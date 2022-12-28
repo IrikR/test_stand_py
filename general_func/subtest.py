@@ -16,6 +16,7 @@ from .database import *
 from .resistance import Resistor
 from .reset import ResetRelay, ResetProtection
 from .exception import HardwareException
+from .utils import CLILog
 
 __all__ = ["SubtestMTZ5", "ProcedureFull", "SubtestBDU", "Subtest2in", "SubtestBDU1M", "Subtest4in", "ReadOPCServer"]
 
@@ -26,6 +27,7 @@ class ReadOPCServer:
         self.rw_error = RWError()
         self.mysql_conn = MySQLConnect()
         self.logger = logging.getLogger(__name__)
+        self.cli_log = CLILog(True)
 
     def _write_condition_1(self, test_num: int, subtest_num: float):
         """
@@ -79,9 +81,11 @@ class ReadOPCServer:
         :param di_a: вход контроллера
         :return:
         """
+        self.cli_log.log_msg("считывание дискретных входов", "gray")
         self._write_condition_1(test_num, subtest_num)
-        in_x, *_ = self.di_read.di_read(di_a, "in_b2")
+        in_x, *_ = self.di_read.di_read(di_a, 'in_b6')
         self.logger.debug(f"состояние входа: {in_x = } is {position}")
+        self.cli_log.log_msg(f"состояние входа: {in_x = } is {position}", "blue1")
         if in_x is position:
             self._write_condition_true(test_num, subtest_num)
             return True

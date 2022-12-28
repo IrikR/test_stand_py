@@ -4,15 +4,15 @@
 import logging
 
 # from OpenOPC import client
-from time import sleep
+# from time import sleep
 
-from general_func.database import *
+# from general_func.database import *
 from general_func.modbus import *
-from general_func.procedure import *
-from general_func.ctrl_tv1 import *
-from general_func.utils import *
+# from general_func.procedure import *
+# from general_func.ctrl_tv1 import *
+# from general_func.utils import *
 from gui.msgbox_1 import *
-from gui.msgbox_2 import *
+# from gui.msgbox_2 import *
 
 logging.basicConfig(filename="TestScript.log",
                     filemode="w",

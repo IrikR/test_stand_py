@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
+!!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
+
 Алгоритм проверки
-Тип блока Производитель
-БКИ-2Т	нет производителя	52
-БКИ-2Т	ТЭТЗ-Инвест	53
-БКИ-2Т	Строй-энерго	54
+Тип блока: БКИ-2Т
+Производитель: нет производителя, ТЭТЗ-Инвест, Строй-энерго
+Модификации: 52, 53, 54
 
 """
 
@@ -15,197 +16,163 @@ import logging
 
 from time import sleep
 
-from gen_func_utils import *
-from my_msgbox import *
-from gen_mb_client import *
-from gen_mysql_connect import *
+from general_func.exception import *
+from general_func.subtest import ReadOPCServer
+from general_func.database import *
+from general_func.modbus import *
+from general_func.resistance import Resistor
+from general_func.reset import ResetRelay
+from gui.msgbox_1 import *
 
 __all__ = ["TestBKI2T"]
 
 
-class TestBKI2T(object):
+class TestBKI2T:
 
     def __init__(self):
-        self.__resist = Resistor()
-        self.__ctrl_kl = CtrlKL()
-        self.__read_mb = ReadMB()
-        self.__mysql_conn = MySQLConnect()
-        self.__fault = Bug(True)
+        self.resist = Resistor()
+        self.ctrl_kl = CtrlKL()
+        self.mysql_conn = MySQLConnect()
+        self.di_read_full = ReadOPCServer()
 
-        logging.basicConfig(filename="C:\Stend\project_class\TestBKI2T.log",
-                            filemode="w",
-                            level=logging.DEBUG,
-                            encoding="utf-8",
-                            format='[%(asctime)s: %(name)s: %(levelname)s] %(message)s')
+        logging.basicConfig(
+            filename="C:\\Stend\\project_class\\log\\TestBKI2T.log",
+            filemode="w",
+            level=logging.DEBUG,
+            encoding="utf-8",
+            format='[%(asctime)s: %(name)s: %(levelname)s] %(message)s')
         logging.getLogger('mysql').setLevel('WARNING')
         self.logger = logging.getLogger(__name__)
+        # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def st_test_1_bki_2t(self) -> bool:
+    def st_test_10(self) -> bool:
         """
         Тест 1. Проверка исходного состояния блока:
         """
-        self.__mysql_conn.mysql_ins_result("идет тест 1", "1")
-        in_a1, in_a2, in_a5, in_a6 = self.__inputs_a()
-        if in_a5 is True and in_a1 is False and in_a6 is True and in_a2 is False:
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", "1")
-            self.__fault.debug_msg('тест 1 не пройден', 1)
-            if in_a5 is False or in_a1 is True:
-                self.__mysql_conn.mysql_error(35)
-            elif in_a6 is False or in_a2 is True:
-                self.__mysql_conn.mysql_error(36)
-            return False
-        self.__fault.debug_msg('тест 1 пройден', 3)
-        self.__mysql_conn.mysql_ins_result("исправен", '1')
-        return True
+        if self.di_read_full.subtest_4di(test_num=1, subtest_num=1.0,
+                                         err_code_a=35, err_code_b=35, err_code_c=36, err_code_d=36,
+                                         position_a=True, position_b=False, position_c=True, position_d=False,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            return True
+        return False
 
-    def st_test_20_bki_2t(self) -> bool:
+    def st_test_20(self) -> bool:
         """
         Тест 2. Проверка работы блока при подаче питания и при
         нормальном сопротивлении изоляции контролируемого присоединения
         """
-        self.__mysql_conn.mysql_ins_result("идет тест 2.1", "2")
-        self.__ctrl_kl.ctrl_relay('KL21', True)
+        self.logger.debug("старт теста 2.0")
+        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.logger.debug("включен KL21")
         sleep(5)
-        if self.__subtest_21(2.2, 2):
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", '2')
-            return False
-        self.__mysql_conn.mysql_ins_result("исправен", '2')
-        return True
+        if self.di_read_full.subtest_4di(test_num=2, subtest_num=2.0,
+                                         err_code_a=37, err_code_b=37, err_code_c=38, err_code_d=38,
+                                         position_a=True, position_b=False, position_c=True, position_d=False,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            return True
+        return False
 
-    def st_test_30_bki_2t(self) -> bool:
+    def st_test_30(self) -> bool:
         """
         Тест 3. Проверка работы 1 канала (К1) блока при снижении
         уровня сопротивлении изоляции ниже 30 кОм в цепи 1 канала
         """
-        self.__mysql_conn.mysql_ins_result("идет тест 3", "3")
-        self.__ctrl_kl.ctrl_relay('KL31', True)
-        self.__resist.resist_kohm(12)
+        self.logger.debug("старт теста 3.0")
+        self.ctrl_kl.ctrl_relay('KL31', True)
+        self.logger.debug("включен KL31")
+        self.resist.resist_kohm(12)
         sleep(1)
-        in_a1, in_a2, in_a5, in_a6 = self.__inputs_a()
-        if in_a5 is False and in_a1 is True and in_a6 is True and in_a2 is False:
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", '3')
-            if in_a5 is True or in_a1 is False:
-                self.__mysql_conn.mysql_error(39)
-            elif in_a6 is False or in_a2 is True:
-                self.__mysql_conn.mysql_error(40)
-            return False
-        self.__resist.resist_kohm(590)
-        self.__mysql_conn.mysql_ins_result("исправен", '3')
-        return True
+        if self.di_read_full.subtest_4di(test_num=3, subtest_num=3.0,
+                                         err_code_a=39, err_code_b=39, err_code_c=40, err_code_d=40,
+                                         position_a=False, position_b=True, position_c=True, position_d=False,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            self.resist.resist_kohm(590)
+            return True
+        return False
 
-    def st_test_40_bki_2t(self) -> bool:
+    def st_test_40(self) -> bool:
         """
         Тест 4. Проверка работы 1 канала (К1) блока от кнопки «Проверка БКИ» в цепи 1 канала
         """
-        if self.__subtest_21(4.1, 4):
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", '4')
-            return False
-        self.__ctrl_kl.ctrl_relay('KL23', True)
-        self.__ctrl_kl.ctrl_relay('KL22', True)
-        sleep(1)
-        in_a1, in_a2, in_a5, in_a6 = self.__inputs_a()
-        if in_a5 is False and in_a1 is True and in_a6 is True and in_a2 is False:
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", '4')
-            if in_a5 is True or in_a1 is False:
-                self.__mysql_conn.mysql_error(41)
-            elif in_a6 is False or in_a2 is True:
-                self.__mysql_conn.mysql_error(42)
-            return False
-        self.__resist.resist_kohm(590)
-        self.__ctrl_kl.ctrl_relay('KL22', False)
-        self.__mysql_conn.mysql_ins_result("исправен", '4')
-        return True
+        if self.di_read_full.subtest_4di(test_num=4, subtest_num=4.0,
+                                         err_code_a=37, err_code_b=37, err_code_c=38, err_code_d=38,
+                                         position_a=True, position_b=False, position_c=True, position_d=False,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            return True
+        return False
 
-    def st_test_50_bki_2t(self) -> bool:
+    def st_test_41(self) -> bool:
+        """
+
+        :return:
+        """
+        self.logger.debug("старт теста 4.1")
+        self.ctrl_kl.ctrl_relay('KL23', True)
+        self.ctrl_kl.ctrl_relay('KL22', True)
+        self.logger.debug("включены KL23, KL22")
+        sleep(1)
+        if self.di_read_full.subtest_4di(test_num=4, subtest_num=4.1,
+                                         err_code_a=41, err_code_b=41, err_code_c=42, err_code_d=42,
+                                         position_a=False, position_b=True, position_c=True, position_d=False,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            self.resist.resist_kohm(590)
+            self.ctrl_kl.ctrl_relay('KL22', False)
+            self.logger.debug("отключен KL22")
+            return True
+        return False
+
+    def st_test_50(self) -> bool:
         """
         Тест 5. Проверка работы 2 канала (К2) блока при снижении уровня
         сопротивлении изоляции ниже 30 кОм в цепи 2 канала
         """
-        self.__mysql_conn.mysql_ins_result("идет тест 5", "5")
-        self.__ctrl_kl.ctrl_relay('KL31', False)
+        self.logger.debug("старт теста 5.0")
+        self.ctrl_kl.ctrl_relay('KL31', False)
+        self.logger.debug("отключен KL31")
         sleep(1)
-        self.__resist.resist_kohm(12)
+        self.resist.resist_kohm(12)
         sleep(1)
-        in_a1, in_a2, in_a5, in_a6 = self.__inputs_a()
-        if in_a5 is True and in_a1 is False and in_a6 is False and in_a2 is True:
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", '5')
-            if in_a5 is False or in_a1 is True:
-                self.__mysql_conn.mysql_error(43)
-            elif in_a6 is True or in_a2 is False:
-                self.__mysql_conn.mysql_error(44)
-            return False
-        self.__resist.resist_kohm(590)
-        self.__mysql_conn.mysql_ins_result("исправен", '5')
-        return True
+        if self.di_read_full.subtest_4di(test_num=5, subtest_num=5.0,
+                                         err_code_a=43, err_code_b=43, err_code_c=44, err_code_d=44,
+                                         position_a=True, position_b=False, position_c=False, position_d=True,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            self.resist.resist_kohm(590)
+            return True
+        return False
 
-    def st_test_60_bki_2t(self) -> bool:
+    def st_test_60(self) -> bool:
         """
         Тест 6. Проверка работы 2 канала (К2) блока от кнопки «Проверка БКИ» в цепи 2 канала
         """
-        if self.__subtest_21(6.1, 6):
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", '6')
-        self.__ctrl_kl.ctrl_relay('KL22', True)
+        if self.di_read_full.subtest_4di(test_num=6, subtest_num=6.0,
+                                         err_code_a=37, err_code_b=37, err_code_c=38, err_code_d=38,
+                                         position_a=True, position_b=False, position_c=True, position_d=False,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            return True
+        return False
+
+    def st_test_61(self) -> bool:
+        self.logger.debug("старт теста 6.1")
+        self.ctrl_kl.ctrl_relay('KL22', True)
+        self.logger.debug("включен KL22")
         sleep(1)
-        in_a1, in_a2, in_a5, in_a6 = self.__inputs_a()
-        if in_a5 is True and in_a1 is False and in_a6 is False and in_a2 is True:
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", '6')
-            if in_a5 is False or in_a1 is True:
-                self.__mysql_conn.mysql_error(45)
-            elif in_a6 is True or in_a2 is False:
-                self.__mysql_conn.mysql_error(46)
-            return False
-        self.__mysql_conn.mysql_ins_result("исправен", '6')
-        return True
-
-    def __subtest_21(self, subtest_2_num: float, test_2_num: int) -> bool:
-        self.__mysql_conn.mysql_ins_result(f'идёт тест {subtest_2_num}', f'{test_2_num}')
-        in_a1, in_a2, in_a5, in_a6 = self.__inputs_a()
-        if in_a5 is True and in_a1 is False and in_a6 is True and in_a2 is False:
-            pass
-        else:
-            self.__mysql_conn.mysql_ins_result("неисправен", f'{test_2_num}')
-            self.__fault.debug_msg(f'тест {subtest_2_num} положение выходов не соответствует', 1)
-            if in_a5 is False or in_a1 is True:
-                self.__mysql_conn.mysql_error(37)
-            elif in_a6 is False or in_a2 is True:
-                self.__mysql_conn.mysql_error(38)
-            return False
-        self.__fault.debug_msg(f'тест {subtest_2_num} положение выходов соответствует', 4)
-        return True
-
-    def __inputs_a(self):
-        in_a1 = self.__read_mb.read_discrete(1)
-        in_a2 = self.__read_mb.read_discrete(2)
-        in_a5 = self.__read_mb.read_discrete(5)
-        in_a6 = self.__read_mb.read_discrete(6)
-        if in_a1 is None or in_a2 is None or in_a5 is None or in_a6 is None:
-            raise ModbusConnectException(f'нет связи с контроллером')
-        return in_a1, in_a2, in_a5, in_a6
+        if self.di_read_full.subtest_4di(test_num=6, subtest_num=6.1,
+                                         err_code_a=45, err_code_b=45, err_code_c=46, err_code_d=46,
+                                         position_a=True, position_b=False, position_c=False, position_d=True,
+                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+            return True
+        return False
 
     def st_test_bki_2t(self) -> bool:
-        if self.st_test_1_bki_2t():
-            if self.st_test_20_bki_2t():
-                if self.st_test_30_bki_2t():
-                    if self.st_test_40_bki_2t():
-                        if self.st_test_50_bki_2t():
-                            if self.st_test_60_bki_2t():
-                                return True
+        if self.st_test_10():
+            if self.st_test_20():
+                if self.st_test_30():
+                    if self.st_test_40():
+                        if self.st_test_41():
+                            if self.st_test_50():
+                                if self.st_test_60():
+                                    if self.st_test_61():
+                                        return True
         return False
 
 
@@ -213,7 +180,6 @@ if __name__ == '__main__':
     test_bki_2t = TestBKI2T()
     reset_test_bki_2t = ResetRelay()
     mysql_conn_bki_2t = MySQLConnect()
-    fault = Bug(True)
     try:
         if test_bki_2t.st_test_bki_2t():
             mysql_conn_bki_2t.mysql_block_good()
@@ -226,7 +192,6 @@ if __name__ == '__main__':
     except SystemError:
         my_msg("внутренняя ошибка", 'red')
     except ModbusConnectException as mce:
-        fault.debug_msg(mce, 'red')
         my_msg(f'{mce}', 'red')
     finally:
         reset_test_bki_2t.reset_all()

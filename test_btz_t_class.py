@@ -98,7 +98,7 @@ class TestBTZT:
         """
         Тест 1. Проверка исходного состояния блока:
         """
-        self.di_read.di_read('in_a0')
+        self.di_read.di_read('in_b6', 'in_b7')
         if my_msg(self.msg_1):
             pass
         else:

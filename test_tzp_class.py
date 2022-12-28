@@ -27,6 +27,7 @@ from general_func.reset import ResetRelay, ResetProtection
 from general_func.subtest import ReadOPCServer, ProcedureFull
 from gui.msgbox_1 import *
 from gui.msgbox_2 import *
+from general_func.utils import CLILog
 
 __all__ = ["TestTZP"]
 
@@ -43,6 +44,7 @@ class TestTZP:
         self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self._list_ust_num = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
         self._list_ust_volt = (25.7, 29.8, 34.3, 39.1, 43.7, 48.5)
@@ -73,7 +75,8 @@ class TestTZP:
         :return:
         """
         self.logger.debug("тест 1")
-        self.di_read.di_read('in_a0')
+        self.cli_log.log_msg("тест 1", "gray")
+        self.di_read.di_read('in_b6', 'in_b7')
         self.mysql_conn.mysql_ins_result('идет тест 1', '1')
         self.ctrl_kl.ctrl_relay('KL21', True)
         self.logger.debug("включен KL21")

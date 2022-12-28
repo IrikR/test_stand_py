@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
+!!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
+
 Алгоритм проверки
 Тип блока: БДУ-1
 Производитель: Без Производителя, Углеприбор
@@ -20,6 +22,7 @@ from general_func.modbus import CtrlKL
 from general_func.resistance import Resistor
 from general_func.reset import ResetRelay
 from gui.msgbox_1 import *
+from general_func.utils import CLILog
 
 __all__ = ["TestBDU1"]
 
@@ -43,12 +46,14 @@ class TestBDU1:
         self.mysql_conn = MySQLConnect()
         self.subtest = SubtestBDU()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
-        logging.basicConfig(filename='C:\Stend\project_class\log\TestBDU1.log',
-                            filemode="w",
-                            level=logging.DEBUG,
-                            encoding="utf-8",
-                            format='[%(asctime)s: %(name)s: %(levelname)s] %(message)s')
+        logging.basicConfig(
+            filename="C:\\Stend\\project_class\\log\\TestBDU1.log",
+            filemode="w",
+            level=logging.DEBUG,
+            encoding="utf-8",
+            format='[%(asctime)s: %(name)s: %(levelname)s] %(message)s')
         logging.getLogger('mysql').setLevel('WARNING')
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
@@ -58,6 +63,7 @@ class TestBDU1:
         Тест 1. Проверка исходного состояния блока.
         :return: bool
         """
+        self.cli_log.log_msg("Тест 1", "gray")
         if self.di_read_full.subtest_1di(test_num=1, subtest_num=1.0, err_code=30, di_a='in_a1', position=False):
             return True
         return False
@@ -67,6 +73,7 @@ class TestBDU1:
         Тест-2 Проверка включения/отключения блока от кнопки пуск.
         :return: bool
         """
+        self.cli_log.log_msg("Тест 2", "gray")
         self.ctrl_kl.ctrl_relay('KL2', True)
         sleep(3)
         if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.0, err_code=30, di_a='in_a1', position=False):
@@ -79,6 +86,7 @@ class TestBDU1:
             Код ошибки 21 – Сообщение: Блок не исправен. Нет срабатывания блока от кнопки Пуск.
         :return: bool
         """
+        self.cli_log.log_msg("Тест 2.1", "gray")
         self.resist.resist_ohm(10)
         sleep(3)
         self.ctrl_kl.ctrl_relay('KL12', True)
@@ -93,6 +101,7 @@ class TestBDU1:
             Код ошибки	23	–	Сообщение	«Блок не исправен. Блок не выключается от кнопки «Стоп».
         :return: bool
         """
+        self.cli_log.log_msg("Тест 2.2", "gray")
         sleep(3)
         self.ctrl_kl.ctrl_relay('KL12', False)
         sleep(3)
@@ -108,6 +117,7 @@ class TestBDU1:
 
         :return: bool
         """
+        self.cli_log.log_msg("Тест 3", "gray")
         sleep(3)
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(0.5)
@@ -126,6 +136,7 @@ class TestBDU1:
             сопротивлении цепи заземления более 50 Ом».
         :return: bool
         """
+        self.cli_log.log_msg("Тест 4", "gray")
         self.ctrl_kl.ctrl_relay('KL7', False)
         self.ctrl_kl.ctrl_relay('KL9', False)
         self.ctrl_kl.ctrl_relay('KL4', True)
@@ -144,6 +155,7 @@ class TestBDU1:
                 при замыкании проводов цепей ДУ».
         :return: bool
         """
+        self.cli_log.log_msg("Тест 5", "gray")
         self.resist.resist_ohm(10)
         sleep(1)
         self.ctrl_kl.ctrl_relay('KL12', True)
@@ -161,6 +173,7 @@ class TestBDU1:
         """
             Тест 6. Защита от потери управляемости при обрыве проводов ДУ
         """
+        self.cli_log.log_msg("Тест 6", "gray")
         self.resist.resist_ohm(10)
         sleep(1)
         self.ctrl_kl.ctrl_relay('KL12', True)

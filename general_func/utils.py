@@ -6,10 +6,10 @@ import logging
 
 from time import time
 
-from .modbus import DIRead, CtrlKL
-from .exception import *
+from general_func.modbus import DIRead, CtrlKL
+from general_func.exception import *
 
-__all__ = ["Bug", "DeltaTimeNoneKL63"]
+__all__ = ["CLILog", "DeltaTimeNoneKL63"]
 
 
 class DeltaTimeNoneKL63:
@@ -50,42 +50,62 @@ class DeltaTimeNoneKL63:
         return in_b1
 
 
-class Bug:
+class CLILog:
     """
         Вывод сообщений в консоль, с цветовой дифференциацией штанов
+        Цвет        Текст   Фон
+        Чёрный      30      40
+        Красный     31      41
+        Зелёный     32      42
+        Жёлтый      33      43
+        Синий       34      44
+        Фиолетовый  35      45
+        Бирюзовый   36      46
+        Белый       37      47
     """
 
-    def __init__(self, dbg=None):
-        self.dbg = dbg
+    def __init__(self, log=None):
+        self.log = log
         kernel32 = ctypes.windll.kernel32
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
-    def debug_msg(self, *args):
+    def log_msg(self, *args):
         """
+        red - для неисправности
+        orange - для измерений
+        blue - для сухих контактов
+        green - для исправности
+        purple - для процедур
         :param args:
         :return: string
         """
 
-        if self.dbg is True:
+        if self.log is True:
             msg, lev = args
             if lev == 1 or lev == 'red':
                 # красный Red
                 print("\033[31m {}".format(msg))
-            elif lev == 2 or lev == 'orange':
-                # оранжевый orange
-                print("\033[33m {}".format(msg))
-            elif lev == 3 or lev == 'blue':
-                # голубой blue
-                print("\033[36m {}".format(msg))
-            elif lev == 4 or lev == 'green':
+            elif lev == 2 or lev == 'green':
                 # зеленый green
                 print("\033[32m {}".format(msg))
+            elif lev == 3 or lev == 'orange':
+                # оранжевый orange
+                print("\033[33m {}".format(msg))
+            elif lev == 4 or lev == 'blue1':
+                # синий blue
+                print("\033[34m {}".format(msg))
             elif lev == 5 or lev == 'purple':
                 # фиолетовый purple
                 print("\033[35m {}".format(msg))
-            else:
-                # серый, если пришел неизвестный аргумент
+            elif lev == 6 or lev == 'blue2':
+                # голубой blue
+                print("\033[36m {}".format(msg))
+            elif lev == 7 or lev == 'gray':
+                # серый
                 print("\033[37m {}".format(msg))
+            else:
+                # черный, если пришел неизвестный аргумент
+                print("\033[0;0m {}".format(msg))
         else:
             pass
 
@@ -112,6 +132,9 @@ class Bug:
 if __name__ == '__main__':
     try:
         pass
+
+        cli_log = CLILog(True)
+        cli_log.log_msg("jhvghvhg", 9)
         # read_di = ReadDI()
 #         # st_timer = time()
 #         # a = read_mb.read_discrete(0)

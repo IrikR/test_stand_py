@@ -62,7 +62,7 @@
 __version__ = '0.2.1'
 
 __all__ = ("config", "general_func", "gui", "reset_all", "test_bdu_1_class", "test_bdu_1m_class", "test_bdu_4_2_class",
-           "test_bdu_4_3_class", "test_bdu_014tp_class", "test_bdu_class", "test_bdu_d4_2_class", "test_bdu_d_class",
+           "test_bdu_4_3_class", "test_bdu_014tp_class", "test_bdu_class_old.py", "test_bdu_d4_2_class", "test_bdu_d_class",
            "test_bdu_dr01_class", "test_bdu_r_t_class", "test_bdz_class", "test_bki_1t_class", "test_bki_2t_class",
            "test_bki_6_3sh_class", "test_bki_p_class", "test_bkz_3mk_class", "test_bmz_2_class", "test_btz_3_class",
            "test_btz_t_class", "test_buz_2_class", "test_bp_class", "test_tzp_class", "test_pmz_class",

@@ -97,7 +97,7 @@ class TestBKZ3MK:
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
     def st_test_0(self) -> bool:
-        self.di_read.di_read('in_a0', )
+        self.di_read.di_read('in_b6', 'in_b7')
         # print(in_a0)
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
