@@ -37,6 +37,7 @@ class ReadOPCServer:
         :param subtest_num:
         :return:
         """
+        self.cli_log.log_msg(f"тест: {test_num}, подтест: {subtest_num}", "grey")
         self.logger.debug(f"тест: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f"идёт тест {subtest_num}", f'{test_num}')
         self.mysql_conn.mysql_add_message(f"идёт тест: {subtest_num}, подтест: {test_num}")
@@ -49,6 +50,7 @@ class ReadOPCServer:
         :param subtest_num:
         :return:
         """
+        self.cli_log.log_msg("состояние выхода блока соответствует", "green")
         self.logger.debug("состояние выхода блока соответствует")
         self.mysql_conn.mysql_ins_result(f"исправен", f'{test_num}')
         self.mysql_conn.mysql_add_message(f"Исправен. тест: {subtest_num}, подтест: {test_num}")
@@ -61,6 +63,7 @@ class ReadOPCServer:
         :param subtest_num:
         :return:
         """
+        self.cli_log.log_msg("состояние выхода блока не соответствует", "red")
         self.logger.warning("состояние выхода блока не соответствует")
         self.mysql_conn.mysql_ins_result("неисправен", f'{test_num}')
         self.mysql_conn.mysql_add_message(f"Несправен. тест: {subtest_num}, подтест: {test_num}")
@@ -68,11 +71,11 @@ class ReadOPCServer:
     def subtest_1di(self, *, test_num: int = 1, subtest_num: float = 1, err_code: int = 30,
                     position: bool = False, di_a: str = 'in_a1') -> bool:
         """
-        Метод используется в алгоритмах у которых только один вход.
+        Метод используется в алгоритмах у которых только один вход,
         для следующих используется вход in_a1
         общий тест для bdu_4_3, bdu_014tp, bdu, bdu_d, bru_2s, bu_pmvir
         для следующих используется вход in_a2
-        общий тест для bdu_4_3, bdu_014tp, bdu, bdu_d, bru_2s, bu_pmvir
+        общий тест для
         Код ошибки	30	–	Сообщение	«Блок не исправен. Контакты блока находятся в неисходном состоянии».
         :param test_num: номер теста
         :param subtest_num: номер подтеста
@@ -85,7 +88,7 @@ class ReadOPCServer:
         self._write_condition_1(test_num, subtest_num)
         in_x, *_ = self.di_read.di_read(di_a, 'in_b6')
         self.logger.debug(f"состояние входа: {in_x = } is {position}")
-        self.cli_log.log_msg(f"состояние входа: {in_x = } is {position}", "blue1")
+        self.cli_log.log_msg(f"состояние входа: {in_x = }, должно быть {position}", "blue1")
         if in_x is position:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -112,7 +115,8 @@ class ReadOPCServer:
         """
         self._write_condition_1(test_num, subtest_num)
         in_a1, in_a2 = self.di_read.di_read(di_a, di_b)
-        self.logger.debug(f"состояние входа: {in_a1 = } is {position_a} and {in_a2 = } is {position_b}")
+        self.logger.debug(f"состояние входа: {in_a1 = } is {position_a} and {in_a2 = } is {position_b}:")
+        self.cli_log.log_msg(f"состояние входа: {in_a1 = } is {position_a} and {in_a2 = } is {position_b}:", "blue1")
         if in_a1 is position_a and in_a2 is position_b:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -129,25 +133,27 @@ class ReadOPCServer:
                     position_a: bool = False, position_b: bool = False, position_c: bool = False,
                     di_a: str = 'in_a0', di_b: str = 'in_a1', di_c: str = 'in_a2') -> bool:
         """
-        Метод используется в алгоритмах проверки блоков у которых 3 выхода.
-        :param test_num: номер теста
-        :param subtest_num: номер подтеста
-        :param err_code_a: код ошибки для 1-го выхода
-        :param err_code_b: код ошибки для 2-го выхода
-        :param err_code_c: код ошибки для 3-го выхода
-        :param position_a: положение которое должен занять 1-й выход блока
-        :param position_b: положение которое должен занять 2-й выход блока
-        :param position_c: положение которое должен занять 3-й выход блока
-        :param di_a: 1-й вход контроллера
-        :param di_b: 2-й вход контроллера
-        :param di_c: 3-й вход контроллера
-        :return: bool
+        Метод используется в алгоритмах проверки блоков у которых 3 выхода
+        :param test_num: номер теста,
+        :param subtest_num: номер подтеста,
+        :param err_code_a: код ошибки для 1-го выхода,
+        :param err_code_b: код ошибки для 2-го выхода,
+        :param err_code_c: код ошибки для 3-го выхода,
+        :param position_a: положение которое должен занять 1-й выход блока,
+        :param position_b: положение которое должен занять 2-й выход блока,
+        :param position_c: положение которое должен занять 3-й выход блока,
+        :param di_a: 1-й вход контроллера,
+        :param di_b: 2-й вход контроллера,
+        :param di_c: 3-й вход контроллера,
+        :return: Bool
         """
 
         self._write_condition_1(test_num, subtest_num)
         in_a, in_b, in_c = self.di_read.di_read(di_a, di_b, di_c)
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
                           f"and {in_c = } is {position_c}")
+        self.cli_log.log_msg(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} : "
+                             f"and {in_c = } is {position_c}", "blue1")
         if in_a is position_a and in_b is position_b and in_c is position_c:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -190,6 +196,8 @@ class ReadOPCServer:
         in_a, in_b, in_c, in_d = self.di_read.di_read(di_a, di_b, di_c, di_d)
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
                           f"and {in_c = } is {position_c} and {in_d = } is {position_d}")
+        self.cli_log.log_msg(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} :"
+                             f"and {in_c = } is {position_c} and {in_d = } is {position_d}", "blue1")
         if in_a is position_a and in_b is position_b and in_c is position_c and in_d is position_d:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -237,6 +245,9 @@ class ReadOPCServer:
         in_a, in_b, in_c, in_d, in_e = self.di_read.di_read(di_a, di_b, di_c, di_d, di_e)
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
                           f"and {in_c = } is {position_c} and {in_d = } is {position_d} and {in_e} is {position_e}")
+        self.cli_log.log_msg(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
+                             f"and {in_c = } is {position_c} and {in_d = } is {position_d} and {in_e} is {position_e}",
+                             "blue1")
         if in_a is position_a and in_b is position_b and in_c is position_c and \
                 in_d is position_d and in_e is position_e:
             self._write_condition_true(test_num, subtest_num)
@@ -261,6 +272,7 @@ class RWError:
     def __init__(self):
         self.mysql_conn = MySQLConnect()
         self.logger = logging.getLogger(__name__)
+        self.cli_log = CLILog(True)
 
     def rw_err(self, err_code):
         """
@@ -272,6 +284,7 @@ class RWError:
         read_err = self.mysql_conn.read_err(err_code)
         self.mysql_conn.mysql_add_message(read_err)
         self.logger.debug(f'код неисправности {err_code}: {read_err}')
+        self.cli_log.log_msg(f'код неисправности {err_code}: {read_err}', "red")
 
 
 class SubtestMTZ5:
@@ -547,7 +560,7 @@ class Subtest2in:
         :param position_b:
         :param resist:
         :param timeout:
-        :return:
+        :return: Bool
         """
         
         self.logger.debug(f"Общий метод, тест: {test_num}, подтест: {subtest_num}")

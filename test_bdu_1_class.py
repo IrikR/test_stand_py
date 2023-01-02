@@ -61,7 +61,7 @@ class TestBDU1:
     def st_test_1(self) -> bool:
         """
         Тест 1. Проверка исходного состояния блока.
-        :return: bool
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 1", "gray")
         if self.di_read_full.subtest_1di(test_num=1, subtest_num=1.0, err_code=30, di_a='in_a1', position=False):
@@ -71,7 +71,7 @@ class TestBDU1:
     def st_test_20(self) -> bool:
         """
         Тест-2 Проверка включения/отключения блока от кнопки пуск.
-        :return: bool
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 2", "gray")
         self.ctrl_kl.ctrl_relay('KL2', True)
@@ -84,7 +84,7 @@ class TestBDU1:
         """
         Тест-2.2 Проверка канала блока от кнопки "Пуск"
             Код ошибки 21 – Сообщение: Блок не исправен. Нет срабатывания блока от кнопки Пуск.
-        :return: bool
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 2.1", "gray")
         self.resist.resist_ohm(10)
@@ -99,7 +99,7 @@ class TestBDU1:
         """
         Тест 2.3 Выключение канала блока от кнопки «Пуск» при сопротивлении 10 Ом.
             Код ошибки	23	–	Сообщение	«Блок не исправен. Блок не выключается от кнопки «Стоп».
-        :return: bool
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 2.2", "gray")
         sleep(3)
@@ -115,7 +115,7 @@ class TestBDU1:
             Код ошибки 28 – Сообщение: «Блок не исправен. Отсутствие удержания исполнительного
         элемента при сопротивлении до 35 Ом».
 
-        :return: bool
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 3", "gray")
         sleep(3)
@@ -134,7 +134,7 @@ class TestBDU1:
         Тест 4. Отключение исполнительного элемента при сопротивлении цепи заземления свыше 50 Ом
             Код ошибки 29 – Сообщение: «Блок не исправен. Отключение исполнительного элемента при
             сопротивлении цепи заземления более 50 Ом».
-        :return: bool
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 4", "gray")
         self.ctrl_kl.ctrl_relay('KL7', False)
@@ -153,7 +153,7 @@ class TestBDU1:
         Тест 5. Защита от потери управляемости при замыкании проводов ДУ
                 Код ошибки	03	–	Сообщение	«Блок не исправен. Выходные контакты блока не отключаются
                 при замыкании проводов цепей ДУ».
-        :return: bool
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 5", "gray")
         self.resist.resist_ohm(10)
@@ -171,7 +171,8 @@ class TestBDU1:
 
     def st_test_60(self) -> bool:
         """
-            Тест 6. Защита от потери управляемости при обрыве проводов ДУ
+        Тест 6. Защита от потери управляемости при обрыве проводов ДУ
+        :return: Bool
         """
         self.cli_log.log_msg("Тест 6", "gray")
         self.resist.resist_ohm(10)
@@ -187,6 +188,7 @@ class TestBDU1:
     def st_test_bdu_1(self) -> bool:
         """
             Главная функция которая собирает все остальные.
+            :return: Bool
         """
         if self.st_test_1():
             if self.st_test_20():
