@@ -263,24 +263,43 @@ class TestBDURT:
                                                                 return True
         return False
 
+    def full_test_bdu_r_t(self):
+        try:
+            if self.st_test_bdu_r_t():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bdu_r_t = TestBDURT()
-    reset_test_bdu_r_t = ResetRelay()
-    mysql_conn_bdu_r_t = MySQLConnect()
-    try:
-        if test_bdu_r_t.st_test_bdu_r_t():
-            mysql_conn_bdu_r_t.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bdu_r_t.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bdu_r_t.reset_all()
-        sys.exit()
+    test_bdu_r_t.full_test_bdu_r_t()
+    # reset_test_bdu_r_t = ResetRelay()
+    # mysql_conn_bdu_r_t = MySQLConnect()
+    # try:
+    #     if test_bdu_r_t.st_test_bdu_r_t():
+    #         mysql_conn_bdu_r_t.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bdu_r_t.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bdu_r_t.reset_all()
+    #     sys.exit()

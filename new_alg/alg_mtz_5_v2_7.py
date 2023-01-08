@@ -507,29 +507,53 @@ class TestMTZ5V27:
                                     return True, self.health_flag
         return False, self.health_flag
 
+    def full_test_mtz_5_v27(self):
+        try:
+            test, health_flag = self.st_test_mtz_5_v2_7()
+            if test and not health_flag:
+                self.result_test()
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.result_test()
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        except HardwareException as hwe:
+            my_msg(f'{hwe}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_mtz = TestMTZ5V27()
-    reset_test_mtz = ResetRelay()
-    mysql_conn_mtz = MySQLConnect()
-    try:
-        test, health_flag = test_mtz.st_test_mtz_5_v2_7()
-        if test and not health_flag:
-            test_mtz.result_test()
-            mysql_conn_mtz.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            test_mtz.result_test()
-            mysql_conn_mtz.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    except HardwareException as hwe:
-        my_msg(f'{hwe}', 'red')
-    finally:
-        reset_test_mtz.reset_all()
-        sys.exit()
+    test_mtz.full_test_mtz_5_v27()
+    # reset_test_mtz = ResetRelay()
+    # mysql_conn_mtz = MySQLConnect()
+    # try:
+    #     test, health_flag = test_mtz.st_test_mtz_5_v2_7()
+    #     if test and not health_flag:
+    #         test_mtz.result_test()
+    #         mysql_conn_mtz.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         test_mtz.result_test()
+    #         mysql_conn_mtz.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # except HardwareException as hwe:
+    #     my_msg(f'{hwe}', 'red')
+    # finally:
+    #     reset_test_mtz.reset_all()
+    #     sys.exit()

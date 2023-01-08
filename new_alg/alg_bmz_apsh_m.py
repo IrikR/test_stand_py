@@ -186,25 +186,45 @@ class TestBMZAPSHM:
                                         return True, self.health_flag
         return False, self.health_flag
 
+    def full_test_bmz_apsh_m(self):
+        try:
+            test, health_flag = self.st_test_bmz_apsh_m()
+            if test and not health_flag:
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bmz_apsh_m = TestBMZAPSHM()
-    reset_test_bmz_apsh_m = ResetRelay()
-    mysql_conn_bmz_apsh_m = MySQLConnect()
-    try:
-        test, health_flag = test_bmz_apsh_m.st_test_bmz_apsh_m()
-        if test and not health_flag:
-            mysql_conn_bmz_apsh_m.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bmz_apsh_m.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bmz_apsh_m.reset_all()
-        sys.exit()
+    test_bmz_apsh_m.full_test_bmz_apsh_m()
+    # reset_test_bmz_apsh_m = ResetRelay()
+    # mysql_conn_bmz_apsh_m = MySQLConnect()
+    # try:
+    #     test, health_flag = test_bmz_apsh_m.st_test_bmz_apsh_m()
+    #     if test and not health_flag:
+    #         mysql_conn_bmz_apsh_m.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bmz_apsh_m.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bmz_apsh_m.reset_all()
+    #     sys.exit()

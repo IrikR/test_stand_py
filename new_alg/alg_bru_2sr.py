@@ -268,24 +268,43 @@ class TestBRU2SR:
                                                 return True
         return False
 
+    def full_test_bru_2sr(self):
+        try:
+            if self.st_test_bru_2sr():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bru_2sr = TestBRU2SR()
-    reset_test_bru_2sr = ResetRelay()
-    mysql_conn_bru_2sr = MySQLConnect()
-    try:
-        if test_bru_2sr.st_test_bru_2sr():
-            mysql_conn_bru_2sr.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bru_2sr.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bru_2sr.reset_all()
-        sys.exit()
+    test_bru_2sr.full_test_bru_2sr()
+    # reset_test_bru_2sr = ResetRelay()
+    # mysql_conn_bru_2sr = MySQLConnect()
+    # try:
+    #     if test_bru_2sr.st_test_bru_2sr():
+    #         mysql_conn_bru_2sr.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bru_2sr.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bru_2sr.reset_all()
+    #     sys.exit()

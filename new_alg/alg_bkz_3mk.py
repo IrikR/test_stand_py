@@ -438,7 +438,6 @@ class TestBKZ3MK:
 
     def full_test_bkz_3mk(self):
         try:
-            # test_bkz_3mk.st_test_bkz_3mk()
             test, health_flag_mtz, health_flag_tzp = self.st_test_bkz_3mk()
             if test and not health_flag_mtz and not health_flag_tzp:
                 self.mysql_conn.mysql_block_good()

@@ -308,29 +308,53 @@ class TestBMZ2:
             self.list_result.append((self.list_ust_num[g1], self.list_delta_percent[g1], self.list_delta_t[g1]))
         self.mysql_conn.mysql_tzp_result(self.list_result)
 
+    def full_test_bmz_2(self):
+        try:
+            test, health_flag = self.st_test_bmz_2()
+            if test and not health_flag:
+                self.result_test_bmz_2()
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.result_test_bmz_2()
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        except HardwareException as hwe:
+            my_msg(f'{hwe}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bmz_2 = TestBMZ2()
-    reset_test_bmz_2 = ResetRelay()
-    mysql_conn_bmz2 = MySQLConnect()
-    try:
-        test, health_flag = test_bmz_2.st_test_bmz_2()
-        if test and not health_flag:
-            test_bmz_2.result_test_bmz_2()
-            mysql_conn_bmz2.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            test_bmz_2.result_test_bmz_2()
-            mysql_conn_bmz2.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    except HardwareException as hwe:
-        my_msg(f'{hwe}', 'red')
-    finally:
-        reset_test_bmz_2.reset_all()
-        sys.exit()
+    test_bmz_2.full_test_bmz_2()
+    # reset_test_bmz_2 = ResetRelay()
+    # mysql_conn_bmz2 = MySQLConnect()
+    # try:
+    #     test, health_flag = test_bmz_2.st_test_bmz_2()
+    #     if test and not health_flag:
+    #         test_bmz_2.result_test_bmz_2()
+    #         mysql_conn_bmz2.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         test_bmz_2.result_test_bmz_2()
+    #         mysql_conn_bmz2.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # except HardwareException as hwe:
+    #     my_msg(f'{hwe}', 'red')
+    # finally:
+    #     reset_test_bmz_2.reset_all()
+    #     sys.exit()

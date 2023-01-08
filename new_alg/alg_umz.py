@@ -408,29 +408,53 @@ class TestUMZ:
                         return True, self.health_flag
         return False, self.health_flag
 
+    def full_test_umz(self):
+        try:
+            test, health_flag = self.st_test_umz()
+            if test and not health_flag:
+                self.result_umz()
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.result_umz()
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        except HardwareException as hwe:
+            my_msg(f'{hwe}', 'red')
+        finally:
+            self.reset.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_umz = TestUMZ()
-    reset_test_umz = ResetRelay()
-    mysql_conn_umz = MySQLConnect()
-    try:
-        test, health_flag = test_umz.st_test_umz()
-        if test and not health_flag:
-            test_umz.result_umz()
-            mysql_conn_umz.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            test_umz.result_umz()
-            mysql_conn_umz.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    except HardwareException as hwe:
-        my_msg(f'{hwe}', 'red')
-    finally:
-        reset_test_umz.reset_all()
-        sys.exit()
+    test_umz.full_test_umz()
+    # reset_test_umz = ResetRelay()
+    # mysql_conn_umz = MySQLConnect()
+    # try:
+    #     test, health_flag = test_umz.st_test_umz()
+    #     if test and not health_flag:
+    #         test_umz.result_umz()
+    #         mysql_conn_umz.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         test_umz.result_umz()
+    #         mysql_conn_umz.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # except HardwareException as hwe:
+    #     my_msg(f'{hwe}', 'red')
+    # finally:
+    #     reset_test_umz.reset_all()
+    #     sys.exit()

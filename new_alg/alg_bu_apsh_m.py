@@ -222,24 +222,43 @@ class TestBUAPSHM:
                                             return True
         return False
 
+    def full_test_bu_apsh_m(self):
+        try:
+            if self.st_test_bu_apsh_m():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f's{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bu_apsh_m = TestBUAPSHM()
-    reset_test_bu_apsh_m = ResetRelay()
-    mysql_conn_bu_apsh_m = MySQLConnect()
-    try:
-        if test_bu_apsh_m.st_test_bu_apsh_m():
-            mysql_conn_bu_apsh_m.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bu_apsh_m.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f's{mce}', 'red')
-    finally:
-        reset_test_bu_apsh_m.reset_all()
-        sys.exit()
+    test_bu_apsh_m.full_test_bu_apsh_m()
+    # reset_test_bu_apsh_m = ResetRelay()
+    # mysql_conn_bu_apsh_m = MySQLConnect()
+    # try:
+    #     if test_bu_apsh_m.st_test_bu_apsh_m():
+    #         mysql_conn_bu_apsh_m.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bu_apsh_m.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f's{mce}', 'red')
+    # finally:
+    #     reset_test_bu_apsh_m.reset_all()
+    #     sys.exit()

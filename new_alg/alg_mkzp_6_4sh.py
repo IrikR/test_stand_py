@@ -426,25 +426,45 @@ class TestMKZP6:
                                                                         return True, self.health_flag
         return False, self.health_flag
 
+    def full_test_mkzp_6_4sh(self):
+        try:
+            test, health_flag = self.st_test_mkzp_6_4sh()
+            if test and not health_flag:
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except HardwareException as hwe:
+            my_msg(f'{hwe}', 'red')
+        finally:
+            self.reset.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_mkzp = TestMKZP6()
-    reset_test_mkzp = ResetRelay()
-    mysql_conn_mkzp = MySQLConnect()
-    try:
-        test, health_flag = test_mkzp.st_test_mkzp_6_4sh()
-        if test and not health_flag:
-            mysql_conn_mkzp.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_mkzp.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except HardwareException as hwe:
-        my_msg(f'{hwe}', 'red')
-    finally:
-        reset_test_mkzp.reset_all()
-        sys.exit()
+    test_mkzp.full_test_mkzp_6_4sh()
+    # reset_test_mkzp = ResetRelay()
+    # mysql_conn_mkzp = MySQLConnect()
+    # try:
+    #     test, health_flag = test_mkzp.st_test_mkzp_6_4sh()
+    #     if test and not health_flag:
+    #         mysql_conn_mkzp.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_mkzp.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except HardwareException as hwe:
+    #     my_msg(f'{hwe}', 'red')
+    # finally:
+    #     reset_test_mkzp.reset_all()
+    #     sys.exit()

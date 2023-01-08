@@ -240,24 +240,43 @@ class TestBKI6:
                                                 return True
         return False
 
+    def full_test_bki_6_3sh(self):
+        try:
+            if self.st_test_bki_6_3sh():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bki6 = TestBKI6()
-    reset_test_bki6 = ResetRelay()
-    mysql_conn_bki6 = MySQLConnect()
-    try:
-        if test_bki6.st_test_bki_6_3sh():
-            mysql_conn_bki6.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bki6.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bki6.reset_all()
-        sys.exit()
+    test_bki6.full_test_bki_6_3sh()
+    # reset_test_bki6 = ResetRelay()
+    # mysql_conn_bki6 = MySQLConnect()
+    # try:
+    #     if test_bki6.st_test_bki_6_3sh():
+    #         mysql_conn_bki6.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bki6.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bki6.reset_all()
+    #     sys.exit()

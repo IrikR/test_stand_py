@@ -185,24 +185,43 @@ class TestBDUD:
                                                 return True
         return False
 
+    def full_test_bdu_d(self):
+        try:
+            if self.st_test_bdu_d():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bdu_d = TestBDUD()
-    reset_test_bdu_d = ResetRelay()
-    mysql_conn_test_bdu_d = MySQLConnect()
-    try:
-        if test_bdu_d.st_test_bdu_d():
-            mysql_conn_test_bdu_d.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_test_bdu_d.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bdu_d.reset_all()
-        sys.exit()
+    test_bdu_d.full_test_bdu_d()
+    # reset_test_bdu_d = ResetRelay()
+    # mysql_conn_test_bdu_d = MySQLConnect()
+    # try:
+    #     if test_bdu_d.st_test_bdu_d():
+    #         mysql_conn_test_bdu_d.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_test_bdu_d.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bdu_d.reset_all()
+    #     sys.exit()

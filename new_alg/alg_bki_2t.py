@@ -179,24 +179,43 @@ class TestBKI2T:
                                         return True
         return False
 
+    def full_test_bki_2t(self):
+        try:
+            if self.st_test_bki_2t():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bki_2t = TestBKI2T()
-    reset_test_bki_2t = ResetRelay()
-    mysql_conn_bki_2t = MySQLConnect()
-    try:
-        if test_bki_2t.st_test_bki_2t():
-            mysql_conn_bki_2t.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bki_2t.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bki_2t.reset_all()
-        sys.exit()
+    test_bki_2t.full_test_bki_2t()
+    # reset_test_bki_2t = ResetRelay()
+    # mysql_conn_bki_2t = MySQLConnect()
+    # try:
+    #     if test_bki_2t.st_test_bki_2t():
+    #         mysql_conn_bki_2t.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bki_2t.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bki_2t.reset_all()
+    #     sys.exit()

@@ -451,29 +451,52 @@ class TestBTZ3:
                                          self.list_delta_t_tzp[g2]))
         self.mysql_conn.mysql_tzp_result(self.list_result_tzp)
 
+    def full_test_btz_3(self):
+        try:
+            test, health_flag = self.st_test_btz_3()
+            if test and not health_flag:
+                self.result_test_btz_3()
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.result_test_btz_3()
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        except HardwareException as hwe:
+            my_msg(f'{hwe}', 'red')
+        finally:
+            self.reset.reset_all()
+            sys.exit()
 
 if __name__ == '__main__':
     test_btz_3 = TestBTZ3()
-    reset_test_btz_3 = ResetRelay()
-    mysql_conn_btz_3 = MySQLConnect()
-    try:
-        test, health_flag = test_btz_3.st_test_btz_3()
-        if test and not health_flag:
-            test_btz_3.result_test_btz_3()
-            mysql_conn_btz_3.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            test_btz_3.result_test_btz_3()
-            mysql_conn_btz_3.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    except HardwareException as hwe:
-        my_msg(f'{hwe}', 'red')
-    finally:
-        reset_test_btz_3.reset_all()
-        sys.exit()
+    test_btz_3.full_test_btz_3()
+    # reset_test_btz_3 = ResetRelay()
+    # mysql_conn_btz_3 = MySQLConnect()
+    # try:
+    #     test, health_flag = test_btz_3.st_test_btz_3()
+    #     if test and not health_flag:
+    #         test_btz_3.result_test_btz_3()
+    #         mysql_conn_btz_3.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         test_btz_3.result_test_btz_3()
+    #         mysql_conn_btz_3.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # except HardwareException as hwe:
+    #     my_msg(f'{hwe}', 'red')
+    # finally:
+    #     reset_test_btz_3.reset_all()
+    #     sys.exit()

@@ -250,24 +250,43 @@ class TestBRU2S:
                                                     return True
         return False
 
+    def full_test_bru_2s(self):
+        try:
+            if self.st_test_bru_2s():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bru_2s = TestBRU2S()
-    reset_test_bru_2s = ResetRelay()
-    mysql_conn_bru_2s = MySQLConnect()
-    try:
-        if test_bru_2s.st_test_bru_2s():
-            mysql_conn_bru_2s.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bru_2s.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bru_2s.reset_all()
-        sys.exit()
+    test_bru_2s.full_test_bru_2s()
+    # reset_test_bru_2s = ResetRelay()
+    # mysql_conn_bru_2s = MySQLConnect()
+    # try:
+    #     if test_bru_2s.st_test_bru_2s():
+    #         mysql_conn_bru_2s.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bru_2s.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bru_2s.reset_all()
+    #     sys.exit()

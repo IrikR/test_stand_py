@@ -391,24 +391,43 @@ class TestBDUDR01:
                                                                                     return True
         return False
 
+    def full_test_bdu_dr01(self):
+        try:
+            if self.st_test_bdu_dr01():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bdu_dr01 = TestBDUDR01()
-    reset_test_bdu_dr01 = ResetRelay()
-    mysql_conn_test_bdu_dr01 = MySQLConnect()
-    try:
-        if test_bdu_dr01.st_test_bdu_dr01():
-            mysql_conn_test_bdu_dr01.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_test_bdu_dr01.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bdu_dr01.reset_all()
-        sys.exit()
+    test_bdu_dr01.full_test_bdu_dr01()
+    # reset_test_bdu_dr01 = ResetRelay()
+    # mysql_conn_test_bdu_dr01 = MySQLConnect()
+    # try:
+    #     if test_bdu_dr01.st_test_bdu_dr01():
+    #         mysql_conn_test_bdu_dr01.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_test_bdu_dr01.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bdu_dr01.reset_all()
+    #     sys.exit()

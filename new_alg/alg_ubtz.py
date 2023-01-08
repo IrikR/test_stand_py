@@ -355,29 +355,53 @@ class TestUBTZ:
                               f"{self.list_delta_t_tzp[g2]}")
         self.mysql_conn.mysql_ubtz_tzp_result(self.list_tzp_result)
 
+    def full_test_ubtz(self):
+        try:
+            test, health_flag = self.st_test_ubtz()
+            if test and not health_flag:
+                self.result_test_ubtz()
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.result_test_ubtz()
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        except HardwareException as hwe:
+            my_msg(f'{hwe}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_ubtz = TestUBTZ()
-    reset_test_ubtz = ResetRelay()
-    mysql_conn_ubtz = MySQLConnect()
-    try:
-        test, health_flag = test_ubtz.st_test_ubtz()
-        if test and not health_flag:
-            test_ubtz.result_test_ubtz()
-            mysql_conn_ubtz.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            test_ubtz.result_test_ubtz()
-            mysql_conn_ubtz.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    except HardwareException as hwe:
-        my_msg(f'{hwe}', 'red')
-    finally:
-        reset_test_ubtz.reset_all()
-        sys.exit()
+    test_ubtz.full_test_ubtz()
+    # reset_test_ubtz = ResetRelay()
+    # mysql_conn_ubtz = MySQLConnect()
+    # try:
+    #     test, health_flag = test_ubtz.st_test_ubtz()
+    #     if test and not health_flag:
+    #         test_ubtz.result_test_ubtz()
+    #         mysql_conn_ubtz.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         test_ubtz.result_test_ubtz()
+    #         mysql_conn_ubtz.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # except HardwareException as hwe:
+    #     my_msg(f'{hwe}', 'red')
+    # finally:
+    #     reset_test_ubtz.reset_all()
+    #     sys.exit()

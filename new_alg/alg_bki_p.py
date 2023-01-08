@@ -144,24 +144,43 @@ class TestBKIP:
                             return True
         return False
 
+    def full_test_bki_p(self):
+        try:
+            if self.st_test_bki_p():
+                self.mysql_conn.mysql_block_good()
+                my_msg('Блок исправен', 'green')
+            else:
+                self.mysql_conn.mysql_block_bad()
+                my_msg('Блок неисправен', 'red')
+        except OSError:
+            my_msg("ошибка системы", 'red')
+        except SystemError:
+            my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            my_msg(f'{mce}', 'red')
+        finally:
+            self.reset_relay.reset_all()
+            sys.exit()
+
 
 if __name__ == '__main__':
     test_bki_p = TestBKIP()
-    reset_test_bki_p = ResetRelay()
-    mysql_conn_bki_p = MySQLConnect()
-    try:
-        if test_bki_p.st_test_bki_p():
-            mysql_conn_bki_p.mysql_block_good()
-            my_msg('Блок исправен', 'green')
-        else:
-            mysql_conn_bki_p.mysql_block_bad()
-            my_msg('Блок неисправен', 'red')
-    except OSError:
-        my_msg("ошибка системы", 'red')
-    except SystemError:
-        my_msg("внутренняя ошибка", 'red')
-    except ModbusConnectException as mce:
-        my_msg(f'{mce}', 'red')
-    finally:
-        reset_test_bki_p.reset_all()
-        sys.exit()
+    test_bki_p.full_test_bki_p()
+    # reset_test_bki_p = ResetRelay()
+    # mysql_conn_bki_p = MySQLConnect()
+    # try:
+    #     if test_bki_p.st_test_bki_p():
+    #         mysql_conn_bki_p.mysql_block_good()
+    #         my_msg('Блок исправен', 'green')
+    #     else:
+    #         mysql_conn_bki_p.mysql_block_bad()
+    #         my_msg('Блок неисправен', 'red')
+    # except OSError:
+    #     my_msg("ошибка системы", 'red')
+    # except SystemError:
+    #     my_msg("внутренняя ошибка", 'red')
+    # except ModbusConnectException as mce:
+    #     my_msg(f'{mce}', 'red')
+    # finally:
+    #     reset_test_bki_p.reset_all()
+    #     sys.exit()
