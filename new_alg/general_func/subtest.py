@@ -37,7 +37,7 @@ class ReadOPCServer:
         :param subtest_num:
         :return:
         """
-        self.cli_log.log_msg(f"тест: {test_num}, подтест: {subtest_num}", "grey")
+        self.cli_log.log_msg(f"тест: {test_num}, подтест: {subtest_num}", "gray")
         self.logger.debug(f"тест: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f"идёт тест {subtest_num}", f'{test_num}')
         self.mysql_conn.mysql_add_message(f"идёт тест: {subtest_num}, подтест: {test_num}")

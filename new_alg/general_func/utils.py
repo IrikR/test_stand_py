@@ -6,8 +6,8 @@ import logging
 
 from time import time
 
-from general_func.modbus import DIRead, CtrlKL
-from general_func.exception import *
+from .modbus import DIRead, CtrlKL
+from .exception import *
 
 __all__ = ["CLILog", "DeltaTimeNoneKL63"]
 
