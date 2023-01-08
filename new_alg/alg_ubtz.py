@@ -39,6 +39,7 @@ class TestUBTZ:
         self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.list_ust_bmz_num = (1, 2, 3, 4, 5, 6, 7)
         self.list_ust_tzp_num = (1, 2, 3, 4, 5, 6, 7)

@@ -23,6 +23,7 @@ from .general_func.modbus import *
 from .general_func.resistance import Resistor
 from .general_func.reset import ResetRelay
 from .gui.msgbox_1 import *
+from .general_func.utils import CLILog
 
 __all__ = ["TestBDU"]
 
@@ -36,6 +37,7 @@ class TestBDU:
         self.sub_test = SubtestBDU()
         self.di_read_full = ReadOPCServer()
         self.reset = ResetRelay()
+        self.cli_log = CLILog(True)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBDU.log",

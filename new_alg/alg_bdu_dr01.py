@@ -37,6 +37,7 @@ class TestBDUDR01:
         self.subtest = Subtest4in()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
+        self.cli_log = CLILog(True)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBDUDR01.log",

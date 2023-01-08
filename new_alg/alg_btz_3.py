@@ -36,7 +36,7 @@ class TestBTZ3:
         Время включения 1.5 сек, время после отключения 3.0 сек
     """
     def __init__(self):
-        self.reset_relay = ResetRelay()
+        self.reset = ResetRelay()
         self.reset_protect = ResetProtection()
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
@@ -45,6 +45,7 @@ class TestBTZ3:
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.list_ust_tzp_num = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
         self.list_ust_tzp = (23.7, 28.6, 35.56, 37.4, 42.6, 47.3)

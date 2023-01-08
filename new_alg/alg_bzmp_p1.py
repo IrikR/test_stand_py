@@ -36,6 +36,7 @@ class TestBZMPP1:
         self.mysql_conn = MySQLConnect()
         self.reset_protect = ResetProtection()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.ust: float = 14.64
         self.ust_pmz: float = 25.2

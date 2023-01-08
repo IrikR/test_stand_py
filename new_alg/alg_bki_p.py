@@ -37,6 +37,7 @@ class TestBKIP:
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
+        self.cli_log = CLILog(True)
 
         self.msg_1 = 'Переведите тумблер на блоке в режим «Предупредительный»'
         self.msg_2 = 'Переведите тумблер на блоке в режим «Аварийный»'

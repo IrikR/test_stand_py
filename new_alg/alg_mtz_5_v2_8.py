@@ -39,6 +39,7 @@ class TestMTZ5V28:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True)
 
         self.list_ust_tzp_num = (0.8, 1, 2, 2.5, 3)
         self.list_ust_tzp_volt = (22.1, 27.6, 55.1, 68.9, 82.5)

@@ -36,6 +36,7 @@ class TestBKI6:
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
+        self.cli_log = CLILog(True)
 
         self.msg_1 = 'Убедитесь в отсутствии других блоков или соединительных кабелей в панели разъемов А'
         self.msg_2 = 'Подключите в разъем, расположенный на панели разъемов А ' \

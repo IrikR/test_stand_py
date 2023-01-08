@@ -41,6 +41,7 @@ class TestBP:
         self.reset_protect = ResetProtection()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.capacitor_capacitance: float = 0.0
         self.capacitor_capacitance_d: float = 0.0

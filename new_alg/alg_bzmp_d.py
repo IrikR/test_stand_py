@@ -38,6 +38,7 @@ class TestBZMPD:
         self.mb_ctrl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True)
 
         self.ust_1 = 22.6
         self.ust_2 = 15.0

@@ -41,6 +41,7 @@ class TestMTZ5V411:
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.sub_test = SubtestMTZ5()
+        self.cli_log = CLILog(True)
 
         self.list_ust_tzp_num = (0.8, 1, 1.5, 2, 2.25, 2.5, 3)
         self.list_ust_tzp_volt = (15.4, 19.3, 29.0, 38.5, 43.4, 48.2, 57.9)

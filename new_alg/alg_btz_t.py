@@ -40,6 +40,7 @@ class TestBTZT:
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.ust_test: float = 80.0
         # self.ust_1 = (23.7, 28.6, 35.56, 37.4, 42.6, 47.3)

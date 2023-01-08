@@ -40,6 +40,7 @@ class TestBMZAPSHM:
         self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.di_read = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.ust_1: float = 85.6
 

@@ -39,6 +39,7 @@ class TestUMZ:
         self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.list_ust_volt = (22.6, 27.1, 31.9, 36.5, 41.3, 46.4, 50.2, 54.7, 59.3, 63.8, 68.4)
         self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)

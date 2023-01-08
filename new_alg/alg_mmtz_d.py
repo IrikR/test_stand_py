@@ -39,6 +39,7 @@ class TestMMTZD:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True)
 
         self.list_ust_num = (10, 20, 30, 40, 50)
         # self.ust = (7.7, 16.5, 25.4, 31.9, 39.4)

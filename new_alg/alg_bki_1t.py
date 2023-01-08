@@ -38,6 +38,7 @@ class TestBKI1T:
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
+        self.cli_log = CLILog(True)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBKI1T.log",

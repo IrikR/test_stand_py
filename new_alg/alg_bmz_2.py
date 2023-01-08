@@ -41,6 +41,7 @@ class TestBMZ2:
         self.mysql_conn = MySQLConnect()
         self.ai_read = AIRead()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         self.ust_test = 80.0
         self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)

@@ -35,6 +35,7 @@ class TestMKZP6:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True)
 
         self.ust_1: float = 45.1
         self.ust_2: float = 15.0

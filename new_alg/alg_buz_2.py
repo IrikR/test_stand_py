@@ -38,6 +38,7 @@ class TestBUZ2:
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.subtest = Subtest2in()
+        self.cli_log = CLILog(True)
 
         self.ust_1 = 75.8
         self.ust_2 = 20.3

@@ -37,6 +37,7 @@ class TestMTZP2:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True)
 
         self.ust_1 = 10.9 * 8.2
         self.ust_2 = 8.2 * 8.2

@@ -46,6 +46,7 @@ class TestBKZ3MK:
         self.mysql_conn = MySQLConnect()
         self.ai_read = AIRead()
         self.di_read_full = ReadOPCServer()
+        self.cli_log = CLILog(True)
 
         # Тест 5. Проверка срабатывания защиты ТЗП блока по уставкам
         # медленные

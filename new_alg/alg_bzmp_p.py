@@ -41,6 +41,7 @@ class TestBZMPP:
         self.mb_ctrl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True)
 
         self.ust_pmz: float = 25.2
         self.ust_faz: float = 8.2

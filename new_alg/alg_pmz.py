@@ -42,6 +42,7 @@ class TestPMZ:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True)
 
         self.ust_1: float = 80.0
         self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9)

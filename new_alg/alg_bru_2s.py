@@ -36,6 +36,7 @@ class TestBRU2S:
         self.sub_test = SubtestBDU()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
+        self.cli_log = CLILog(True)
 
         self.msg_1 = "Переведите тумблер «П/А» на блоке в положение «П» и нажмите кнопку «ОК» " \
                      "Если на блоке нет тумблера «П/А» нажмите кнопку «Отмена»"
