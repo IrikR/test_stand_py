@@ -3,11 +3,11 @@
 
 import ctypes
 import logging
-
+from datetime import datetime
 from time import time
 
-from .modbus import DIRead, CtrlKL
 from .exception import *
+from .modbus import DIRead, CtrlKL
 
 __all__ = ["CLILog", "DeltaTimeNoneKL63"]
 
@@ -84,93 +84,82 @@ class CLILog:
             msg, lev = args
             if lev == 1 or lev == 'red':
                 # красный Red
-                print("\033[31m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[31m {msg}")
             elif lev == 2 or lev == 'green':
                 # зеленый green
-                print("\033[32m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[32m {msg}")
             elif lev == 3 or lev == 'orange':
                 # оранжевый orange
-                print("\033[33m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[33m {msg}")
             elif lev == 4 or lev == 'blue1':
                 # синий blue
-                print("\033[34m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[34m {msg}")
             elif lev == 5 or lev == 'purple':
                 # фиолетовый purple
-                print("\033[35m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[35m {msg}")
             elif lev == 6 or lev == 'blue2':
                 # голубой blue
-                print("\033[36m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[36m {msg}")
             elif lev == 7 or lev == 'gray':
                 # серый
-                print("\033[37m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[37m {msg}")
             else:
                 # черный, если пришел неизвестный аргумент
-                print("\033[0;0m {}".format(msg))
+                print(f"\033[37m {datetime.time(datetime.now())}: \033[0;0m {msg}")
         else:
             pass
 
-
-# class ResultMsg:
-#     """
-#     исправность/неисправность блока
-#     """
-#
-#     def __init__(self):
-#         self.reset = ResetRelay()
-#
-#     def test_error(self, test_number):
-#         # msg = (f'Тест: {test_number} не пройден')
-#         # my_msg(msg)
-#         self.reset.reset_all()
-#
-#     def test_good(self):
-#         # msg = "Тестирование завершено:\nБлок исправен "
-#         # my_msg(msg)
-#         self.reset.reset_all()
+    @staticmethod
+    def progress_bar(percent=0, max_it=100):
+        width = 60
+        percent_tek = 100 / max_it * percent
+        left = width * percent // max_it
+        right = width - left
+        print('\r[', '#' * left, ' ' * right, ']',
+              f' {percent_tek:.0f}%',
+              sep='', end='', flush=True)
 
 
 if __name__ == '__main__':
     try:
-        pass
-
         cli_log = CLILog(True)
-        cli_log.log_msg("jhvghvhg", 9)
+        cli_log.log_msg("jhvghvhg", "red")
         # read_di = ReadDI()
-#         # st_timer = time()
-#         # a = read_mb.read_discrete(0)
-#         # b = read_mb.read_discrete(1)
-#         # c = read_mb.read_discrete(2)
-#         # d = read_mb.read_discrete(3)
-#         # e = read_mb.read_discrete(4)
-#         # f = read_mb.read_discrete(5)
-#         # g = read_mb.read_discrete(6)
-#         # h = read_mb.read_discrete(7)
-#         # j = read_mb.read_discrete(8)
-#         # k = read_mb.read_discrete(9)
-#         # l = read_mb.read_discrete(10)
-#         # q = read_mb.read_discrete(11)
-#         # a, b, c = read_mb.read_discrete_v1('in_a0', 'in_a1', 'in_a2')
-#         # a = read_mb.read_discrete_v1('in_a0')
-#         # a, b, c, d, e, f, g, h, j, k, l, q = read_mb.read_discrete_v1('in_a0', 'in_a1', 'in_a2', 'in_a3', 'in_a4',
-#         #                                                               'in_a5', 'in_a6', 'in_a7', 'in_b0', 'in_b1',
-#         #                                                               'in_b2', 'in_b3')
-#         # stop_timer = time()
-#         # print(a, b, c, d, e, f, g, h, j, k, l, q)
-#         #
-#         # # print(a, b, c)
-#         # # print(a)
-#         # print(type(a))
-#         # print(stop_timer - st_timer)
-#         # in_1, in_5, in_6 = read_di.inputs_di("in_a0, in_a5, in_a6")
-#         # print(in_1, in_5, in_6)
-#         in_2, *_ = read_di.inputs_di("in_a2")
-#         print(in_2)
-#         # in_4, in_7 = read_di.inputs_di("in_a4", "in_a7")
-#         # print(in_4, in_7)
-#         # in_3 = read_di.inputs_di("in_a3")
-#         # print(in_3)
-#         in_a0, in_a1 = read_di.inputs_di_1('in_a0', 'in_a1')
-#         print(in_a0, in_a1)
+    #         # st_timer = time()
+    #         # a = read_mb.read_discrete(0)
+    #         # b = read_mb.read_discrete(1)
+    #         # c = read_mb.read_discrete(2)
+    #         # d = read_mb.read_discrete(3)
+    #         # e = read_mb.read_discrete(4)
+    #         # f = read_mb.read_discrete(5)
+    #         # g = read_mb.read_discrete(6)
+    #         # h = read_mb.read_discrete(7)
+    #         # j = read_mb.read_discrete(8)
+    #         # k = read_mb.read_discrete(9)
+    #         # l = read_mb.read_discrete(10)
+    #         # q = read_mb.read_discrete(11)
+    #         # a, b, c = read_mb.read_discrete_v1('in_a0', 'in_a1', 'in_a2')
+    #         # a = read_mb.read_discrete_v1('in_a0')
+    #         # a, b, c, d, e, f, g, h, j, k, l, q = read_mb.read_discrete_v1('in_a0', 'in_a1', 'in_a2', 'in_a3', 'in_a4',
+    #         #                                                               'in_a5', 'in_a6', 'in_a7', 'in_b0', 'in_b1',
+    #         #                                                               'in_b2', 'in_b3')
+    #         # stop_timer = time()
+    #         # print(a, b, c, d, e, f, g, h, j, k, l, q)
+    #         #
+    #         # # print(a, b, c)
+    #         # # print(a)
+    #         # print(type(a))
+    #         # print(stop_timer - st_timer)
+    #         # in_1, in_5, in_6 = read_di.inputs_di("in_a0, in_a5, in_a6")
+    #         # print(in_1, in_5, in_6)
+    #         in_2, *_ = read_di.inputs_di("in_a2")
+    #         print(in_2)
+    #         # in_4, in_7 = read_di.inputs_di("in_a4", "in_a7")
+    #         # print(in_4, in_7)
+    #         # in_3 = read_di.inputs_di("in_a3")
+    #         # print(in_3)
+    #         in_a0, in_a1 = read_di.inputs_di_1('in_a0', 'in_a1')
+    #         print(in_a0, in_a1)
     except IOError:
         print('системная ошибка')
     except ModbusConnectException as mce:
