@@ -10,6 +10,8 @@ from datetime import datetime
 
 import mysql.connector
 
+from .utils import CLILog
+
 
 __all__ = ['MySQLConnect']
 
@@ -23,12 +25,13 @@ class MySQLConnect:
         self.database = 'simple_database'
         self.auth_plugin = 'mysql_native_password'
         self.mysql_err = mysql.connector.Error
+        self.cli_log = CLILog(True)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
     def mysql_ins_result(self, my_result, num_test):
         """
-        запись в БД результата подтеста, (исправен/не исправен и номер подтеста)
+        Запись в БД результата подтеста, (исправен/не исправен и номер подтеста)
         :param my_result: исправен/не исправен
         :param num_test: номер теста
         :return:
@@ -45,11 +48,12 @@ class MySQLConnect:
             conn.commit()
             conn.close()
         except self.mysql_err:
-            self.logger.error('!!! Ошибка связи с базой данных MySQL !!!.')
+            self.logger.error('!!! Ошибка связи с базой данных MySQL !!!')
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_pmz_result(self, my_result):
         """
-        запись в БД результатов теста блока ПМЗ
+        Запись в БД результатов теста блока ПМЗ
         :param my_result:
         :return:
         """
@@ -68,10 +72,11 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_tzp_result(self, my_result):
         """
-        запись в БД результатов теста блока ТЗП
+        Запись в БД результатов теста блока ТЗП
         :param my_result:
         :return:
         """
@@ -90,10 +95,11 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_umz_result(self, my_result):
         """
-        запись в БД результатов теста блока УМЗ
+        Запись в БД результатов теста блока УМЗ
         :param my_result:
         :return:
         """
@@ -112,10 +118,11 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_ubtz_btz_result(self, my_result):
         """
-        запись в БД результатов теста блока УБТЗ
+        Запись в БД результатов теста блока УБТЗ
         :param my_result:
         :return:
         """
@@ -133,10 +140,11 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_ubtz_tzp_result(self, my_result):
         """
-        запись в БД результатов теста проверки ТЗП, блока УБТЗ
+        Запись в БД результатов теста проверки ТЗП, блока УБТЗ
         :param my_result:
         :return:
         """
@@ -154,10 +162,11 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_connect(self, request: str):
         """
-        подключение к БД
+        Подключение к БД
         :param request:
         :return:
         """
@@ -171,6 +180,7 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_block_bad(self):
         """
@@ -205,7 +215,7 @@ class MySQLConnect:
     def mysql_add_message(self, mess: str):
         """
         Запись в БД для динамического отслеживания прогресса испытания.
-        :param mess: текстовое сообщение
+        :param mess: Текстовое сообщение
         :return:
         """
         # self.mess = mess
@@ -223,11 +233,12 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error('Ошибка связи с базой данных MySQL.')
+            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def progress_level(self, level: float):
         """
         Запись в БД времени прогресса выполнения испытания.
-        :param level: число с пл. точкой
+        :param level: Число с пл. точкой
         :return:
         """
         level = f'{level:.1f}'
@@ -253,6 +264,7 @@ class MySQLConnect:
                 return text_0
             except self.mysql_err:
                 self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
+                self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
 
 if __name__ == '__main__':

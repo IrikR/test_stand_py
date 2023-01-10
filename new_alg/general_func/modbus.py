@@ -8,6 +8,7 @@ from time import sleep
 from OpenOPC import client
 
 from .exception import ModbusConnectException
+from .utils import CLILog
 
 __all__ = ['CtrlKL', 'ReadMB', 'DIRead', "AIRead"]
 
@@ -180,6 +181,7 @@ class CtrlKL:
         self.analog_tags_value = []
         self.logger = logging.getLogger(__name__)
         self.di_read = DIRead()
+        self.cli_log = CLILog(True)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
     def ctrl_relay(self, rel: str, ctrl: bool) -> None:
@@ -224,13 +226,16 @@ class CtrlKL:
             # elif list_str[2] == "'Bad'":
             self.opc['Устройство.tegs.in_num_alg'] = 0
             self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
+            self.cli_log.log_msg(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
 
         analog_inp_fl = float(list_str[1])
         self.logger.info(f"ctrl_ai_code_v0 время срабатывания: {analog_inp_fl}")
+        self.cli_log.log_msg(f"ctrl_ai_code_v0 время срабатывания: {analog_inp_fl}", "orange")
         self.opc['Устройство.tegs.in_num_alg'] = 0
         self.logger.debug(f"ctrl_ai_code_v0 дискретные входы: {in_a1 =}, {in_a2 =}, {in_a5 =}, {in_a6 =}")
+        self.cli_log.log_msg(f"ctrl_ai_code_v0 дискретные входы: {in_a1 =}, {in_a2 =}, {in_a5 =}, {in_a6 =}", "skyblue")
         if analog_inp_fl >= 9000.0:
             return 9999, in_a1, in_a2, in_a5, in_a6
         else:
@@ -254,6 +259,7 @@ class CtrlKL:
         else:
             self.opc['Устройство.tegs.in_num_alg'] = 0
             self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
+            self.cli_log.log_msg(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_fl = float(list_str[1])
@@ -277,6 +283,7 @@ class CtrlKL:
         else:
             self.opc['Устройство.tegs.in_num_alg'] = 0
             self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
+            self.cli_log.log_msg(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_fl = float(list_str[1])
@@ -300,6 +307,7 @@ class CtrlKL:
         else:
             self.opc['Устройство.tegs.in_num_alg'] = 0
             self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
+            self.cli_log.log_msg(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_fl = float(list_str[1])

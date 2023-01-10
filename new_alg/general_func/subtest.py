@@ -77,8 +77,8 @@ class ReadOPCServer:
         для следующих используется вход in_a2
         общий тест для
         Код ошибки	30	–	Сообщение	«Блок не исправен. Контакты блока находятся в неисходном состоянии».
-        :param test_num: номер теста
-        :param subtest_num: номер подтеста
+        :param test_num: Номер теста
+        :param subtest_num: Номер подтеста
         :param err_code: код неисправности
         :param position: положение которое должен занять выход блока
         :param di_a: вход контроллера
@@ -88,7 +88,7 @@ class ReadOPCServer:
         self._write_condition_1(test_num, subtest_num)
         in_x, *_ = self.di_read.di_read(di_a, 'in_b6')
         self.logger.debug(f"состояние входа: {in_x = } is {position}")
-        self.cli_log.log_msg(f"состояние входа: {in_x = }, должно быть {position}", "blue1")
+        self.cli_log.log_msg(f"состояние входа: {in_x = }, должно быть {position}", "skyblue")
         if in_x is position:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -116,7 +116,7 @@ class ReadOPCServer:
         self._write_condition_1(test_num, subtest_num)
         in_a1, in_a2 = self.di_read.di_read(di_a, di_b)
         self.logger.debug(f"состояние входа: {in_a1 = } is {position_a} and {in_a2 = } is {position_b}:")
-        self.cli_log.log_msg(f"состояние входа: {in_a1 = } is {position_a} and {in_a2 = } is {position_b}:", "blue1")
+        self.cli_log.log_msg(f"состояние входа: {in_a1 = } is {position_a} and {in_a2 = } is {position_b}:", "skyblue")
         if in_a1 is position_a and in_a2 is position_b:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -153,7 +153,7 @@ class ReadOPCServer:
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
                           f"and {in_c = } is {position_c}")
         self.cli_log.log_msg(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} : "
-                             f"and {in_c = } is {position_c}", "blue1")
+                             f"and {in_c = } is {position_c}", "skyblue")
         if in_a is position_a and in_b is position_b and in_c is position_c:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -174,7 +174,7 @@ class ReadOPCServer:
                     di_a: str = 'in_a0', di_b: str = 'in_a1', di_c: str = 'in_a2', di_d: str = 'in_a3') -> bool:
         """
         Метод используется в алгоритмах проверки блоков у которых 4 выхода.
-        общий тест для БДУ-ДР.01 (bdu_dr01)
+        Общий тест для БДУ-ДР.01 (bdu_dr01)
         :param test_num: номер теста
         :param subtest_num: номер подтеста
         :param err_code_a: код ошибки для 1-го выхода
@@ -197,7 +197,7 @@ class ReadOPCServer:
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
                           f"and {in_c = } is {position_c} and {in_d = } is {position_d}")
         self.cli_log.log_msg(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} :"
-                             f"and {in_c = } is {position_c} and {in_d = } is {position_d}", "blue1")
+                             f"and {in_c = } is {position_c} and {in_d = } is {position_d}", "skyblue")
         if in_a is position_a and in_b is position_b and in_c is position_c and in_d is position_d:
             self._write_condition_true(test_num, subtest_num)
             return True
@@ -221,7 +221,7 @@ class ReadOPCServer:
                     di_e: str = 'in_a4') -> bool:
         """
         Метод используется в алгоритмах проверки блоков у которых 5 выходов.
-        :param test_num: номер теста
+        :param test_num: Номер теста
         :param subtest_num: номер подтеста
         :param err_code_a: код ошибки для 1-го выхода
         :param err_code_b: код ошибки для 2-го выхода
@@ -247,7 +247,7 @@ class ReadOPCServer:
                           f"and {in_c = } is {position_c} and {in_d = } is {position_d} and {in_e} is {position_e}")
         self.cli_log.log_msg(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
                              f"and {in_c = } is {position_c} and {in_d = } is {position_d} and {in_e} is {position_e}",
-                             "blue1")
+                             "skyblue")
         if in_a is position_a and in_b is position_b and in_c is position_c and \
                 in_d is position_d and in_e is position_e:
             self._write_condition_true(test_num, subtest_num)
@@ -343,7 +343,7 @@ class ProcedureFull:
                          coef_max_volt: float = 1.1):
         """
         1.1. Проверка вероятности наличия короткого замыкания на входе измерительной цепи блока.
-        :return: bool
+        :return: Bool
         """
         self.logger.debug("СТАРТ процедуры 1, 2.1, 3.1 - проверка на КЗ")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
@@ -456,7 +456,7 @@ class SubtestBDU:
 
     def subtest_a_bdu014tp(self, *, test_num: int, subtest_num: float) -> bool:
         """
-        подтест проверки блока БДУ-0,1,4,Т,П
+        Подтест проверки блока БДУ-0,1,4,Т,П
         :param subtest_num:
         :param test_num:
         :return:
@@ -790,7 +790,7 @@ class Subtest4in:
                   position_c: bool = False, position_d: bool = False,
                   di_a: str = 'in_a0', di_b: str = 'in_a1', di_c: str = 'in_a2', di_d: str = 'in_a3') -> bool:
         """
-        общий подтест для БДУ-ДР.01
+        Общий подтест для БДУ-ДР.01
         2.2. Включение 1 канала блока от кнопки «Пуск» 1 канала
         # общий подтест для алгоритма БДУ-ДР.01 (bdu_dr01)
             err_code: 1-й канал 224, 225, 226, 227, 2-й канал 252, 253, 254, 255
@@ -835,7 +835,7 @@ class Subtest4in:
                   position_c: bool = False, position_d: bool = False,
                   di_a: str = 'in_a0', di_b: str = 'in_a1', di_c: str = 'in_a2', di_d: str = 'in_a3') -> bool:
         """
-        общий подтест для БДУ-ДР.01
+        Общий подтест для БДУ-ДР.01
         2.3. Проверка удержания 1 канала блока во включенном состоянии
         при подключении Rш пульта управления 1 каналом блока:
         6.3. Проверка удержания 2 канала блока во включенном состоянии
