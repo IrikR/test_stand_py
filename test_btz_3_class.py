@@ -3,10 +3,10 @@
 from old_alg.alg_btz_3_old import *
 
 
-def btz():
+def btz_3():
     test_btz = TestBTZ3()
     test_btz.full_test_btz_3()
 
 
 if __name__ == "__main__":
-    btz()
+    btz_3()

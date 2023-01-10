@@ -3,10 +3,10 @@
 from old_alg.alg_bu_pmvir_old import *
 
 
-def bu():
+def bu_pmvir():
     test_bu = TestBUPMVIR()
     test_bu.full_test_bu_pmvir()
 
 
 if __name__ == "__main__":
-    bu()
+    bu_pmvir()

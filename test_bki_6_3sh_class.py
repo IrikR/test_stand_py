@@ -3,10 +3,10 @@
 from old_alg.alg_bki_6_3sh_old import *
 
 
-def bki():
+def bki_6_3sh():
     test_bki = TestBKI6()
     test_bki.full_test_bki_6_3sh()
 
 
 if __name__ == "__main__":
-    bki()
+    bki_6_3sh()

@@ -92,6 +92,7 @@ class TestMKZP6(object):
         Тест 1
         :return: 
         """
+        self.__fault.debug_msg("Старт проверки блока МКЗП 6 4Ш", "3")
         self.__inputs_a0()
         if my_msg(self.msg_1):
             pass

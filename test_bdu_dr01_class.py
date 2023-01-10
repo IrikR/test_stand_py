@@ -3,10 +3,10 @@
 from old_alg.alg_bdu_dr01_old import *
 
 
-def bdu():
+def bdu_dr01():
     test_bdu = TestBDUDR01()
     test_bdu.full_test_bdu_dr01()
 
 
 if __name__ == "__main__":
-    bdu()
+    bdu_dr01()
