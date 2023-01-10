@@ -91,13 +91,13 @@ class CLILog:
             elif lev == 3 or lev == 'orange':
                 # оранжевый orange
                 print(f"\033[37m {datetime.time(datetime.now())}: \033[33m {msg}")
-            elif lev == 4 or lev == 'blue1':
+            elif lev == 4 or lev == 'blue':
                 # синий blue
                 print(f"\033[37m {datetime.time(datetime.now())}: \033[34m {msg}")
             elif lev == 5 or lev == 'purple':
                 # фиолетовый purple
                 print(f"\033[37m {datetime.time(datetime.now())}: \033[35m {msg}")
-            elif lev == 6 or lev == 'blue2':
+            elif lev == 6 or lev == 'skyblue':
                 # голубой blue
                 print(f"\033[37m {datetime.time(datetime.now())}: \033[36m {msg}")
             elif lev == 7 or lev == 'gray':
