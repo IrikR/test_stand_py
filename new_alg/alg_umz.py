@@ -250,7 +250,7 @@ class TestUMZ:
             self.mysql_conn.mysql_error(481)
             return False
 
-    def st_subtest_20_0(self):
+    def st_subtest_20_0(self) -> bool:
         # self.sp_volt = sp_volt
         if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=self.i, factor=1.1):
             pass
@@ -314,7 +314,7 @@ class TestUMZ:
             self.list_delta_t_ab[-1] = f'неисправен'
             self.list_delta_t_vg[-1] = f'неисправен'
 
-    def st_subtest_20_1(self):
+    def st_subtest_20_1(self) -> bool:
         if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=self.i, factor=1.1):
             pass
         else:
@@ -349,7 +349,7 @@ class TestUMZ:
         else:
             self.list_delta_t_ab[-1] = f'неисправен'
 
-    def st_subtest_20_2(self):
+    def st_subtest_20_2(self) -> bool:
         if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=self.i, factor=1.1):
             pass
         else:
@@ -386,7 +386,7 @@ class TestUMZ:
         else:
             self.list_delta_t_vg[-1] = f'неисправен'
 
-    def result_umz(self):
+    def result_umz(self) -> None:
         """
 
         :return:
@@ -396,7 +396,7 @@ class TestUMZ:
                                      self.list_ust_num[g1], self.list_delta_percent_vg[g1], self.list_delta_t_vg[g1]))
         self.mysql_conn.mysql_umz_result(self.list_result)
 
-    def st_test_umz(self) -> [bool, bool]:
+    def st_test_umz(self) -> [bool]:
         """
 
         :return:
@@ -408,7 +408,7 @@ class TestUMZ:
                         return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_umz(self):
+    def full_test_umz(self) -> None:
         try:
             test, health_flag = self.st_test_umz()
             if test and not health_flag:

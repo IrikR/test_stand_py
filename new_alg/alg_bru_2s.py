@@ -179,7 +179,7 @@ class TestBRU2S:
     def st_test_60(self) -> bool:
         """
         Тест 6.0
-        :return: bool:
+        :return: Bool
         """
         self.logger.debug(f"старт теста: 6, подтест: 0")
         if my_msg(self.msg_1):
@@ -207,7 +207,7 @@ class TestBRU2S:
         """
         Тест 6. Блокировка включения блока при снижении сопротивления изоляции
         контролируемого присоединения до уровня предупредительной уставки.
-        :return: bool
+        :return: Bool
         """
         self.logger.debug(f"старт теста: 6, подтест: 1")
         self.resist.resist_kohm(200)
@@ -222,7 +222,7 @@ class TestBRU2S:
     def subtest_7(self) -> bool:
         """
         Тест 7. Блокировка включения блока при снижении сопротивления изоляции
-        контролируемого присоединения до уровня аварийной уставки.
+        контролируемого присоединения до уровня аварийной уставки
         :return: bool
         """
         self.logger.debug(f"старт теста: 7, подтест: 0")
@@ -250,7 +250,7 @@ class TestBRU2S:
                                                     return True
         return False
 
-    def full_test_bru_2s(self):
+    def full_test_bru_2s(self) -> None:
         try:
             if self.st_test_bru_2s():
                 self.mysql_conn.mysql_block_good()

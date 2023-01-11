@@ -273,7 +273,7 @@ class TestUBTZ:
         self.mysql_conn.mysql_ins_result("исправен", '1')
         return True
 
-    def subtest_32(self, i, k):
+    def subtest_32(self, i: float, k: int) -> bool:
         """
         3.2. Формирование нагрузочного сигнала 1,1*U3[i]:
         3.2.1. Сброс защит после проверки
@@ -339,7 +339,7 @@ class TestUBTZ:
         self.mysql_conn.mysql_add_message(f'тест {test_num}: не срабатывает сброс защит')
         return False
 
-    def st_test_ubtz(self) -> [bool, bool]:
+    def st_test_ubtz(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_20():
@@ -347,7 +347,7 @@ class TestUBTZ:
                         return True, self.health_flag
         return False, self.health_flag
 
-    def result_test_ubtz(self):
+    def result_test_ubtz(self) -> None:
         for g1 in range(len(self.list_delta_t_bmz)):
             self.list_bmz_result.append((self.list_ust_bmz_num[g1], self.list_delta_t_bmz[g1]))
             self.logger.debug(f"запись уставок МТЗ в БД: {self.list_ust_bmz_num[g1]} "
@@ -359,7 +359,7 @@ class TestUBTZ:
                               f"{self.list_delta_t_tzp[g2]}")
         self.mysql_conn.mysql_ubtz_tzp_result(self.list_tzp_result)
 
-    def full_test_ubtz(self):
+    def full_test_ubtz(self) -> None:
         try:
             test, health_flag = self.st_test_ubtz()
             if test and not health_flag:

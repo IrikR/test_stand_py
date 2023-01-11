@@ -192,7 +192,7 @@ class TestBDU42:
 
     def st_test_bdu_4_2(self) -> bool:
         """
-        Главная функция которая собирает все остальные.
+        Главная функция которая собирает все остальные
         :return: bool
         """
         if self.st_test_1():
@@ -208,7 +208,7 @@ class TestBDU42:
                                                 return True
         return False
 
-    def full_test_bdu_4_2(self):
+    def full_test_bdu_4_2(self) -> None:
         try:
             if self.st_test_bdu_4_2():
                 self.mysql_conn.mysql_block_good()

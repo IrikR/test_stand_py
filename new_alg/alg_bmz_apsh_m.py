@@ -196,7 +196,7 @@ class TestBMZAPSHM:
                                         return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_bmz_apsh_m(self):
+    def full_test_bmz_apsh_m(self) -> None:
         try:
             test, health_flag = self.st_test_bmz_apsh_m()
             if test and not health_flag:

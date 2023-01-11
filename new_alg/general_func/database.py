@@ -51,7 +51,7 @@ class MySQLConnect:
             self.logger.error('!!! Ошибка связи с базой данных MySQL !!!')
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_pmz_result(self, my_result: str) -> None:
+    def mysql_pmz_result(self, my_result: [str]) -> None:
         """
         Запись в БД результатов теста блока ПМЗ
         :param my_result:
@@ -75,7 +75,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_tzp_result(self, my_result: str) -> None:
+    def mysql_tzp_result(self, my_result: [str]) -> None:
         """
         Запись в БД результатов теста блока ТЗП
         :param my_result:
@@ -99,7 +99,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_umz_result(self, my_result: str) -> None:
+    def mysql_umz_result(self, my_result: [str]) -> None:
         """
         Запись в БД результатов теста блока УМЗ
         :param my_result:
@@ -123,7 +123,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_ubtz_btz_result(self, my_result: str) -> None:
+    def mysql_ubtz_btz_result(self, my_result: [str]) -> None:
         """
         Запись в БД результатов теста блока УБТЗ
         :param my_result:
@@ -146,7 +146,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_ubtz_tzp_result(self, my_result: str) -> None:
+    def mysql_ubtz_tzp_result(self, my_result: [str]) -> None:
         """
         Запись в БД результатов теста проверки ТЗП, блока УБТЗ
         :param my_result:

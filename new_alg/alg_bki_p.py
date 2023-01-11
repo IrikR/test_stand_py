@@ -52,7 +52,7 @@ class TestBKIP:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def st_test_1(self):
+    def st_test_1(self) -> bool:
         """
         Тест 1. Проверка исходного состояния блока
         """
@@ -152,7 +152,7 @@ class TestBKIP:
                             return True
         return False
 
-    def full_test_bki_p(self):
+    def full_test_bki_p(self) -> None:
         try:
             if self.st_test_bki_p():
                 self.mysql_conn.mysql_block_good()

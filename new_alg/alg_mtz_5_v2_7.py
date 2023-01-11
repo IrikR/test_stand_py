@@ -199,7 +199,7 @@ class TestMTZ5V27:
 
     def st_test_30(self) -> bool:
         """
-        Тест 3. Проверка срабатывания защиты ПМЗ блока по уставкам.
+        Тест 3. Проверка срабатывания защиты ПМЗ блока по уставкам
         :return: bool
         """
         if my_msg(self.msg_5):
@@ -353,7 +353,7 @@ class TestMTZ5V27:
         self.mysql_conn.mysql_ins_result('исправен', '4')
         return True
 
-    def subtest_32(self, i, k):
+    def subtest_32(self, i: float, k: int) -> bool:
         """
         3.2. Формирование нагрузочного сигнала 1,15*U3[i]:
         :param i: уставка
@@ -434,11 +434,11 @@ class TestMTZ5V27:
                 self.mysql_conn.mysql_error(447)
             return False
 
-    def subtest_46(self):
+    def subtest_46(self) -> bool:
         """
         4.6.1. Сброс защит после проверки
         Определение кратности сигнала нагрузки: Δ%= 3.4364*U4[i]/0.63
-        :return:
+        :return: bool
         """
         self.reset_protect.sbros_zashit_mtz5()
         in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
@@ -454,7 +454,7 @@ class TestMTZ5V27:
                 self.mysql_conn.mysql_error(450)
             return False
 
-    def subtest_time_calc(self):
+    def subtest_time_calc(self) -> [float, bool, bool]:
         self.logger.debug("подтест проверки времени срабатывания")
         for stc in range(2):
             self.logger.debug(f"попытка: {stc}")
@@ -484,7 +484,7 @@ class TestMTZ5V27:
     #     self.ctrl_kl.ctrl_relay('KL1', True)
     #     sleep(2)
 
-    def result_test(self):
+    def result_test(self) -> None:
         """
         Записывает результаты проверки в БД.
         :return:
@@ -500,10 +500,10 @@ class TestMTZ5V27:
                                          self.list_delta_t_tzp[g2]))
         self.mysql_conn.mysql_tzp_result(self.list_tzp_result)
 
-    def st_test_mtz_5_v2_7(self) -> [bool, bool]:
+    def st_test_mtz_5_v2_7(self) -> [bool]:
         """
         Функция собирающая все тесты в один тест.
-        :return: bool
+        :return: Bool
         """
         if self.st_test_10():
             if self.st_test_11():
@@ -515,7 +515,7 @@ class TestMTZ5V27:
                                     return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_mtz_5_v27(self):
+    def full_test_mtz_5_v27(self) -> None:
         try:
             test, health_flag = self.st_test_mtz_5_v2_7()
             if test and not health_flag:

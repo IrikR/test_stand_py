@@ -126,7 +126,7 @@ class TestMTZP2:
 
     def st_test_13(self) -> bool:
         """
-        1.2. Определение коэффициента Кс отклонения фактического напряжения от номинального.
+        1.2. Определение коэффициента Кс отклонения фактического напряжения от номинального
         :return: bool
         """
         self.logger.debug('тест 1.3')
@@ -547,7 +547,7 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('исправен', '7')
         return True
 
-    def sbros_mtzp(self):
+    def sbros_mtzp(self) -> None:
         """
         Общая функция для некоторых функций.
         :return
@@ -569,7 +569,7 @@ class TestMTZP2:
         self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL84', False)
 
-    def st_test_mtzp_2(self) -> [bool, bool]:
+    def st_test_mtzp_2(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -589,7 +589,7 @@ class TestMTZP2:
                                                                         return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_mtzp_2(self):
+    def full_test_mtzp_2(self) -> None:
         try:
             test, health_flag = self.st_test_mtzp_2()
             if test and not health_flag:

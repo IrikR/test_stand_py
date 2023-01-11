@@ -272,7 +272,7 @@ class TestBURPMVIR:
                                                     return True
         return False
 
-    def full_test_bur_pmvir(self):
+    def full_test_bur_pmvir(self) -> None:
         try:
             if self.st_test_bur_pmvir():
                 self.mysql_conn.mysql_block_good()

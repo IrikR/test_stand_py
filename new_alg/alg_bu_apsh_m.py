@@ -260,7 +260,7 @@ class TestBUAPSHM:
                                             return True
         return False
 
-    def full_test_bu_apsh_m(self):
+    def full_test_bu_apsh_m(self) -> None:
         try:
             if self.st_test_bu_apsh_m():
                 self.mysql_conn.mysql_block_good()

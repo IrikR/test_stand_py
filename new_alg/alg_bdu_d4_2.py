@@ -209,7 +209,7 @@ class TestBDUD42:
                                                 return True
         return False
 
-    def full_test_bdu_d4_2(self):
+    def full_test_bdu_d4_2(self) -> None:
 
         try:
             if self.st_test_bdu_d4_2():

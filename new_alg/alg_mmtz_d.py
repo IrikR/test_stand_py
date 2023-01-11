@@ -356,7 +356,7 @@ class TestMMTZD:
                 self.mysql_conn.mysql_error(418)
             return False
 
-    def st_test_mmtz_d(self) -> [bool, bool]:
+    def st_test_mmtz_d(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -365,7 +365,7 @@ class TestMMTZD:
                             return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_mmtz_d(self):
+    def full_test_mmtz_d(self) -> None:
         try:
             test, health_flag = self.st_test_mmtz_d()
             if test and not health_flag:

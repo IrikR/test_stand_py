@@ -333,7 +333,7 @@ class TestBZMPP1:
             return True
         return False
 
-    def st_test_bzmp_p1(self) -> [bool, bool]:
+    def st_test_bzmp_p1(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -351,7 +351,7 @@ class TestBZMPP1:
                                                                 return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_bzmp_p1(self):
+    def full_test_bzmp_p1(self) -> None:
         try:
             test, health_flag = self.st_test_bzmp_p1()
             if test and not health_flag:

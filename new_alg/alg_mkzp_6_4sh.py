@@ -94,7 +94,7 @@ class TestMKZP6:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def st_test_10(self):
+    def st_test_10(self) -> bool:
         """
         Тест 1
         :return: 
@@ -464,7 +464,7 @@ class TestMKZP6:
         self.mysql_conn.mysql_ins_result("исправен", '5')
         return True
 
-    def st_test_mkzp_6_4sh(self) -> [bool, bool]:
+    def st_test_mkzp_6_4sh(self) -> [bool, None]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -484,7 +484,7 @@ class TestMKZP6:
                                                                         return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_mkzp_6_4sh(self):
+    def full_test_mkzp_6_4sh(self) -> None:
         try:
             test, health_flag = self.st_test_mkzp_6_4sh()
             if test and not health_flag:

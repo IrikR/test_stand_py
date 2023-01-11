@@ -270,7 +270,7 @@ class TestBRU2SR:
                                                 return True
         return False
 
-    def full_test_bru_2sr(self):
+    def full_test_bru_2sr(self) -> None:
         try:
             if self.st_test_bru_2sr():
                 self.mysql_conn.mysql_block_good()

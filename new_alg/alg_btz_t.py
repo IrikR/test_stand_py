@@ -359,7 +359,7 @@ class TestBTZT:
         self.mysql_conn.mysql_ins_result('исправен', '5')
         return True
 
-    def reset_protection(self, *, test_num: int, subtest_num: float):
+    def reset_protection(self, *, test_num: int, subtest_num: float) -> bool:
         self.logger.debug("сброс защит")
         self.reset_protect.sbros_zashit_kl30()
         sleep(1)
@@ -372,7 +372,7 @@ class TestBTZT:
             return True
         return False
 
-    def func_delta_t_pmz(self, k):
+    def func_delta_t_pmz(self, k: int) -> None:
         for qw in range(2):
             if self.reset_protection(test_num=4, subtest_num=4.2):
                 # self.in_a1, self.in_a2, self.in_a5, self.in_a6 = self.di_read.di_read('in_a1', 'in_a2',
@@ -409,7 +409,7 @@ class TestBTZT:
                 self.malfunction = True
                 break
 
-    def func_delta_t_tzp(self):
+    def func_delta_t_tzp(self) -> None:
         self.ctrl_kl.ctrl_relay('KL63', True)
         self.in_b1, *_ = self.di_read.di_read('in_b1')
         i = 0
@@ -437,7 +437,7 @@ class TestBTZT:
         else:
             self.malfunction = True
 
-    def st_test_btz_t(self) -> [bool, bool]:
+    def st_test_btz_t(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_20():
@@ -450,7 +450,7 @@ class TestBTZT:
                                             return True, self.health_flag_pmz, self.health_flag_tzp
         return False, self.health_flag_pmz, self.health_flag_tzp
 
-    def result_test_btz_t(self):
+    def result_test_btz_t(self) -> None:
         """
         Сведение всех результатов измерения, и запись в БД.
         """
@@ -465,7 +465,7 @@ class TestBTZT:
                                          self.list_delta_t_tzp[g2]))
         self.mysql_conn.mysql_tzp_result(self.list_result_tzp)
 
-    def full_test_btz_t(self):
+    def full_test_btz_t(self) -> None:
         try:
             test, health_flag_pmz, health_flag_tzp = self.st_test_btz_t()
             if test and not health_flag_pmz and not health_flag_tzp:

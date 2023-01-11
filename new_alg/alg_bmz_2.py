@@ -226,7 +226,7 @@ class TestBMZ2:
         self.mysql_conn.mysql_ins_result('исправен', '3')
         return True
 
-    def subtest_32(self, i, k) -> bool:
+    def subtest_32(self, i: float, k: int) -> bool:
         """
         3.2. Формирование нагрузочного сигнала 1,1*calc_volt[i]:
         3.2.1. Сброс защит после проверки
@@ -284,7 +284,7 @@ class TestBMZ2:
     def reset_protection(self, *, test_num: int = 3, subtest_num: float = 3.5):
         """
         Сброс защиты блока.
-        :param test_num: номер теста.
+        :param test_num: Номер теста.
         :param subtest_num: номер подтеста.
         :return:
         """
@@ -307,12 +307,12 @@ class TestBMZ2:
                                 return True, self.health_flag
         return False, self.health_flag
 
-    def result_test_bmz_2(self):
+    def result_test_bmz_2(self) -> None:
         for g1 in range(len(self.list_delta_percent)):
             self.list_result.append((self.list_ust_num[g1], self.list_delta_percent[g1], self.list_delta_t[g1]))
         self.mysql_conn.mysql_tzp_result(self.list_result)
 
-    def full_test_bmz_2(self):
+    def full_test_bmz_2(self) -> None:
         try:
             test, health_flag = self.st_test_bmz_2()
             if test and not health_flag:

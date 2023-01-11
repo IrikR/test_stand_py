@@ -116,7 +116,7 @@ class TestBUPMVIR:
     def st_test_40(self) -> bool:
         """
         4.  Отключение блока при увеличении сопротивления цепи заземления на величину более 100 Ом.
-        :return: bool
+        :return: Bool
         """
         if self.subtest.subtest_a_bupmvir(test_num=4, subtest_num=4.0):
             self.resist.resist_10_to_137_ohm()
@@ -132,7 +132,7 @@ class TestBUPMVIR:
     def st_test_50(self) -> bool:
         """
         Тест 5. Защита от потери управляемости блока при замыкании проводов ДУ.
-        :return: bool
+        :return: Bool
         """
         if self.subtest.subtest_a_bupmvir(test_num=5, subtest_num=5.0):
             self.ctrl_kl.ctrl_relay('KL11', True)
@@ -165,7 +165,7 @@ class TestBUPMVIR:
     def st_test_70(self) -> bool:
         """
         7. Проверка отключения блока от срабатывания защиты УМЗ.
-        :return: bool
+        :return: Bool
         """
         if self.subtest.subtest_a_bupmvir(test_num=7, subtest_num=7.0):
             self.ctrl_kl.ctrl_relay('KL27', False)
@@ -205,7 +205,7 @@ class TestBUPMVIR:
                                         return True
         return False
 
-    def full_test_bu_pmvir(self):
+    def full_test_bu_pmvir(self) -> None:
         try:
             if self.st_test_bu_pmvir():
                 self.mysql_conn.mysql_block_good()

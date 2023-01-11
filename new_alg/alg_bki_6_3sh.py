@@ -191,7 +191,7 @@ class TestBKI6:
             return True
         return False
 
-    def sub_test(self, *, test_num: int, subtest_num: float, iteration):
+    def sub_test(self, *, test_num: int, subtest_num: float, iteration) -> bool:
         """
         Для теста 2.0 iteration = 20.
         Для теста 3.1 iteration = 40.
@@ -250,7 +250,7 @@ class TestBKI6:
                                                 return True
         return False
 
-    def full_test_bki_6_3sh(self):
+    def full_test_bki_6_3sh(self) -> None:
         try:
             if self.st_test_bki_6_3sh():
                 self.mysql_conn.mysql_block_good()

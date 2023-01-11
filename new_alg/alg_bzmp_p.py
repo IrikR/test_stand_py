@@ -416,7 +416,7 @@ class TestBZMPP:
         self.mysql_conn.mysql_ins_result(f'исправен, {self.timer_test_6_2:.1f} сек', "6")
         return True
 
-    def sbros_zashit(self):
+    def sbros_zashit(self) -> None:
         """
         reset protection
         :return:
@@ -427,7 +427,7 @@ class TestBZMPP:
         self.cli_log.log_msg("таймаут 3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
 
-    def st_test_bzmp_p(self) -> [bool, bool]:
+    def st_test_bzmp_p(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -446,7 +446,7 @@ class TestBZMPP:
                                                                     return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_bzmp_p(self):
+    def full_test_bzmp_p(self) -> None:
         try:
             test, health_flag = self.st_test_bzmp_p()
             if test and not health_flag:

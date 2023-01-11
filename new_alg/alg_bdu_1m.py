@@ -203,7 +203,7 @@ class TestBDU1M:
             return True
         return False
 
-    def st_test_bdu_1m(self):
+    def st_test_bdu_1m(self) -> bool:
         """
             Главная функция которая собирает все остальные.
         """
@@ -222,7 +222,7 @@ class TestBDU1M:
                                                         return True
         return False
 
-    def full_test_bdu_1m(self):
+    def full_test_bdu_1m(self) -> None:
         try:
             if self.st_test_bdu_1m():
                 self.mysql_conn.mysql_block_good()

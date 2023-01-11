@@ -366,7 +366,7 @@ class TestBDUDR01:
                 return True
         return False
 
-    def st_test_92(self):
+    def st_test_92(self) -> bool:
         """
         Тест 9. Защита от потери управляемости 1 канала блока при обрыве проводов ДУ
         """
@@ -409,7 +409,7 @@ class TestBDUDR01:
                                                                                     return True
         return False
 
-    def full_test_bdu_dr01(self):
+    def full_test_bdu_dr01(self) -> None:
         try:
             if self.st_test_bdu_dr01():
                 self.mysql_conn.mysql_block_good()

@@ -330,7 +330,7 @@ class TestPMZ:
         self.logger.debug("положение выходов блока соответствует")
         return True
 
-    def st_test_pmz(self) -> [bool, bool]:
+    def st_test_pmz(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_20():
@@ -342,12 +342,12 @@ class TestPMZ:
                                         return True, self.health_flag
         return False, self.health_flag
 
-    def result_test_pmz(self):
+    def result_test_pmz(self) -> None:
         for g1 in range(len(self.list_delta_percent)):
             self.list_result.append((self.list_ust_num[g1], self.list_delta_percent[g1], self.list_delta_t[g1]))
         self.mysql_conn.mysql_pmz_result(self.list_result)
 
-    def full_test_pmz(self):
+    def full_test_pmz(self) -> None:
         try:
             test, health_flag = self.st_test_pmz()
             if test and not health_flag:

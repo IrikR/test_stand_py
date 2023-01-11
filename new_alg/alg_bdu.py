@@ -235,7 +235,7 @@ class TestBDU:
                                         return True
         return False
 
-    def full_test_bdu(self):
+    def full_test_bdu(self) -> None:
 
         try:
             if self.st_test_bdu():

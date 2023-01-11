@@ -343,7 +343,7 @@ class TestBKZ3MK:
         self.mysql_conn.mysql_ins_result('исправен', '5')
         return True
 
-    def reset_protection(self, *, test_num: int, subtest: float, err1: int, err2: int):
+    def reset_protection(self, *, test_num: int, subtest: float, err1: int, err2: int) -> bool:
         """
 
         :param test_num:
@@ -361,7 +361,7 @@ class TestBKZ3MK:
         self.mysql_conn.mysql_add_message("Блок не исправен. Не работает сброс защит.")
         return False
 
-    def func_delta_t_tzp(self):
+    def func_delta_t_tzp(self) -> None:
         self.ctrl_kl.ctrl_relay('KL63', True)
         in_b1, *_ = self.di_read.di_read('in_b1')
         i = 0
@@ -385,7 +385,7 @@ class TestBKZ3MK:
         else:
             self.malfunction = True
 
-    def func_delta_t_mtz(self, *, k):
+    def func_delta_t_mtz(self, *, k) -> None:
         for qw in range(3):
             if self.reset_protection(test_num=4, subtest=4.1, err1=325, err2=326):
                 self.calc_delta_t_mtz = self.ctrl_kl.ctrl_ai_code_v0(code=105)
@@ -432,7 +432,7 @@ class TestBKZ3MK:
                                         return True, self.health_flag_mtz, self.health_flag_tzp
         return False, self.health_flag_mtz, self.health_flag_tzp
 
-    def result_test_bkz_3mk(self):
+    def result_test_bkz_3mk(self) -> None:
         for g1 in range(len(self.list_delta_percent_mtz)):
             self.list_result_mtz.append((self.list_ust_mtz_num[g1],
                                          self.list_delta_percent_mtz[g1],
@@ -446,7 +446,7 @@ class TestBKZ3MK:
         self.mysql_conn.mysql_tzp_result(self.list_result_tzp)
         self.logger.info(f"результат проверки ТЗП: {self.list_result_tzp}")
 
-    def full_test_bkz_3mk(self):
+    def full_test_bkz_3mk(self) -> None:
         try:
             test, health_flag_mtz, health_flag_tzp = self.st_test_bkz_3mk()
             if test and not health_flag_mtz and not health_flag_tzp:

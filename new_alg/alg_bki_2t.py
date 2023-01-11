@@ -191,7 +191,7 @@ class TestBKI2T:
                                         return True
         return False
 
-    def full_test_bki_2t(self):
+    def full_test_bki_2t(self) -> None:
         try:
             if self.st_test_bki_2t():
                 self.mysql_conn.mysql_block_good()

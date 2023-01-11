@@ -193,7 +193,7 @@ class TestBDUD:
                                                 return True
         return False
 
-    def full_test_bdu_d(self):
+    def full_test_bdu_d(self) -> None:
         try:
             if self.st_test_bdu_d():
                 self.mysql_conn.mysql_block_good()

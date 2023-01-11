@@ -308,7 +308,7 @@ class TestBUZ2:
         self.mysql_conn.mysql_ins_result(f'исправен, {timer_test_3:.1f} сек', "3")
         return True
 
-    def st_test_buz_2(self) -> [bool, bool]:
+    def st_test_buz_2(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -321,7 +321,7 @@ class TestBUZ2:
                                             return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_buz_2(self):
+    def full_test_buz_2(self) -> None:
         try:
             test, health_flag = self.st_test_buz_2()
             if test and not health_flag:

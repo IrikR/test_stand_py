@@ -200,7 +200,7 @@ class TestBP:
                         return True
         return False
 
-    def full_test_bp(self):
+    def full_test_bp(self) -> None:
         try:
             if self.st_test_bp():
                 self.mysql_conn.mysql_block_good()

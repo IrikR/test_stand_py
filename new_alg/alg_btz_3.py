@@ -348,7 +348,7 @@ class TestBTZ3:
         self.mysql_conn.mysql_ins_result('исправен', '5')
         return True
 
-    def subtest_42(self, i, k) -> bool:
+    def subtest_42(self, i: float, k: int) -> bool:
         """
         4.2. Формирование нагрузочного сигнала 1,1*U3[i]:
         4.2.1. Сброс защит после проверки
@@ -405,7 +405,7 @@ class TestBTZ3:
     def reset_protection(self, *, test_num: int, subtest_num: float, err_code_a: int = 377, err_code_b: int = 378,
                          err_code_c: int = 379, err_code_d: int = 380) -> bool:
         """
-        Модуль сброса защиты блока.
+        Модуль сброса защиты блока
         :param test_num: номер теста
         :param subtest_num: номер подтеста
         :param err_code_a: код ошибки при неисправности 1-го выхода блока, по умолчанию 377
@@ -436,7 +436,7 @@ class TestBTZ3:
                                             return True, self.health_flag
         return False, self.health_flag
 
-    def result_test_btz_3(self):
+    def result_test_btz_3(self) -> None:
         """
         Сведение всех результатов измерения, и запись в БД.
         """
@@ -451,7 +451,7 @@ class TestBTZ3:
                                          self.list_delta_t_tzp[g2]))
         self.mysql_conn.mysql_tzp_result(self.list_result_tzp)
 
-    def full_test_btz_3(self):
+    def full_test_btz_3(self) -> None:
         try:
             test, health_flag = self.st_test_btz_3()
             if test and not health_flag:

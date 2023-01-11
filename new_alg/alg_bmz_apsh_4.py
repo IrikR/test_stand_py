@@ -145,7 +145,7 @@ class TestBMZAPSH4:
         self.mysql_conn.mysql_ubtz_btz_result(self.list_result)
         return True
 
-    def subtest_2_2(self, i, k):
+    def subtest_2_2(self, i: float, k: int) -> bool:
         if self.reset_protection(test_num=2, subtest_num=2.2):
             pass
         else:
@@ -195,7 +195,7 @@ class TestBMZAPSH4:
                     return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_bmz_apsh_4(self):
+    def full_test_bmz_apsh_4(self) -> None:
         try:
             test, health_flag = self.st_test_bmz_apsh_4()
             if test and not health_flag:

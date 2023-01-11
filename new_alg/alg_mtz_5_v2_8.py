@@ -197,7 +197,7 @@ class TestMTZ5V28:
 
     def st_test_30(self) -> bool:
         """
-        Тест 3. Проверка срабатывания защиты ПМЗ блока по уставкам.
+        Тест 3. Проверка срабатывания защиты ПМЗ блока по уставкам
         :return: bool
         """
         if my_msg(self.msg_8):
@@ -347,7 +347,7 @@ class TestMTZ5V28:
         self.mysql_conn.mysql_ins_result('исправен', '4')
         return True
 
-    def subtest_32(self, i, k):
+    def subtest_32(self, i: float, k: int) -> bool:
         """
         3.2. Формирование нагрузочного сигнала 1,15*U3[i]:
         :param i: уставка
@@ -475,7 +475,7 @@ class TestMTZ5V28:
         self.ctrl_kl.ctrl_relay('KL1', True)
         sleep(2)
 
-    def st_test_mtz(self) -> [bool, bool]:
+    def st_test_mtz(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -487,7 +487,7 @@ class TestMTZ5V28:
                                         return True, self.health_flag
         return False, self.health_flag
 
-    def result_test_mtz(self):
+    def result_test_mtz(self) -> None:
         for g1 in range(len(self.list_delta_percent_mtz)):
             self.list_mtz_result.append(
                 (self.list_ust_mtz_num[g1], self.list_delta_percent_mtz[g1], self.list_delta_t_mtz[g1]))
@@ -497,7 +497,7 @@ class TestMTZ5V28:
                 (self.list_ust_tzp_num[g2], self.list_delta_percent_tzp[g2], self.list_delta_t_tzp[g2]))
         self.mysql_conn.mysql_tzp_result(self.list_tzp_result)
 
-    def full_test_mtz_5_v28(self):
+    def full_test_mtz_5_v28(self) -> None:
         try:
             test, health_flag = self.st_test_mtz()
             if test and not health_flag:

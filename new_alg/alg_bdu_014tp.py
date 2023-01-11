@@ -206,7 +206,7 @@ class TestBDU014TP:
                                                     return True
         return False
 
-    def full_test_bdu_014tp(self):
+    def full_test_bdu_014tp(self) -> None:
         try:
             if self.st_test_bdu_014tp():
                 self.mysql_conn.mysql_block_good()

@@ -412,7 +412,7 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result(f'исправен, {self.timer_test_5:.1f} сек', "5")
         return True
 
-    def sbros_zashit(self):
+    def sbros_zashit(self) -> None:
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(3)
         self.logger.debug("таймаут 3 сек")
@@ -422,7 +422,7 @@ class TestBZMPD:
         self.logger.debug("таймаут 0.7 сек")
         self.cli_log.log_msg("таймаут 0.7 сек", "gray")
 
-    def st_test_bzmp_d(self) -> [bool, bool]:
+    def st_test_bzmp_d(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_12():
@@ -441,7 +441,7 @@ class TestBZMPD:
                                                                     return True, self.health_flag
         return False, self.health_flag
 
-    def full_test_bzmp_d(self):
+    def full_test_bzmp_d(self) -> None:
         try:
             test, health_flag = self.st_test_bzmp_d()
             if test and not health_flag:

@@ -177,7 +177,7 @@ class TestMTZ5V411:
 
     def st_test_30(self) -> bool:
         """
-        Тест 3. Проверка срабатывания защиты ПМЗ блока по уставкам.
+        Тест 3. Проверка срабатывания защиты ПМЗ блока по уставкам
         :return: bool
         """
         self.logger.debug("тест 3.0")
@@ -244,7 +244,7 @@ class TestMTZ5V411:
 
     def st_test_40(self) -> bool:
         """
-        Тест 4. Проверка срабатывания защиты от перегрузки блока по уставкам.
+        Тест 4. Проверка срабатывания защиты от перегрузки блока по уставкам
         :return: bool
         """
         self.logger.debug("тест 4.0")
@@ -325,7 +325,7 @@ class TestMTZ5V411:
         self.mysql_conn.mysql_ins_result('исправен', '4')
         return True
 
-    def subtest_32(self, i, k):
+    def subtest_32(self, i: float, k: int) -> bool:
         """
         3.2. Формирование нагрузочного сигнала 1,15*U3[i]:
         :param i: напряжение уставки
@@ -415,9 +415,9 @@ class TestMTZ5V411:
                 self.mysql_conn.mysql_error(447)
             return False
 
-    def st_test_mtz(self) -> [bool, bool]:
+    def st_test_mtz(self) -> [bool]:
         """
-        Функция собирающая все алгоритмы в одну функцию.
+        Функция собирающая все алгоритмы в одну функцию
         :return: bool
         """
         if self.st_test_10():
@@ -430,7 +430,7 @@ class TestMTZ5V411:
                                     return True, self.health_flag
         return False, self.health_flag
 
-    def result_test_mtz(self):
+    def result_test_mtz(self) -> None:
         for g1 in range(len(self.list_delta_percent_mtz)):
             self.logger.debug(f"уставка: {self.list_ust_mtz_num[g1]}, "
                               f"%: {self.list_delta_percent_mtz[g1]}, "
@@ -447,7 +447,7 @@ class TestMTZ5V411:
         self.mysql_conn.mysql_tzp_result(self.list_tzp_result)
         self.logger.debug("результаты тестов записаны в БД")
 
-    def full_test_mtz_5_v411(self):
+    def full_test_mtz_5_v411(self) -> None:
         try:
             test, health_flag = self.st_test_mtz()
             if test and not health_flag:

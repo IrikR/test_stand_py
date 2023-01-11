@@ -253,7 +253,7 @@ class TestTZP:
             return True
         return False
 
-    def st_test_tzp(self) -> [bool, bool]:
+    def st_test_tzp(self) -> [bool]:
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_20():
@@ -262,13 +262,13 @@ class TestTZP:
                             return True, self._health_flag
         return False, self._health_flag
 
-    def result_test_tzp(self):
+    def result_test_tzp(self) -> None:
         for t in range(len(self._list_delta_percent)):
             self._list_tzp_result.append((self._list_ust_num[t], self._list_delta_percent[t], self._list_delta_t[t]))
             self.logger.debug(f'{self._list_ust_num[t]}, {self._list_delta_percent[t]}, {self._list_delta_t[t]}')
         self.mysql_conn.mysql_tzp_result(self._list_tzp_result)
 
-    def full_test_tzp(self):
+    def full_test_tzp(self) -> None:
         try:
             test, health_flag = self.st_test_tzp()
             if test and not health_flag:
