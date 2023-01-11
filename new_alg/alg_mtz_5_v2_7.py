@@ -521,18 +521,30 @@ class TestMTZ5V27:
             if test and not health_flag:
                 self.result_test()
                 self.mysql_conn.mysql_block_good()
+                self.logger.debug('Блок исправен')
+                self.cli_log.log_msg('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.result_test()
                 self.mysql_conn.mysql_block_bad()
+                self.logger.debug('Блок неисправен')
+                self.cli_log.log_msg('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
+            self.logger.debug("ошибка системы")
+            self.cli_log.log_msg("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
+            self.logger.debug("внутренняя ошибка")
+            self.cli_log.log_msg("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
+            self.logger.debug(f'{mce}')
+            self.cli_log.log_msg(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
+            self.logger.debug(f'{hwe}')
+            self.cli_log.log_msg(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
             self.reset_relay.reset_all()

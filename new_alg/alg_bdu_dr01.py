@@ -413,15 +413,25 @@ class TestBDUDR01:
         try:
             if self.st_test_bdu_dr01():
                 self.mysql_conn.mysql_block_good()
+                self.logger.debug('Блок исправен')
+                self.cli_log.log_msg('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
+                self.logger.debug('Блок неисправен')
+                self.cli_log.log_msg('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
+            self.logger.debug("ошибка системы")
+            self.cli_log.log_msg("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
+            self.logger.debug("внутренняя ошибка")
+            self.cli_log.log_msg("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
+            self.logger.debug(f'{mce}')
+            self.cli_log.log_msg(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
             self.reset_relay.reset_all()
