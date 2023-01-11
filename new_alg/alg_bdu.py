@@ -37,7 +37,7 @@ class TestBDU:
         self.sub_test = SubtestBDU()
         self.di_read_full = ReadOPCServer()
         self.reset = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBDU.log",
@@ -210,15 +210,20 @@ class TestBDU:
         try:
             if self.st_test_bdu():
                 self.mysql_conn.mysql_block_good()
+                self.cli_log.log_msg('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
+                self.cli_log.log_msg('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
+            self.cli_log.log_msg("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
+            self.cli_log.log_msg("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
+            self.cli_log.log_msg(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
             self.reset.reset_all()

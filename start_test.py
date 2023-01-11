@@ -8,6 +8,9 @@ from old_alg import *
 
 
 def create_parser():
+    """
+
+    """
     pars = argparse.ArgumentParser(
         prog='test stand',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -442,7 +445,7 @@ def handler():
     elif arg.block == "umz":
         umz()
     else:
-        print(help)
+        print("используйте:\n python.exe .\start_test.py --help \n для получения справки")
 
 
 if __name__ == '__main__':
