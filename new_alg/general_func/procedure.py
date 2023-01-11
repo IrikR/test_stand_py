@@ -291,8 +291,11 @@ class Procedure:
                     max_volt = coef_max * meas_volt
                     self.logger.info(f"изм. напряжение умноженное на {coef_min} и на {coef_max}: "
                                      f"{min_volt = }, {max_volt = }")
+                    self.cli_log.log_msg(f"изм. напряжение умноженное на {coef_min} и на {coef_max}: "
+                                         f"{min_volt = }, {max_volt = }", "orange")
                     return min_volt, max_volt
         self.logger.warning('Неисправность узла формирования напряжения в стенде')
+        self.cli_log.log_msg('Неисправность узла формирования напряжения в стенде', "red")
         raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                 "Неисправность узла формирования напряжения в стенде")
 
