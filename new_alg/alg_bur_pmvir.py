@@ -37,7 +37,7 @@ class TestBURPMVIR:
         self.subtest = Subtest2in()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBURPMVIR.log",
@@ -72,6 +72,8 @@ class TestBURPMVIR:
                     self.ctrl_kl.ctrl_relay('KL12', False)
                     self.logger.debug("отключены KL12")
                     sleep(1)
+                    self.logger.debug("таймаут 1 сек")
+                    self.cli_log.log_msg("таймаут 1 сек", "gray")
                     if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.3, err_code_a=174, err_code_b=175,
                                                      position_a=False, position_b=False):
                         self.ctrl_kl.ctrl_relay('KL25', False)
@@ -87,6 +89,8 @@ class TestBURPMVIR:
             if self.subtest.subtest_b_bur(test_num=3, subtest_num=3.1, forward=True):
                 self.resist.resist_0_to_100_ohm()
                 sleep(1)
+                self.logger.debug("таймаут 1 сек")
+                self.cli_log.log_msg("таймаут 1 сек", "gray")
                 if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.2, err_code_a=176, err_code_b=177,
                                                  position_a=False, position_b=False):
                     self.ctrl_kl.ctrl_relay('KL12', False)
@@ -104,6 +108,8 @@ class TestBURPMVIR:
                 self.ctrl_kl.ctrl_relay('KL11', True)
                 self.logger.debug("включен KL11")
                 sleep(2)
+                self.logger.debug("таймаут 2 сек")
+                self.cli_log.log_msg("таймаут 2 сек", "gray")
                 if self.di_read_full.subtest_2di(test_num=4, subtest_num=4.2, err_code_a=178, err_code_b=179,
                                                  position_a=False, position_b=False):
                     self.ctrl_kl.ctrl_relay('KL12', False)
@@ -122,6 +128,8 @@ class TestBURPMVIR:
                 self.ctrl_kl.ctrl_relay('KL12', False)
                 self.logger.debug("отключен KL12")
                 sleep(2)
+                self.logger.debug("таймаут 2 сек")
+                self.cli_log.log_msg("таймаут 2 сек", "gray")
                 if self.di_read_full.subtest_2di(test_num=5, subtest_num=5.2, err_code_a=180, err_code_b=181,
                                                  position_a=False, position_b=False):
                     self.ctrl_kl.ctrl_relay('KL25', False)
@@ -137,6 +145,8 @@ class TestBURPMVIR:
         self.ctrl_kl.ctrl_relay('KL26', True)
         self.logger.debug("включен KL26")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=6, subtest_num=6.0, err_code_a=168, err_code_b=169, position_a=False,
                                          position_b=False):
             if self.subtest.subtest_a_bur(test_num=6, subtest_num=6.1, back=True):
@@ -145,6 +155,8 @@ class TestBURPMVIR:
                     self.ctrl_kl.ctrl_relay('KL12', False)
                     self.logger.debug("отключен KL12")
                     sleep(2)
+                    self.logger.debug("таймаут 2 сек")
+                    self.cli_log.log_msg("таймаут 2 сек", "gray")
                     if self.di_read_full.subtest_2di(test_num=6, subtest_num=6.3, err_code_a=186, err_code_b=187,
                                                      position_a=False, position_b=False):
                         self.ctrl_kl.ctrl_relay('KL25', False)
@@ -160,6 +172,8 @@ class TestBURPMVIR:
             if self.subtest.subtest_b_bur(test_num=7, subtest_num=7.1, back=True):
                 self.resist.resist_0_to_100_ohm()
                 sleep(2)
+                self.logger.debug("таймаут 2 сек")
+                self.cli_log.log_msg("таймаут 2 сек", "gray")
                 if self.di_read_full.subtest_2di(test_num=7, subtest_num=7.2, err_code_a=188, err_code_b=189,
                                                  position_a=False, position_b=False):
                     self.ctrl_kl.ctrl_relay('KL12', False)
@@ -177,6 +191,8 @@ class TestBURPMVIR:
                 self.ctrl_kl.ctrl_relay('KL11', True)
                 self.logger.debug("включен KL11")
                 sleep(2)
+                self.logger.debug("таймаут 2 сек")
+                self.cli_log.log_msg("таймаут 2 сек", "gray")
                 if self.di_read_full.subtest_2di(test_num=8, subtest_num=8.2, err_code_a=190, err_code_b=191,
                                                  position_a=False, position_b=False):
                     self.ctrl_kl.ctrl_relay('KL12', False)
@@ -195,6 +211,8 @@ class TestBURPMVIR:
                 self.ctrl_kl.ctrl_relay('KL12', False)
                 self.logger.debug("отключен KL12")
                 sleep(2)
+                self.logger.debug("таймаут 2 сек")
+                self.cli_log.log_msg("таймаут 2 сек", "gray")
                 if self.di_read_full.subtest_2di(test_num=9, subtest_num=9.2, err_code_a=192, err_code_b=193,
                                                  position_a=False, position_b=False):
                     self.ctrl_kl.ctrl_relay('KL25', False)
@@ -208,9 +226,13 @@ class TestBURPMVIR:
         """
         self.resist.resist_kohm(30)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug("включен KL12")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=10, subtest_num=10.0, err_code_a=194, err_code_b=195,
                                          position_a=False,
                                          position_b=False):
@@ -227,6 +249,8 @@ class TestBURPMVIR:
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug("отключены KL12, KL22")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=10, subtest_num=10.1, err_code_a=196, err_code_b=197,
                                          position_a=False,
                                          position_b=False):

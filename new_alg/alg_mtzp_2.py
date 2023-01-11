@@ -37,7 +37,7 @@ class TestMTZP2:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.ust_1 = 10.9 * 8.2
         self.ust_2 = 8.2 * 8.2
@@ -104,8 +104,12 @@ class TestMTZP2:
         """
         self.ctrl_kl.ctrl_relay('KL73', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL91', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', True)
         meas_volt = self.ai_read.ai_read('AI0')
         min_volt = 0.8 * self.meas_volt_ust
@@ -145,13 +149,21 @@ class TestMTZP2:
         """
         self.ctrl_kl.ctrl_relay('KL88', True)
         sleep(10)
+        self.logger.debug("таймаут 10 сек")
+        self.cli_log.log_msg("таймаут 10 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL24', True)
         self.ctrl_kl.ctrl_relay('KL24', False)
         sleep(10)
+        self.logger.debug("таймаут 10 сек")
+        self.cli_log.log_msg("таймаут 10 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL84', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL84', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is True and in_a1 is False:
             pass
@@ -171,10 +183,16 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('идёт тест 2.1', '2')
         self.ctrl_kl.ctrl_relay('KL92', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL93', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL93', False)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is False and in_a1 is True:
             pass
@@ -192,10 +210,16 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('идёт тест 2.2', '2')
         self.logger.debug('тест 2.1 положение выходов соответствует')
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL94', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL94', False)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is True and in_a1 is False:
             pass
@@ -215,8 +239,12 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('идёт тест 3.1', '3')
         self.resist.resist_ohm(0)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is False and in_a1 is True:
             pass
@@ -236,6 +264,8 @@ class TestMTZP2:
         self.ctrl_kl.ctrl_relay('KL25', True)
         self.resist.resist_ohm(255)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is False and in_a1 is True:
             pass
@@ -254,6 +284,8 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('идёт тест 3.3', '3')
         self.ctrl_kl.ctrl_relay('KL12', False)
         sleep(0.2)
+        self.logger.debug("таймаут 0.2 сек")
+        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is True and in_a1 is False:
@@ -282,6 +314,8 @@ class TestMTZP2:
         self.resist.resist_ohm(0)
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is False and in_a1 is True:
             pass
@@ -305,6 +339,8 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('идёт тест 4.2', '4')
         self.ctrl_kl.ctrl_relay('KL63', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', False)
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is True and in_a1 is False:
@@ -319,10 +355,16 @@ class TestMTZP2:
         self.ctrl_kl.ctrl_relay('KL12', False)
         self.ctrl_kl.ctrl_relay('KL24', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL24', False)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL84', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL84', False)
         self.mysql_conn.mysql_ins_result('исправен', '4')
         return True
@@ -339,12 +381,20 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('идёт тест 5.1', '5')
         self.resist.resist_ohm(0)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL25', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.resist.resist_ohm(255)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is False and in_a1 is True:
             pass
@@ -409,11 +459,17 @@ class TestMTZP2:
         self.ctrl_kl.ctrl_relay('KL63', True)
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(0.2)
+        self.logger.debug("таймаут 0.2 сек")
+        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL25', True)
         self.resist.resist_ohm(255)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', False)
         sleep(0.2)
+        self.logger.debug("таймаут 0.2 сек")
+        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is True and in_a1 is False:
             pass
@@ -440,12 +496,20 @@ class TestMTZP2:
         self.mysql_conn.mysql_ins_result('идёт тест 7.1', '7')
         self.resist.resist_ohm(0)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL25', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.resist.resist_ohm(255)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
         if in_b2 is False and in_a1 is True:
             pass
@@ -493,10 +557,16 @@ class TestMTZP2:
         self.resist.resist_ohm(255)
         self.ctrl_kl.ctrl_relay('KL24', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL24', False)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL84', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL84', False)
 
     def st_test_mtzp_2(self) -> [bool, bool]:

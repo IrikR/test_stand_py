@@ -37,7 +37,7 @@ class TestBDUD:
         self.sub_test = SubtestBDU()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBDUD.log",
@@ -87,6 +87,8 @@ class TestBDUD:
         self.ctrl_kl.ctrl_relay('KL12', False)
         self.logger.debug(f'отключение KL12')
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.3, err_code=23, position=False):
             self.ctrl_kl.ctrl_relay('KL25', False)
             self.ctrl_kl.ctrl_relay('KL1', False)
@@ -111,6 +113,8 @@ class TestBDUD:
         self.logger.debug(f"старт теста: 3, подтест: 2")
         self.resist.resist_0_to_63_ohm()
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=3, subtest_num=3.2, err_code=24, position=False):
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.ctrl_kl.ctrl_relay('KL25', False)
@@ -137,6 +141,8 @@ class TestBDUD:
         self.ctrl_kl.ctrl_relay('KL11', True)
         self.logger.debug(f'включение KL11')
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=4, subtest_num=4.2, err_code=3, position=False):
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.ctrl_kl.ctrl_relay('KL25', False)
@@ -164,6 +170,8 @@ class TestBDUD:
         self.ctrl_kl.ctrl_relay('KL12', False)
         self.logger.debug(f'отключение KL12')
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=5, subtest_num=5.2, err_code=4, position=False):
             return True
         return False

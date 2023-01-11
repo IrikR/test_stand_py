@@ -37,7 +37,7 @@ class TestBKIP:
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.msg_1 = 'Переведите тумблер на блоке в режим «Предупредительный»'
         self.msg_2 = 'Переведите тумблер на блоке в режим «Аварийный»'
@@ -74,8 +74,12 @@ class TestBKIP:
         self.ctrl_kl.ctrl_relay('KL21', True)
         self.logger.debug("включен KL21")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.resist.resist_kohm(220)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.0, err_code_a=31, err_code_b=31,
                                          position_a=True, position_b=False, di_a='in_a0', di_b='in_a1'):
             return True
@@ -113,6 +117,8 @@ class TestBKIP:
             self.logger.debug("от пользователя пришла отмена")
             return False
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=4, subtest_num=4.0, err_code_a=33, err_code_b=33,
                                          position_a=True, position_b=False, di_a='in_a0', di_b='in_a1'):
             return True
@@ -128,6 +134,8 @@ class TestBKIP:
         self.ctrl_kl.ctrl_relay('KL22', True)
         self.logger.debug("включен KL22")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=5, subtest_num=5.0, err_code_a=34, err_code_b=34,
                                          position_a=False, position_b=True, di_a='in_a0', di_b='in_a1'):
             self.ctrl_kl.ctrl_relay('KL21', False)

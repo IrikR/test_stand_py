@@ -47,7 +47,7 @@ class TestBDU1:
         self.subtest = SubtestBDU()
         self.di_read_full = ReadOPCServer()
         self.reset_test_bdu_1 = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBDU1.log",
@@ -76,6 +76,8 @@ class TestBDU1:
         self.cli_log.log_msg("Тест 2", "gray")
         self.ctrl_kl.ctrl_relay('KL2', True)
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.0, err_code=30, di_a='in_a1', position=False):
             return True
         return False
@@ -89,8 +91,12 @@ class TestBDU1:
         self.cli_log.log_msg("Тест 2.1", "gray")
         self.resist.resist_ohm(10)
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.1, err_code=21, di_a='in_a1', position=True):
             return True
         return False
@@ -103,8 +109,12 @@ class TestBDU1:
         """
         self.cli_log.log_msg("Тест 2.2", "gray")
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', False)
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.2, err_code=23, di_a='in_a1', position=False):
             return True
         return False
@@ -119,12 +129,18 @@ class TestBDU1:
         """
         self.cli_log.log_msg("Тест 3", "gray")
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         # Отключаем KL5, KL8 для формирования 35 Ом
         self.ctrl_kl.ctrl_relay('KL5', False)
         self.ctrl_kl.ctrl_relay('KL8', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=3, subtest_num=3.0, err_code=28, di_a='in_a1', position=False):
             return True
         return False
@@ -143,6 +159,8 @@ class TestBDU1:
         self.ctrl_kl.ctrl_relay('KL6', True)
         self.ctrl_kl.ctrl_relay('KL10', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=4, subtest_num=4.0, err_code=29, di_a='in_a1', position=False):
             self.ctrl_kl.ctrl_relay('KL12', True)
             return True
@@ -158,10 +176,16 @@ class TestBDU1:
         self.cli_log.log_msg("Тест 5", "gray")
         self.resist.resist_ohm(10)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL11', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=5, subtest_num=5.0, err_code=3, di_a='in_a1', position=False):
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.ctrl_kl.ctrl_relay('KL11', False)
@@ -177,10 +201,16 @@ class TestBDU1:
         self.cli_log.log_msg("Тест 6", "gray")
         self.resist.resist_ohm(10)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', False)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=4, subtest_num=4.0, err_code=29, di_a='in_a1', position=False):
             return True
         return False

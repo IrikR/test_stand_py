@@ -37,7 +37,7 @@ class TestBDZ:
         self.subtest = Subtest2in()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.msg_1 = "Убедитесь в отсутствии блоков в панелях разъемов. " \
                      "Вставьте испытуемый блок БДЗ в разъем Х16 на панели B"
@@ -69,14 +69,24 @@ class TestBDZ:
         self.mb_ctrl.ctrl_relay('KL2', True)
         self.mb_ctrl.ctrl_relay('KL66', True)
         sleep(6)
+        self.logger.debug("таймаут 6 сек")
+        self.cli_log.log_msg("таймаут 6 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL80', True)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.0, err_code_a=1, err_code_b=1, position_a=True,
                                          position_b=True):
             return True
@@ -87,10 +97,16 @@ class TestBDZ:
         1.2.	Выключение блока
         """
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL80', False)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.1, err_code_a=1, err_code_b=1, position_a=False,
                                          position_b=False):
             return True
@@ -101,12 +117,20 @@ class TestBDZ:
         # Тест 2. Блокировка включения при снижении уровня сопротивления изоляции:
         """
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL22', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL80', True)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.0, err_code_a=1, err_code_b=1, position_a=False,
                                          position_b=False):
             return True

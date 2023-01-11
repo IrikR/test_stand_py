@@ -38,7 +38,7 @@ class TestBUPMVIR:
         self.subtest = SubtestBDU()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBUPMVIR.log",
@@ -63,7 +63,7 @@ class TestBUPMVIR:
     def st_test_11(self) -> bool:
         """
         # 1.1. Проверка состояния контактов блока при подаче напряжения питания.
-        :return: bool
+        :return: Bool
         """
         self.logger.debug("старт теста 1.1")
         self.ctrl_kl.ctrl_relay('KL21', True)
@@ -76,13 +76,15 @@ class TestBUPMVIR:
         """
         2. Проверка включения/выключения блока от кнопки «Пуск/Стоп».
         2.1. Проверка исходного состояния блока.
-        :return: bool
+        :return: Bool
         """
         if self.subtest.subtest_a_bupmvir(test_num=2, subtest_num=2.0):
             # 2.2. Выключение блока от кнопки «Стоп» при сопротивлении 10 Ом
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.logger.debug("отключение KL12")
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.1, err_code=92, position=False):
                 return True
         return False
@@ -90,16 +92,20 @@ class TestBUPMVIR:
     def st_test_30(self) -> bool:
         """
         3. Проверка блокировки включения блока при снижении сопротивления изоляции контролируемого присоединения:
-        :return: bool
+        :return: Bool
         """
         self.logger.debug("старт теста 3.0")
         self.ctrl_kl.ctrl_relay('KL22', True)
         self.logger.debug("включение KL22")
         self.resist.resist_ohm(10)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug("включение KL12")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_1di(test_num=3, subtest_num=3.0, err_code=93, position=False):
             self.ctrl_kl.ctrl_relay('KL22', False)
             self.ctrl_kl.ctrl_relay('KL12', False)
@@ -115,6 +121,8 @@ class TestBUPMVIR:
         if self.subtest.subtest_a_bupmvir(test_num=4, subtest_num=4.0):
             self.resist.resist_10_to_137_ohm()
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_1di(test_num=4, subtest_num=4.1, err_code=94, position=False):
                 self.ctrl_kl.ctrl_relay('KL12', False)
                 self.logger.debug("отключение KL12")
@@ -130,6 +138,8 @@ class TestBUPMVIR:
             self.ctrl_kl.ctrl_relay('KL11', True)
             self.logger.debug("включение KL11")
             sleep(1)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_1di(test_num=5, subtest_num=5.1, err_code=95, position=False):
                 self.ctrl_kl.ctrl_relay('KL12', False)
                 self.ctrl_kl.ctrl_relay('KL11', False)
@@ -146,6 +156,8 @@ class TestBUPMVIR:
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.logger.debug("отключение KL12")
             sleep(1)
+            self.logger.debug("таймаут 1 сек")
+            self.cli_log.log_msg("таймаут 1 сек", "gray")
             if self.di_read_full.subtest_1di(test_num=6, subtest_num=6.1, err_code=96, position=False):
                 return True
         return False
@@ -160,13 +172,19 @@ class TestBUPMVIR:
             self.ctrl_kl.ctrl_relay('KL30', True)
             self.logger.debug("отключение KL27, KL30")
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             self.ctrl_kl.ctrl_relay('KL27', True)
             self.logger.debug("включение KL27")
             sleep(6)
+            self.logger.debug("таймаут 6 сек")
+            self.cli_log.log_msg("таймаут 6 сек", "gray")
             if self.di_read_full.subtest_1di(test_num=7, subtest_num=7.1, err_code=97, position=False):
                 self.ctrl_kl.ctrl_relay('KL30', False)
                 self.logger.debug("отключение KL30")
                 sleep(6)
+                self.logger.debug("таймаут 6 сек")
+                self.cli_log.log_msg("таймаут 6 сек", "gray")
                 if self.di_read_full.subtest_1di(test_num=7, subtest_num=7.2, err_code=98, position=True):
                     return True
         return False

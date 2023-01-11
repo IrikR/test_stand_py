@@ -44,7 +44,7 @@ class TestTZP:
         self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self._list_ust_num = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
         self._list_ust_volt = (25.7, 29.8, 34.3, 39.1, 43.7, 48.5)
@@ -246,6 +246,8 @@ class TestTZP:
         self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
         self.logger.debug("сброс защит")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.5, err_code_a=284, err_code_b=285,
                                          position_a=False, position_b=True, di_b='in_a5'):
             return True

@@ -41,7 +41,7 @@ class TestBP:
         self.reset_protect = ResetProtection()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.capacitor_capacitance: float = 0.0
         self.capacitor_capacitance_d: float = 0.0
@@ -87,12 +87,20 @@ class TestBP:
         self.mysql_conn.mysql_ins_result("идёт тест 2.1", "2")
         self.mb_ctrl.ctrl_relay('KL77', True)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL65', True)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL66', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL76', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         charge_1 = self.ai_read.ai_read('AI2')
         self.logger.info(f'заряд конденсатора по истечении 5с:\t{charge_1} В')
         if charge_1 != 999:
@@ -101,6 +109,8 @@ class TestBP:
             self.mysql_conn.mysql_ins_result("неисправен", "2")
             return False
         sleep(15)
+        self.logger.debug("таймаут 15 сек")
+        self.cli_log.log_msg("таймаут 15 сек", "gray")
         charge_2 = self.ai_read.ai_read('AI2')
         self.logger.info(f'заряд конденсатора по истечении 15с:\t{charge_2} В')
         if charge_2 != 999:
@@ -132,8 +142,12 @@ class TestBP:
         self.mysql_conn.mysql_ins_result("идёт тест 2.3", "2")
         self.mb_ctrl.ctrl_relay('KL79', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL79', False)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mysql_conn.mysql_ins_result("исправен", "2")
         self.mysql_conn.mysql_ins_result(f'{self.capacitor_capacitance:.1f}', "3")
         self.mysql_conn.mysql_ins_result(f'{self.capacitor_capacitance_d:.1f}', "4")
@@ -147,6 +161,8 @@ class TestBP:
         self.mysql_conn.mysql_ins_result("идёт тест 3", "5")
         self.mb_ctrl.ctrl_relay('KL75', True)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         if self.di_read_full.subtest_4di(test_num=5, subtest_num=5.0,
                                          err_code_a=344, err_code_b=344, err_code_c=344, err_code_d=344,
                                          position_a=False, position_b=True, position_c=False, position_d=True,

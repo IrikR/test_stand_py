@@ -39,7 +39,7 @@ class TestUBTZ:
         self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.list_ust_bmz_num = (1, 2, 3, 4, 5, 6, 7)
         self.list_ust_tzp_num = (1, 2, 3, 4, 5, 6, 7)
@@ -87,6 +87,8 @@ class TestUBTZ:
         self.ctrl_kl.ctrl_relay('KL66', True)
         self.reset_protect.sbros_zashit_ubtz()
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_4di(test_num=1, subtest_num=1.0,
                                          err_code_a=451, err_code_b=452, err_code_c=453, err_code_d=454,
                                          position_a=False, position_b=True, position_c=False, position_d=True,
@@ -327,6 +329,8 @@ class TestUBTZ:
         """
         self.reset_protect.sbros_zashit_ubtz()
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_4di(test_num=test_num, subtest_num=subtest_num,
                                          err_code_a=460, err_code_b=461, err_code_c=462, err_code_d=463,
                                          position_a=False, position_b=True, position_c=False, position_d=True,

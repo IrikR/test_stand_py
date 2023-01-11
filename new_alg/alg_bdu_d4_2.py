@@ -37,7 +37,7 @@ class TestBDUD42:
         self.subtest = Subtest2in()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(filename="C:\Stend\project_class\log\TestBDUD42.log",
                             filemode="w",
@@ -66,6 +66,8 @@ class TestBDUD42:
         self.ctrl_kl.ctrl_relay('KL2', True)
         self.logger.debug("включен KL2")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.0, err_code_a=13, err_code_b=14, position_a=False,
                                          position_b=False):
             return True
@@ -91,6 +93,8 @@ class TestBDUD42:
         self.ctrl_kl.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.3, err_code_a=17, err_code_b=18, position_a=False,
                                          position_b=False):
             self.ctrl_kl.ctrl_relay('KL1', False)
@@ -118,6 +122,8 @@ class TestBDUD42:
         self.logger.debug("старт теста 3.2")
         self.resist.resist_10_to_110_ohm()
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.2, err_code_a=19, err_code_b=20, position_a=False,
                                          position_b=False):
             self.ctrl_kl.ctrl_relay('KL12', False)
@@ -147,6 +153,8 @@ class TestBDUD42:
         self.ctrl_kl.ctrl_relay('KL11', True)
         self.logger.debug("включен KL11")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=4, subtest_num=4.2, err_code_a=9, err_code_b=10, position_a=False,
                                          position_b=False):
             self.ctrl_kl.ctrl_relay('KL12', False)
@@ -177,6 +185,8 @@ class TestBDUD42:
         self.ctrl_kl.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=5, subtest_num=5.2, err_code_a=11, err_code_b=12, position_a=False,
                                          position_b=False):
             return True

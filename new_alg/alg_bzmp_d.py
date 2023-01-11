@@ -38,7 +38,7 @@ class TestBZMPD:
         self.mb_ctrl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.ust_1 = 22.6
         self.ust_2 = 15.0
@@ -97,8 +97,12 @@ class TestBZMPD:
             return False
         self.mb_ctrl.ctrl_relay('KL73', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL90', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL63', True)
         min_volt = 0.6 * meas_volt_ust
         max_volt = 1.0 * meas_volt_ust
@@ -151,6 +155,8 @@ class TestBZMPD:
             else:
                 continue
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         in_a1, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a5', 'in_a6')
         self.logger.debug(f'{in_a1 = } (True), {in_a5 = } (True), {in_a6 = } (False)')
         if in_a1 is True and in_a5 is True and in_a6 is False:
@@ -177,10 +183,16 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result('идёт тест 2.1', '2')
         self.mb_ctrl.ctrl_relay('KL21', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', False)
         sleep(0.2)
+        self.logger.debug("таймаут 0.2 сек")
+        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
         in_a6, *_ = self.di_read.di_read('in_a6')
         if in_a6 is True:
             pass
@@ -199,8 +211,12 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result('идёт тест 2.2', '2')
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(0.7)
+        self.logger.debug("таймаут 0.7 сек")
+        self.cli_log.log_msg("таймаут 0.7 сек", "gray")
         in_a1, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a5', 'in_a6')
         if in_a1 is True and in_a5 is True and in_a6 is False:
             pass
@@ -224,6 +240,8 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result('идёт тест 3.1', '3')
         self.resist.resist_kohm(61)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         in_a1, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a5', 'in_a6')
         self.logger.debug(f'{in_a1 = } (False), {in_a5 = } (False), {in_a6 = } (True)')
         if in_a1 is False and in_a5 is False and in_a6 is True:
@@ -239,11 +257,17 @@ class TestBZMPD:
         self.logger.debug("идёт тест 3.1")
         self.resist.resist_kohm(590)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.mysql_conn.mysql_ins_result('идёт тест 3.2', '3')
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         in_a1, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a5', 'in_a6')
         self.logger.debug(f'{in_a1 = } (True), {in_a5 = } (True), {in_a6 = } (False)')
         if in_a1 is True and in_a5 is True and in_a6 is False:
@@ -281,6 +305,8 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result('идёт тест 4.2', '4')
         self.mb_ctrl.ctrl_relay('KL63', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL63', False)
         in_a1, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a5', 'in_a6')
         if in_a1 is False and in_a5 is False and in_a6 is True:
@@ -299,8 +325,12 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result('идёт тест 4.3', '4')
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(0.7)
+        self.logger.debug("таймаут 0.7 сек")
+        self.cli_log.log_msg("таймаут 0.7 сек", "gray")
         in_a1, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a5', 'in_a6')
         if in_a1 is True and in_a5 is True and in_a6 is False:
             pass
@@ -352,6 +382,8 @@ class TestBZMPD:
         self.mysql_conn.progress_level(0.0)
         self.logger.debug(f'таймер тест 5: {self.timer_test_5:.1f}')
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.mysql_conn.mysql_ins_result('идёт тест 5.2', '5')
         in_a1, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a5', 'in_a6')
         if in_a1 is False and in_a5 is False and in_a6 is True and self.timer_test_5 <= 360:
@@ -383,8 +415,12 @@ class TestBZMPD:
     def sbros_zashit(self):
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(0.7)
+        self.logger.debug("таймаут 0.7 сек")
+        self.cli_log.log_msg("таймаут 0.7 сек", "gray")
 
     def st_test_bzmp_d(self) -> [bool, bool]:
         if self.st_test_10():

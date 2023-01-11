@@ -38,7 +38,7 @@ class TestBUZ2:
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.subtest = Subtest2in()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.ust_1 = 75.8
         self.ust_2 = 20.3
@@ -79,8 +79,12 @@ class TestBUZ2:
         min_volt, max_volt = self.proc.procedure_1_21_31_v1()
         self.mb_ctrl.ctrl_relay('KL73', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL90', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL63', True)
         meas_volt = self.ai_read.ai_read('AI0')
         self.reset.sbros_kl63_proc_1_21_31()
@@ -105,14 +109,24 @@ class TestBUZ2:
         self.mb_ctrl.ctrl_relay('KL2', True)
         self.mb_ctrl.ctrl_relay('KL66', True)
         sleep(6)
+        self.logger.debug("таймаут 6 сек")
+        self.cli_log.log_msg("таймаут 6 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL80', True)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         in_a1, in_a2 = self.di_read.di_read('in_a1', 'in_a2')
         if in_a1 is True and in_a2 is True:
             pass
@@ -126,10 +140,16 @@ class TestBUZ2:
         1.4.	Выключение блока
         """
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL80', False)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         in_a1, in_a2 = self.di_read.di_read('in_a1', 'in_a2')
         if in_a1 is False and in_a2 is False:
             pass
@@ -146,8 +166,12 @@ class TestBUZ2:
         """
         self.mb_ctrl.ctrl_relay('KL66', False)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL82', True)
         sleep(0.3)
+        self.logger.debug("таймаут 0.3 сек")
+        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL66', True)
         if my_msg(self.msg_3):
             pass
@@ -155,18 +179,32 @@ class TestBUZ2:
             return False
         self.mb_ctrl.ctrl_relay('KL66', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL82', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL66', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL80', True)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         in_a1, in_a2 = self.di_read.di_read('in_a1', 'in_a2')
         if in_a1 is True and in_a2 is True:
             pass
@@ -183,8 +221,12 @@ class TestBUZ2:
             return False
         self.mb_ctrl.ctrl_relay('KL63', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL63', False)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         in_a1, in_a2 = self.di_read.di_read('in_a1', 'in_a2')
         if in_a1 is False and in_a2 is False:
             pass
@@ -202,10 +244,16 @@ class TestBUZ2:
         self.mb_ctrl.ctrl_relay('KL80', False)
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(6)
+        self.logger.debug("таймаут 6 сек")
+        self.cli_log.log_msg("таймаут 6 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL84', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.mysql_conn.mysql_ins_result("исправен", "2")
         return True
 
@@ -216,8 +264,12 @@ class TestBUZ2:
         """
         self.mb_ctrl.ctrl_relay('KL80', True)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         in_a1, in_a2 = self.di_read.di_read('in_a1', 'in_a2')
         if in_a1 is True and in_a2 is True:
             pass

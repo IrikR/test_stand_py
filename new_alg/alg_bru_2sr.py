@@ -37,7 +37,7 @@ class TestBRU2SR:
         self.subtest = Subtest2in()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBRU2SR.log",
@@ -95,6 +95,8 @@ class TestBRU2SR:
                                           position_a=True, position_b=False, kl1=False):
                 self.resist.resist_ohm(150)
                 sleep(1)
+                self.logger.debug("таймаут 1 сек")
+                self.cli_log.log_msg("таймаут 1 сек", "gray")
                 if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.2, err_code_a=67, err_code_b=68,
                                                  position_a=False, position_b=False):
                     self.ctrl_kl.ctrl_relay('KL12', False)

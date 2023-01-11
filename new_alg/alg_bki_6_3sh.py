@@ -36,7 +36,7 @@ class TestBKI6:
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.msg_1 = 'Убедитесь в отсутствии других блоков или соединительных кабелей в панели разъемов А'
         self.msg_2 = 'Подключите в разъем, расположенный на панели разъемов А ' \
@@ -100,6 +100,8 @@ class TestBKI6:
         """
         self.ctrl_kl.ctrl_relay('KL36', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_5di(test_num=3, subtest_num=3.0, err_code_a=129, err_code_b=129, err_code_c=130,
                                          err_code_d=131, err_code_e=131, position_a=False, position_b=True,
                                          position_c=True,
@@ -134,6 +136,8 @@ class TestBKI6:
         self.ctrl_kl.ctrl_relay('KL22', False)
         self.resist.resist_kohm(30)
         sleep(10)
+        self.logger.debug("таймаут 10 сек")
+        self.cli_log.log_msg("таймаут 10 сек", "gray")
         if self.di_read_full.subtest_5di(test_num=4, subtest_num=4.0, err_code_a=135, err_code_b=135, err_code_c=136,
                                          err_code_d=137, err_code_e=137, position_a=False, position_b=True,
                                          position_c=False,
@@ -148,6 +152,8 @@ class TestBKI6:
         """
         self.resist.resist_kohm(590)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_5di(test_num=4, subtest_num=4.1, err_code_a=138, err_code_b=138, err_code_c=139,
                                          err_code_d=140, err_code_e=140, position_a=False, position_b=True,
                                          position_c=False,
@@ -162,6 +168,8 @@ class TestBKI6:
         """
         self.ctrl_kl.ctrl_relay('KL22', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_5di(test_num=5, subtest_num=5.0, err_code_a=141, err_code_b=141, err_code_c=142,
                                          err_code_d=143, err_code_e=143, position_a=False, position_b=True,
                                          position_c=True,
@@ -173,6 +181,8 @@ class TestBKI6:
     def st_test_51(self) -> bool:
         self.ctrl_kl.ctrl_relay('KL22', False)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         if self.di_read_full.subtest_5di(test_num=5, subtest_num=5.1, err_code_a=144, err_code_b=144, err_code_c=145,
                                          err_code_d=146, err_code_e=146, position_a=False, position_b=True,
                                          position_c=False,

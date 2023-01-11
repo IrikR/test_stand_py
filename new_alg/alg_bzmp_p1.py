@@ -36,7 +36,7 @@ class TestBZMPP1:
         self.mysql_conn = MySQLConnect()
         self.reset_protect = ResetProtection()
         self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.ust: float = 14.64
         self.ust_pmz: float = 25.2
@@ -86,8 +86,12 @@ class TestBZMPP1:
             return False
         self.mb_ctrl.ctrl_relay('KL73', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL90', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL63', True)
         min_volt = 0.6 * meas_volt_ust
         max_volt = 1.0 * meas_volt_ust
@@ -161,8 +165,12 @@ class TestBZMPP1:
         self.logger.debug("идёт тест 2.2")
         self.mb_ctrl.ctrl_relay('KL63', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL63', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
         if in_a1 is False and in_a6 is True:
             pass
@@ -200,6 +208,8 @@ class TestBZMPP1:
         self.logger.debug("идёт тест 3.1")
         self.mb_ctrl.ctrl_relay('KL81', True)
         sleep(0.1)
+        self.logger.debug("таймаут 0.1 сек")
+        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL63', True)
         in_b1, *_ = self.di_read.di_read('in_b1')
         i = 0
@@ -235,8 +245,12 @@ class TestBZMPP1:
         self.logger.debug("идёт тест 3.2")
         self.mb_ctrl.ctrl_relay('KL24', True)
         sleep(4)
+        self.logger.debug("таймаут 4 сек")
+        self.cli_log.log_msg("таймаут 4 сек", "gray")
         self.mb_ctrl.ctrl_relay('KL24', False)
         sleep(0.7)
+        self.logger.debug("таймаут 0.7 сек")
+        self.cli_log.log_msg("таймаут 0.7 сек", "gray")
         in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
         if in_a1 is True and in_a6 is False:
             pass
@@ -312,6 +326,8 @@ class TestBZMPP1:
         """
         self.reset_protect.sbros_zashit_kl24()
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=test_num, subtest_num=subtest_num, err_code_a=345, err_code_b=345,
                                          position_a=True, position_b=False, di_a='in_a1', di_b='in_a6'):
             return True

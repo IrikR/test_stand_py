@@ -36,7 +36,7 @@ class TestBUAPSHM:
         self.subtest = Subtest2in()
         self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBUAPShM.log",
@@ -55,11 +55,15 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 1.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.0, err_code_a=99, err_code_b=100, position_a=False,
                                          position_b=False):
             self.ctrl_kl.ctrl_relay('KL21', True)
             self.logger.debug("включен KL21")
             sleep(1)
+            self.logger.debug("таймаут 1 сек")
+            self.cli_log.log_msg("таймаут 1 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.1, err_code_a=101, err_code_b=102,
                                              position_a=False, position_b=False):
                 return True
@@ -72,11 +76,15 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 2.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=2, subtest_num=2.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(1)
+            self.logger.debug("таймаут 1 сек")
+            self.cli_log.log_msg("таймаут 1 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.1, err_code_a=105, err_code_b=106,
                                              position_a=False, position_b=False):
                 return True
@@ -89,10 +97,14 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 3.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=3, subtest_num=3.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.resist.resist_10_to_110_ohm()
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.1, err_code_a=107, err_code_b=108,
                                              position_a=False, position_b=False):
                 self.ctrl_kl.ctrl_relay('KL12', False)
@@ -106,11 +118,15 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 4.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=4, subtest_num=4.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.ctrl_kl.ctrl_relay('KL11', True)
             self.logger.debug("включен KL11")
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=4, subtest_num=4.1, err_code_a=109, err_code_b=110,
                                              position_a=False, position_b=False):
                 self.ctrl_kl.ctrl_relay('KL12', False)
@@ -125,11 +141,15 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 5.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=5, subtest_num=5.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=5, subtest_num=5.1, err_code_a=111, err_code_b=112,
                                              position_a=False, position_b=False):
                 return True
@@ -143,14 +163,20 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 6.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL26', True)
         self.logger.debug("включен KL26")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=6, subtest_num=6.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(1)
+            self.logger.debug("таймаут 1 сек")
+            self.cli_log.log_msg("таймаут 1 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=6, subtest_num=6.1, err_code_a=115, err_code_b=116,
                                              position_a=False, position_b=False):
                 return True
@@ -163,10 +189,14 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 1.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=7, subtest_num=7.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.resist.resist_10_to_110_ohm()
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=7, subtest_num=7.1, err_code_a=117, err_code_b=118,
                                              position_a=False, position_b=False):
                 self.ctrl_kl.ctrl_relay('KL12', False)
@@ -180,11 +210,15 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 1.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=8, subtest_num=8.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.ctrl_kl.ctrl_relay('KL11', True)
             self.logger.debug("включен KL11")
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=8, subtest_num=8.1, err_code_a=119, err_code_b=120,
                                              position_a=False, position_b=False):
                 self.ctrl_kl.ctrl_relay('KL12', False)
@@ -199,11 +233,15 @@ class TestBUAPSHM:
         """
         self.logger.debug("старт теста 1.0")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=9, subtest_num=9.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.ctrl_kl.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(2)
+            self.logger.debug("таймаут 2 сек")
+            self.cli_log.log_msg("таймаут 2 сек", "gray")
             if self.di_read_full.subtest_2di(test_num=9, subtest_num=9.1, err_code_a=121, err_code_b=122,
                                              position_a=False, position_b=False):
                 return True

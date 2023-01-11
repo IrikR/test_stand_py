@@ -46,7 +46,7 @@ class TestBKZ3MK:
         self.mysql_conn = MySQLConnect()
         self.ai_read = AIRead()
         self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         # Тест 5. Проверка срабатывания защиты ТЗП блока по уставкам
         # медленные
@@ -119,8 +119,12 @@ class TestBKZ3MK:
         self.ctrl_kl.ctrl_relay('KL21', True)
         self.logger.debug("включение KL21")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.0, err_code_a=317, err_code_b=318,
                                          position_a=True, position_b=True, di_a='in_a5', di_b='in_a6'):
             return True
@@ -144,6 +148,8 @@ class TestBKZ3MK:
         self.mysql_conn.mysql_ins_result('идет тест 2', '2')
         self.resist.resist_kohm(200)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.0, err_code_a=319, err_code_b=320,
                                          position_a=True, position_b=True, di_a='in_a5', di_b='in_a6'):
             return True
@@ -158,6 +164,8 @@ class TestBKZ3MK:
         self.ctrl_kl.ctrl_relay('KL22', True)
         self.logger.debug("включение KL22")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.0, err_code_a=321, err_code_b=322,
                                          position_a=True, position_b=False, di_a='in_a5', di_b='in_a6'):
             return True
@@ -168,6 +176,8 @@ class TestBKZ3MK:
         self.ctrl_kl.ctrl_relay('KL22', False)
         self.logger.debug("отключение KL22")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
         if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.1, err_code_a=321, err_code_b=322,
                                          position_a=True, position_b=True, di_a='in_a5', di_b='in_a6'):

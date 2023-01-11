@@ -39,7 +39,7 @@ class TestMMTZD:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.list_ust_num = (10, 20, 30, 40, 50)
         # self.ust = (7.7, 16.5, 25.4, 31.9, 39.4)
@@ -172,6 +172,8 @@ class TestMMTZD:
         """
         self.ctrl_kl.ctrl_relay('KL73', True)
         sleep(5)
+        self.logger.debug("таймаут 5 сек")
+        self.cli_log.log_msg("таймаут 5 сек", "gray")
         if my_msg(self.msg_5):
             pass
         else:
@@ -246,6 +248,8 @@ class TestMMTZD:
         # 2.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         self.ctrl_kl.ctrl_ai_code_v1(107)
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
         self.reset_relay.stop_procedure_3()
         if in_a1 is False and in_a5 is False:
@@ -311,6 +315,8 @@ class TestMMTZD:
         # 2.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         self.ctrl_kl.ctrl_ai_code_v1(107)
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
         self.reset_relay.stop_procedure_3()
         if in_a1 is False and in_a5 is False:

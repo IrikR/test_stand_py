@@ -41,7 +41,7 @@ class TestBMZ2:
         self.mysql_conn = MySQLConnect()
         self.ai_read = AIRead()
         self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.ust_test = 80.0
         self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
@@ -116,8 +116,12 @@ class TestBMZ2:
     def st_test_21_bmz_2(self) -> bool:
         self.ctrl_kl.ctrl_relay('KL63', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', False)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_3di(test_num=2, subtest_num=2.1, err_code_a=335, err_code_b=336, err_code_c=337,
                                          position_a=True, position_b=False, position_c=True, di_a='in_a1',
                                          di_b='in_a5', di_c='in_a2'):

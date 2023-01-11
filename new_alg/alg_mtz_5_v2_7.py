@@ -40,7 +40,7 @@ class TestMTZ5V27:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.list_ust_tzp_num = (0.4, 0.7, 1.0, 1.3, 1.6, 1.8, 2.0)
         self.list_ust_tzp_volt = (10.8, 18.8, 26.55, 34.05, 41.4, 46.2, 50.85)
@@ -98,8 +98,12 @@ class TestMTZ5V27:
         self.mysql_conn.mysql_ins_result('идёт тест 1', '1')
         self.ctrl_kl.ctrl_relay('KL1', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL2', True)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.reset_protect.sbros_zashit_mtz5()
         in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
         if in_a1 is True and in_a5 is False:
@@ -150,8 +154,12 @@ class TestMTZ5V27:
         self.mysql_conn.mysql_ins_result('идёт тест 2.2', '2')
         self.ctrl_kl.ctrl_relay('KL63', True)
         sleep(0.5)
+        self.logger.debug("таймаут 0.5 сек")
+        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', False)
         sleep(0.2)
+        self.logger.debug("таймаут 0.2 сек")
+        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
         in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
         if in_a1 is False and in_a5 is True:
             pass

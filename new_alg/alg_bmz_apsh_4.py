@@ -38,7 +38,7 @@ class TestBMZAPSH4:
         self.ctrl_kl = CtrlKL()
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.list_ust_num = (1, 2, 3, 4, 5)
         self.list_ust = (9.84, 16.08, 23.28, 34.44, 50.04)

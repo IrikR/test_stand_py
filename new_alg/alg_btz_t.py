@@ -40,7 +40,7 @@ class TestBTZT:
         self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.ust_test: float = 80.0
         # self.ust_1 = (23.7, 28.6, 35.56, 37.4, 42.6, 47.3)
@@ -150,6 +150,8 @@ class TestBTZT:
         self.mysql_conn.mysql_ins_result('идет тест 2.2', '2')
         self.ctrl_kl.ctrl_relay('KL63', True)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', False)
         if self.di_read_full.subtest_4di(test_num=2, subtest_num=2.1,
                                          err_code_a=395, err_code_b=396, err_code_c=397, err_code_d=398,
@@ -361,6 +363,8 @@ class TestBTZT:
         self.logger.debug("сброс защит")
         self.reset_protect.sbros_zashit_kl30()
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read_full.subtest_4di(test_num=test_num, subtest_num=subtest_num,
                                          err_code_a=399, err_code_b=400, err_code_c=401, err_code_d=402,
                                          position_a=False, position_b=True, position_c=False, position_d=True,

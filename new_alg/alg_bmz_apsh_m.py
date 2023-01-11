@@ -40,7 +40,7 @@ class TestBMZAPSHM:
         self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.di_read = ReadOPCServer()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
         self.ust_1: float = 85.6
 
@@ -107,9 +107,13 @@ class TestBMZAPSHM:
         self.ctrl_kl.ctrl_relay('KL63', True)
         self.logger.debug('включен KL63')
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', False)
         self.logger.debug('отключен KL63')
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read.subtest_4di(test_num=2, subtest_num=2.1,
                                     err_code_a=352, err_code_b=353, err_code_c=354, err_code_d=355,
                                     position_a=True, position_b=False, position_c=False, position_d=True,
@@ -148,9 +152,13 @@ class TestBMZAPSHM:
         self.ctrl_kl.ctrl_relay('KL63', True)
         self.logger.debug('включен KL63')
         sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.log_msg("таймаут 3 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL63', False)
         self.logger.debug('отключен KL63')
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read.subtest_4di(test_num=3, subtest_num=3.1,
                                     err_code_a=360, err_code_b=361, err_code_c=362, err_code_d=363,
                                     position_a=False, position_b=True, position_c=True, position_d=False,
@@ -167,6 +175,8 @@ class TestBMZAPSHM:
         self.logger.debug("старт теста 3.2")
         self.reset_protect.sbros_zashit_kl30()
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read.subtest_4di(test_num=3, subtest_num=3.2,
                                     err_code_a=364, err_code_b=365, err_code_c=366, err_code_d=367,
                                     position_a=False, position_b=True, position_c=False, position_d=True,
