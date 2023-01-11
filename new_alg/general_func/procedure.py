@@ -52,7 +52,7 @@ class Procedure:
         self.read_mb = ReadMB()
         self.di_read = DIRead()
         self.ai_read = AIRead()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
     def start_procedure_1(self) -> bool:
         """

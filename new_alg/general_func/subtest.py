@@ -6,16 +6,15 @@
 """
 
 import logging
-
-from typing import Union
 from time import sleep
+from typing import Union
 
+from .database import *
+from .exception import HardwareException
 from .modbus import *
 from .procedure import *
-from .database import *
-from .resistance import Resistor
 from .reset import ResetRelay, ResetProtection
-from .exception import HardwareException
+from .resistance import Resistor
 from .utils import CLILog
 
 __all__ = ["SubtestMTZ5", "ProcedureFull", "SubtestBDU", "Subtest2in", "SubtestBDU1M", "Subtest4in", "ReadOPCServer"]
@@ -27,14 +26,14 @@ class ReadOPCServer:
         self.rw_error = RWError()
         self.mysql_conn = MySQLConnect()
         self.logger = logging.getLogger(__name__)
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
     def _write_condition_1(self, test_num: int, subtest_num: float):
         """
         Метод для записи результатов начала теста.
         Используется для логирования и записи результатов в БД, в методах опроса дискретных входов ПЛК.
-        :param test_num:
-        :param subtest_num:
+        :param test_num: Int
+        :param subtest_num: Float
         :return:
         """
         self.cli_log.log_msg(f"тест: {test_num}, подтест: {subtest_num}", "gray")
@@ -84,7 +83,8 @@ class ReadOPCServer:
         :param di_a: вход контроллера
         :return:
         """
-        self.cli_log.log_msg("считывание дискретных входов", "gray")
+        self.logger.debug(f"считывание дискретных входов. функция subtest_1di")
+        self.cli_log.log_msg(f"считывание дискретных входов. функция subtest_1di", "gray")
         self._write_condition_1(test_num, subtest_num)
         in_x, *_ = self.di_read.di_read(di_a, 'in_b6')
         self.logger.debug(f"состояние входа: {in_x = } is {position}")
@@ -113,6 +113,8 @@ class ReadOPCServer:
         :param di_b:
         :return:
         """
+        self.logger.debug(f"считывание дискретных входов. функция subtest_2di")
+        self.cli_log.log_msg(f"считывание дискретных входов. функция subtest_2di", "gray")
         self._write_condition_1(test_num, subtest_num)
         in_a1, in_a2 = self.di_read.di_read(di_a, di_b)
         self.logger.debug(f"состояние входа: {in_a1 = } is {position_a} and {in_a2 = } is {position_b}:")
@@ -139,15 +141,16 @@ class ReadOPCServer:
         :param err_code_a: код ошибки для 1-го выхода,
         :param err_code_b: код ошибки для 2-го выхода,
         :param err_code_c: код ошибки для 3-го выхода,
-        :param position_a: положение которое должен занять 1-й выход блока,
-        :param position_b: положение которое должен занять 2-й выход блока,
-        :param position_c: положение которое должен занять 3-й выход блока,
+        :param position_a: положение. Которое должен занять 1-й выход блока,
+        :param position_b: положение. Которое должен занять 2-й выход блока,
+        :param position_c: положение. Которое должен занять 3-й выход блока,
         :param di_a: 1-й вход контроллера,
         :param di_b: 2-й вход контроллера,
         :param di_c: 3-й вход контроллера,
         :return: Bool
         """
-
+        self.logger.debug(f"считывание дискретных входов. функция subtest_3di")
+        self.cli_log.log_msg(f"считывание дискретных входов. функция subtest_3di", "gray")
         self._write_condition_1(test_num, subtest_num)
         in_a, in_b, in_c = self.di_read.di_read(di_a, di_b, di_c)
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
@@ -181,17 +184,18 @@ class ReadOPCServer:
         :param err_code_b: код ошибки для 2-го выхода
         :param err_code_c: код ошибки для 3-го выхода
         :param err_code_d: код ошибки для 4-го выхода
-        :param position_a: положение которое должен занять 1-й выход блока
-        :param position_b: положение которое должен занять 2-й выход блока
-        :param position_c: положение которое должен занять 3-й выход блока
-        :param position_d: положение которое должен занять 4-й выход блока
+        :param position_a: положение. Которое должен занять 1-й выход блока
+        :param position_b: положение. Которое должен занять 2-й выход блока
+        :param position_c: положение. Которое должен занять 3-й выход блока
+        :param position_d: положение. Которое должен занять 4-й выход блока
         :param di_a: 1-й вход контроллера
         :param di_b: 2-й вход контроллера
         :param di_c: 3-й вход контроллера
         :param di_d: 4-й вход контроллера
         :return:
         """
-
+        self.logger.debug(f"считывание дискретных входов. функция subtest_4di")
+        self.cli_log.log_msg(f"считывание дискретных входов. функция subtest_4di", "gray")
         self._write_condition_1(test_num, subtest_num)
         in_a, in_b, in_c, in_d = self.di_read.di_read(di_a, di_b, di_c, di_d)
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
@@ -228,11 +232,11 @@ class ReadOPCServer:
         :param err_code_c: код ошибки для 3-го выхода
         :param err_code_d: код ошибки для 4-го выхода
         :param err_code_e: код ошибки для 5-го выхода
-        :param position_a: положение которое должен занять 1-й выход блока
-        :param position_b: положение которое должен занять 2-й выход блока
-        :param position_c: положение которое должен занять 3-й выход блока
-        :param position_d: положение которое должен занять 4-й выход блока
-        :param position_e: положение которое должен занять 5-й выход блока
+        :param position_a: положение. Которое должен занять 1-й выход блока
+        :param position_b: положение. Которое должен занять 2-й выход блока
+        :param position_c: положение. Которое должен занять 3-й выход блока
+        :param position_d: положение. Которое должен занять 4-й выход блока
+        :param position_e: положение. Которое должен занять 5-й выход блока
         :param di_a: 1-й вход контроллера
         :param di_b: 2-й вход контроллера
         :param di_c: 3-й вход контроллера
@@ -240,7 +244,8 @@ class ReadOPCServer:
         :param di_e: 5-й вход контроллера
         :return: bool
         """
-
+        self.logger.debug(f"считывание дискретных входов. функция subtest_5di")
+        self.cli_log.log_msg(f"считывание дискретных входов. функция subtest_5di", "gray")
         self._write_condition_1(test_num, subtest_num)
         in_a, in_b, in_c, in_d, in_e = self.di_read.di_read(di_a, di_b, di_c, di_d, di_e)
         self.logger.debug(f"состояние входа: {in_a = } is {position_a} and {in_b = } is {position_b} "
@@ -272,7 +277,7 @@ class RWError:
     def __init__(self):
         self.mysql_conn = MySQLConnect()
         self.logger = logging.getLogger(__name__)
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
 
     def rw_err(self, err_code):
         """
@@ -300,6 +305,7 @@ class SubtestMTZ5:
         self.ctrl_kl = CtrlKL()
         self.read_mb = ReadMB()
         self.di_read = DIRead()
+        self.cli_log = CLILog(True, __name__)
 
         self.delta_t_mtz: Union[float, int] = 0
         self.in_1 = False
@@ -307,14 +313,19 @@ class SubtestMTZ5:
 
     def subtest_time_calc_mtz(self) -> [float, bool, bool]:
         self.logger.debug("подтест проверки времени срабатывания")
+        self.cli_log.log_msg("подтест проверки времени срабатывания", "gray")
         for stc in range(3):
             self.logger.debug(f"попытка: {stc}")
+            self.cli_log.log_msg(f"попытка: {stc}", "gray")
             self.reset_protect.sbros_zashit_mtz5()
             self.delta_t_mtz = self.ctrl_kl.ctrl_ai_code_v0(110)
             self.in_1, self.in_5 = self.di_read.di_read("in_a1", "in_a5")
             self.logger.debug(f"время срабатывания: {self.delta_t_mtz}, "
                               f"{self.in_1 = } is False, "
                               f"{self.in_5 = } is True")
+            self.cli_log.log_msg(f"время срабатывания: {self.delta_t_mtz}, "
+                                 f"{self.in_1 = } is False, "
+                                 f"{self.in_5 = } is True", "skyblue")
             if self.delta_t_mtz == 9999:
                 stc += 1
                 continue
@@ -338,6 +349,7 @@ class ProcedureFull:
         self.mysql_conn = MySQLConnect()
         self.ai_read = AIRead()
         self.rw_error = RWError()
+        self.cli_log = CLILog(True, __name__)
 
     def procedure_1_full(self, *, test_num: int = 1, subtest_num: float = 1.0, coef_min_volt: float = 0.6,
                          coef_max_volt: float = 1.1):
@@ -346,17 +358,26 @@ class ProcedureFull:
         :return: Bool
         """
         self.logger.debug("СТАРТ процедуры 1, 2.1, 3.1 - проверка на КЗ")
+        self.cli_log.log_msg("СТАРТ процедуры 1, 2.1, 3.1 - проверка на КЗ", "purple")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         min_volt, max_volt = self.proc.procedure_1_21_31_v1(coef_min=coef_min_volt, coef_max=coef_max_volt)
         self.ctrl_kl.ctrl_relay('KL63', True)
+        self.logger.debug("включение KL63")
+        self.cli_log.log_msg("включение KL63", "blue")
         sleep(2)
         meas_volt = self.ai_read.ai_read('AI0')
         self.logger.debug(f'напряжение после включения KL63:\t{meas_volt:.2f}\tдолжно быть '
                           f'от\t{min_volt:.2f}\tдо\t{max_volt:.2f}')
+        self.cli_log.log_msg(f'напряжение после включения KL63:\t{meas_volt:.2f}\tдолжно быть '
+                             f'от\t{min_volt:.2f}\tдо\t{max_volt:.2f}', "orange")
         self.reset_relay.sbros_kl63_proc_1_21_31()
         if min_volt <= meas_volt <= max_volt:
             self.mysql_conn.mysql_add_message(f'тест {subtest_num} пройден')
+            self.logger.debug("напряжение соответствует")
+            self.cli_log.log_msg("напряжение соответствует", "green")
             return True
+        self.logger.debug("напряжение не соответствует")
+        self.cli_log.log_msg("напряжение не соответствует", "red")
         self.mysql_conn.mysql_add_message(f'тест {subtest_num} не пройден')
         self.mysql_conn.mysql_ins_result('неисправен', f'{test_num}')
         self.rw_error.rw_err(455)
@@ -367,6 +388,7 @@ class ProcedureFull:
         1.2. Определение коэффициента Кс отклонения фактического напряжения от номинального
         """
         self.logger.debug("Определение коэффициента Кс отклонения фактического напряжения от номинального")
+        self.cli_log.log_msg("Определение коэффициента Кс отклонения фактического напряжения от номинального", "gray")
         self.mysql_conn.mysql_ins_result(f'идет тест {subtest_num}', f'{test_num}')
         coef_volt = self.proc.procedure_1_22_32()
         self.mysql_conn.mysql_add_message(f"Определение коэффициента Кс: {coef_volt}")
@@ -390,6 +412,7 @@ class SubtestBDU:
         self.di_read = ReadOPCServer()
         self.resist = Resistor()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True, __name__)
 
     def subtest_a_bdu43_bru2s(self, *, test_num: int, subtest_num: float) -> bool:
         """
@@ -401,18 +424,20 @@ class SubtestBDU:
         :return: bool
         """
         self.logger.debug(f"старт теста: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"старт теста: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f"идёт тест {subtest_num}", f'{test_num}')
         self.resist.resist_ohm(0)
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug("включение KL12")
+        self.cli_log.log_msg("включение KL12", "blue")
         sleep(1)
         if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=21, position=True,
                                     di_a='in_a1'):
             return True
         return False
 
-    def subtest_b_bdu43_d(self, *,  test_num: int, subtest_num: float) -> bool:
+    def subtest_b_bdu43_d(self, *, test_num: int, subtest_num: float) -> bool:
         """
             2.3. Проверка удержания блока во включенном состоянии при подключении Rш пульта управления:
             подтест проверки блока БДУ-4-3
@@ -422,11 +447,13 @@ class SubtestBDU:
             :return bool:
         """
         self.logger.debug(f"старт теста: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"старт теста: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f"идёт тест {subtest_num}", f'{test_num}')
         self.ctrl_kl.ctrl_relay('KL1', True)
         self.ctrl_kl.ctrl_relay('KL25', True)
         self.logger.debug('включение KL1, KL25')
+        self.cli_log.log_msg('включение KL1, KL25', "blue")
         sleep(1)
         if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=22, position=True,
                                     di_a='in_a1'):
@@ -442,12 +469,14 @@ class SubtestBDU:
         :return bool:
         """
         self.logger.debug(f"старт теста: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"старт теста: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f"идёт тест {subtest_num}", f'{test_num}')
         self.resist.resist_ohm(15)
         sleep(3)
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug(f'включение KL12')
+        self.cli_log.log_msg('включение KL12', "blue")
         sleep(3)
         if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=21, position=True,
                                     di_a='in_a1'):
@@ -462,17 +491,26 @@ class SubtestBDU:
         :return:
         """
         self.logger.debug(f"старт теста: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"старт теста: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         self.resist.resist_ohm(255)
         sleep(1)
+        self.logger.debug("таймаут 1 секунда")
+        self.cli_log.log_msg("таймаут 1 секунда", "gray")
         self.resist.resist_ohm(10)
         sleep(2)
+        self.logger.debug("таймаут 2 секунды")
+        self.cli_log.log_msg("таймаут 2 секунды", "gray")
         self.ctrl_kl.ctrl_relay('KL1', True)
         self.logger.debug(f'включение KL1')
+        self.cli_log.log_msg('включение KL1', "blue")
         sleep(1)
+        self.logger.debug("таймаут 1 секунда")
+        self.cli_log.log_msg("таймаут 1 секунда", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug(f'включение KL12')
+        self.cli_log.log_msg('включение KL12', "blue")
         sleep(1)
         if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=26, position=True,
                                     di_a='in_a1'):
@@ -488,10 +526,12 @@ class SubtestBDU:
         :return: bool
         """
         self.logger.debug(f"старт теста: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"старт теста: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         self.ctrl_kl.ctrl_relay('KL25', True)
         self.logger.debug(f'включение KL25')
+        self.cli_log.log_msg('включение KL25', "blue")
         if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=50, position=True,
                                     di_a='in_a1'):
             return True
@@ -503,13 +543,19 @@ class SubtestBDU:
         подтест проверки БУ-ПМВИР
         """
         self.logger.debug(f"старт теста: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"старт теста: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         self.resist.resist_ohm(10)
         sleep(1)
+        self.logger.debug("таймаут 1 секунда")
+        self.cli_log.log_msg("таймаут 1 секунда", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug(f'включение KL12')
+        self.cli_log.log_msg('включение KL12', "blue")
         sleep(3)
+        self.logger.debug("таймаут 3 секунды")
+        self.cli_log.log_msg("таймаут 3 секунды", "gray")
         if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=91, position=True,
                                     di_a='in_a1'):
             return True
@@ -527,6 +573,7 @@ class Subtest2in:
         self.resist = Resistor()
         self.mysql_conn = MySQLConnect()
         self.rw_error = RWError()
+        self.cli_log = CLILog(True, __name__)
 
     def subtest_a_bdu(self, *, test_num: int, subtest_num: float, err_code_a: int, err_code_b: int,
                       position_a: bool, position_b: bool, resist: int = 10, timeout: int = 2) -> bool:
@@ -562,16 +609,22 @@ class Subtest2in:
         :param timeout:
         :return: Bool
         """
-        
+
         self.logger.debug(f"Общий метод, тест: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"Общий метод, тест: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         self.resist.resist_ohm(255)
         self.resist.resist_ohm(resist)
         sleep(timeout)
+        self.logger.debug(f"таймаут {timeout} сек")
+        self.cli_log.log_msg(f"таймаут {timeout} сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug("включен KL12")
+        self.cli_log.log_msg("включен KL12", "blue")
         sleep(timeout)
+        self.logger.debug(f"таймаут {timeout} сек")
+        self.cli_log.log_msg(f"таймаут {timeout} сек", "gray")
         if self.di_read.subtest_2di(test_num=test_num, subtest_num=subtest_num, err_code_a=err_code_a,
                                     err_code_b=err_code_b, position_a=position_a, position_b=position_b,
                                     di_a='in_a1', di_b='in_a2'):
@@ -607,6 +660,7 @@ class Subtest2in:
         """
 
         self.logger.debug(f"Общий метод, тест: {test_num}, подтест: {subtest_num}")
+        self.cli_log.log_msg(f"Общий метод, тест: {test_num}, подтест: {subtest_num}", "gray")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         self.mysql_conn.mysql_add_message(f"старт теста: {test_num}, подтест: {subtest_num}")
         if kl1 is False:
@@ -615,7 +669,10 @@ class Subtest2in:
             self.ctrl_kl.ctrl_relay('KL1', True)
         self.ctrl_kl.ctrl_relay('KL25', True)
         self.logger.debug("включены KL1, KL25")
+        self.cli_log.log_msg("включены KL1, KL25", "blue")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read.subtest_2di(test_num=test_num, subtest_num=subtest_num, err_code_a=err_code_a,
                                     err_code_b=err_code_b, position_a=position_a, position_b=position_b,
                                     di_a='in_a1', di_b='in_a2'):
@@ -646,8 +703,14 @@ class Subtest2in:
             pos_a2 = True
         self.resist.resist_ohm(0)
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
+        self.logger.debug("включено реле KL12")
+        self.cli_log.log_msg("включено реле KL12", "blue")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
 
         if self.di_read.subtest_2di(test_num=test_num, subtest_num=subtest_num,
                                     err_code_a=err_code_1, err_code_b=err_code_2,
@@ -679,7 +742,11 @@ class Subtest2in:
             pos_a1 = False
             pos_a2 = True
         self.ctrl_kl.ctrl_relay('KL25', True)
+        self.logger.debug("включено реле KL25")
+        self.cli_log.log_msg("включено реле KL25", "blue")
         sleep(2)
+        self.logger.debug("таймаут 2 сек")
+        self.cli_log.log_msg("таймаут 2 сек", "gray")
         if self.di_read.subtest_2di(test_num=test_num, subtest_num=subtest_num,
                                     err_code_a=err_code_1, err_code_b=err_code_2,
                                     position_a=pos_a1, position_b=pos_a2, di_a='in_a1', di_b='in_a2'):
@@ -707,21 +774,30 @@ class Subtest2in:
         """
 
         self.logger.debug("старт подтеста 10 и 11")
+        self.cli_log.log_msg("старт подтеста 10 и 11", "gray")
         self.mysql_conn.mysql_add_message(f"тест: {test_num}, подтест: {subtest_num}")
         self.mysql_conn.mysql_ins_result(f"идет тест {subtest_num}", f"{test_num}")
         self.resist.resist_kohm(resist)
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug("включен KL12")
+        self.cli_log.log_msg("включен KL12", "blue")
         in_a1, in_a2 = self.di_read_2.di_read('in_a1', 'in_a2')
         self.logger.debug(f'положение выходов блока: {in_a1 = } is False, {in_a2 = } is False')
+        self.cli_log.log_msg(f'положение выходов блока: {in_a1 = } is False, {in_a2 = } is False', "skyblue")
         if in_a1 is False and in_a2 is False:
             self.ctrl_kl.ctrl_relay('KL12', False)
+            self.logger.debug("отключено реле KL12")
+            self.cli_log.log_msg("отключено реле KL12", "blue")
             self.mysql_conn.mysql_ins_result("исправен", f"{test_num}")
             self.mysql_conn.mysql_add_message(f"Исправен. тест: {test_num}, подтест: {subtest_num}")
+            self.logger.debug(f"Исправен. тест: {test_num}, подтест: {subtest_num}")
+            self.cli_log.log_msg(f"Исправен. тест: {test_num}, подтест: {subtest_num}", "green")
             return True
         else:
             self.mysql_conn.mysql_ins_result("неисправен", f"{test_num}")
             self.mysql_conn.mysql_add_message(f"Неисправен. тест: {test_num}, подтест: {subtest_num}")
+            self.logger.debug(f"Неисправен. тест: {test_num}, подтест: {subtest_num}")
+            self.cli_log.log_msg(f"Неисправен. тест: {test_num}, подтест: {subtest_num}", "red")
             if in_a1 is True:
                 self.rw_error.rw_err(err_code_a)
             elif in_a2 is True:
@@ -738,21 +814,34 @@ class SubtestBDU1M:
         self.di_read = ReadOPCServer()
         self.resist = Resistor()
         self.mysql_conn = MySQLConnect()
+        self.cli_log = CLILog(True, __name__)
 
     def subtest_a(self, *, test_num: int, subtest_num: float) -> bool:
         """
             2.2. Включение блока от кнопки «Пуск»
         """
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
+        self.logger.debug(f'идёт тест {subtest_num}', f'{test_num}')
+        self.cli_log.log_msg(f'идёт тест {subtest_num}', f'{test_num}', "gray")
         self.ctrl_kl.ctrl_relay('KL22', True)
         self.ctrl_kl.ctrl_relay('KL1', False)
         self.ctrl_kl.ctrl_relay('KL25', False)
+        self.logger.debug("включено реле KL22, и отключены реле KL1, KL25")
+        self.cli_log.log_msg("включено реле KL22, и отключены реле KL1, KL25", "blue")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.resist.resist_ohm(10)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
+        self.logger.debug("включено реле KL12")
+        self.cli_log.log_msg("включено реле KL12", "blue")
         sleep(1)
-        if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=203, position=True, 
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=203, position=True,
                                     di_a='in_a2'):
             return True
         return False
@@ -762,12 +851,22 @@ class SubtestBDU1M:
             2.3. Проверка удержания блока во включенном состоянии при подключении Rш пульта управления:
         """
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
+        self.logger.debug(f'идёт тест {subtest_num}', f'{test_num}')
+        self.cli_log.log_msg(f'идёт тест {subtest_num}', f'{test_num}', "gray")
         self.ctrl_kl.ctrl_relay('KL1', True)
         self.ctrl_kl.ctrl_relay('KL22', False)
+        self.logger.debug("включено реле KL1, отключено реле KL22")
+        self.cli_log.log_msg("включено реле KL1, отключено реле KL22", "blue")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL25', True)
+        self.logger.debug("включено реле KL25")
+        self.cli_log.log_msg("включено реле KL25", "blue")
         sleep(1)
-        if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=205, position=True, 
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        if self.di_read.subtest_1di(test_num=test_num, subtest_num=subtest_num, err_code=205, position=True,
                                     di_a='in_a2'):
             return True
         return False
@@ -783,6 +882,7 @@ class Subtest4in:
         self.resist = Resistor()
         self.mysql_conn = MySQLConnect()
         self.rw_error = RWError()
+        self.cli_log = CLILog(True, __name__)
 
     def subtest_a(self, *, test_num: int = 1, subtest_num: float = 1.0, resistance: int = 10,
                   err_code_a: int = 1, err_code_b: int = 1, err_code_c: int = 1, err_code_d: int = 1,
@@ -802,10 +902,10 @@ class Subtest4in:
         :param err_code_b: код ошибки для 2-го выхода
         :param err_code_c: код ошибки для 3-го выхода
         :param err_code_d: код ошибки для 4-го выхода
-        :param position_a: положение которое должен занять 1-й выход блока
-        :param position_b: положение которое должен занять 2-й выход блока
-        :param position_c: положение которое должен занять 3-й выход блока
-        :param position_d: положение которое должен занять 4-й выход блока
+        :param position_a: положение. Которое должен занять 1-й выход блока
+        :param position_b: положение. Которое должен занять 2-й выход блока
+        :param position_c: положение. Которое должен занять 3-й выход блока
+        :param position_d: положение. Которое должен занять 4-й выход блока
         :param di_a: 1-й вход контроллера
         :param di_b: 2-й вход контроллера
         :param di_c: 3-й вход контроллера
@@ -813,18 +913,24 @@ class Subtest4in:
         :return:
         """
         self.logger.debug(f"старт теста {test_num}, подтест {subtest_num}")
+        self.cli_log.log_msg(f"старт теста {test_num}, подтест {subtest_num}", "gray")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         self.mysql_conn.mysql_add_message(f"идёт тест: {test_num}, подтест: {subtest_num}")
         self.resist.resist_ohm(255)
         self.resist.resist_ohm(resistance)
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         self.ctrl_kl.ctrl_relay('KL12', True)
         self.logger.debug("включен KL12")
+        self.cli_log.log_msg("включен KL12", "blue")
         sleep(1)
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
         if self.di_read.subtest_4di(test_num=test_num, subtest_num=subtest_num,
-                                    err_code_a=err_code_a, err_code_b=err_code_b, err_code_c=err_code_c, 
-                                    err_code_d=err_code_d, position_a=position_a, position_b=position_b, 
-                                    position_c=position_c, position_d=position_d, di_a=di_a, di_b=di_b, 
+                                    err_code_a=err_code_a, err_code_b=err_code_b, err_code_c=err_code_c,
+                                    err_code_d=err_code_d, position_a=position_a, position_b=position_b,
+                                    position_c=position_c, position_d=position_d, di_a=di_a, di_b=di_b,
                                     di_c=di_c, di_d=di_d):
             return True
         return False
@@ -851,10 +957,10 @@ class Subtest4in:
         :param err_code_b: код ошибки для 2-го выхода
         :param err_code_c: код ошибки для 3-го выхода
         :param err_code_d: код ошибки для 4-го выхода
-        :param position_a: положение которое должен занять 1-й выход блока
-        :param position_b: положение которое должен занять 2-й выход блока
-        :param position_c: положение которое должен занять 3-й выход блока
-        :param position_d: положение которое должен занять 4-й выход блока
+        :param position_a: положение. Которое должен занять 1-й выход блока
+        :param position_b: положение. Которое должен занять 2-й выход блока
+        :param position_c: положение. Которое должен занять 3-й выход блока
+        :param position_d: положение. Которое должен занять 4-й выход блока
         :param di_a: 1-й вход контроллера
         :param di_b: 2-й вход контроллера
         :param di_c: 3-й вход контроллера
@@ -862,14 +968,21 @@ class Subtest4in:
         :return:
         """
         self.logger.debug(f"старт теста {test_num}, подтест {subtest_num}")
+        self.cli_log.log_msg(f"старт теста {test_num}, подтест {subtest_num}", "gray")
         self.mysql_conn.mysql_ins_result(f'идёт тест {subtest_num}', f'{test_num}')
         self.mysql_conn.mysql_add_message(f"идёт тест: {test_num}, подтест: {subtest_num}")
         self.ctrl_kl.ctrl_relay(relay, True)
+        self.logger.debug(f"включено реле {relay}")
+        self.cli_log.log_msg(f"включено реле {relay}", "blue")
         self.ctrl_kl.ctrl_relay('KL25', True)
+        self.logger.debug(f"включено реле KL25")
+        self.cli_log.log_msg(f"включено реле KL25", "blue")
         sleep(1)
-        if self.di_read.subtest_4di(test_num=test_num, subtest_num=subtest_num, err_code_a=err_code_a, 
-                                    err_code_b=err_code_b, err_code_c=err_code_c, err_code_d=err_code_d, 
-                                    position_a=position_a, position_b=position_b, position_c=position_c, 
+        self.logger.debug("таймаут 1 сек")
+        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        if self.di_read.subtest_4di(test_num=test_num, subtest_num=subtest_num, err_code_a=err_code_a,
+                                    err_code_b=err_code_b, err_code_c=err_code_c, err_code_d=err_code_d,
+                                    position_a=position_a, position_b=position_b, position_c=position_c,
                                     position_d=position_d, di_a=di_a, di_b=di_b, di_c=di_c, di_d=di_d):
             return True
         return False

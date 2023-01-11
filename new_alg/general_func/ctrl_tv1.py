@@ -18,7 +18,7 @@ class PervObmTV1:
     def __init__(self):
         self.ctrl_kl = CtrlKL()
         self.reset = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
@@ -622,7 +622,7 @@ class VtorObmTV1:
 
         self.ctrl_kl = CtrlKL()
         self.reset = ResetRelay()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 

@@ -181,7 +181,7 @@ class CtrlKL:
         self.analog_tags_value = []
         self.logger = logging.getLogger(__name__)
         self.di_read = DIRead()
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
     def ctrl_relay(self, rel: str, ctrl: bool) -> None:
@@ -337,12 +337,13 @@ class ReadMB:
         self.opc.connect('arOPC.arOpcServer.1')
         self.tags_value = []
         self.analog_tags_value = []
+        self.cli_log = CLILog(True, __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
     def read_uint_error_4(self) -> [int, float]:
         """
-            считывание тега модбас error_4
+            Считывание тега modbus error_4
         :return:
         """
         self.analog_tags_value.append(self.opc.list('Устройство.tegs')[3])
@@ -354,6 +355,7 @@ class ReadMB:
             pass
         else:
             self.logger.warning(f'качество сигнала read_uint_error_4 {list_str[2]}')
+            self.cli_log.log_msg(f'качество сигнала read_uint_error_4 {list_str[2]}', "red")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_fl = float(list_str[1])
@@ -362,7 +364,7 @@ class ReadMB:
     def read_uint_error_1(self) -> [int, float]:
         """
             считывание тега modbus error_1
-        :return:
+        :return analog_inp_fl: int, float
         """
         self.analog_tags_value.append(self.opc.list('Устройство.tegs')[1])
         val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
@@ -373,6 +375,7 @@ class ReadMB:
             pass
         else:
             self.logger.warning(f'качество сигнала read_uint_error_1 {list_str[2]}')
+            self.cli_log.log_msg(f'качество сигнала read_uint_error_1 {list_str[2]}', "red")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_fl = float(list_str[1])
@@ -392,6 +395,7 @@ class ReadMB:
             pass
         else:
             self.logger.warning(f'качество сигнала read_uint_error_2 {list_str[2]}')
+            self.cli_log.log_msg(f'качество сигнала read_uint_error_2 {list_str[2]}', "red")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_fl = float(list_str[1])
@@ -405,6 +409,7 @@ class DIRead:
     def __init__(self):
         self.opc = client()
         self.opc.connect('arOPC.arOpcServer.1')
+        self.cli_log = CLILog(True, __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
@@ -439,14 +444,18 @@ class DIRead:
         for j in args:
             tag_list.append(self.tags_dict[j])
         self.logger.debug("старт считывания дискретных входов ПЛК")
+        self.cli_log.log_msg("старт считывания дискретных входов ПЛК", "gray")
         gr_di = 'Выходы.inputs'
         read_tags = self.opc.read(tag_list, group=gr_di, update=1, include_error=True)
         self.opc.remove(gr_di)
         self.logger.info(f'считанные значения {read_tags}')
+        self.cli_log.log_msg(f'считанные значения {read_tags}', "skyblue")
         if read_tags[0][2] == "Good":
             self.logger.info(f'качество дискретных сигналов {read_tags[0][2]}')
+            self.cli_log.log_msg(f'качество дискретных сигналов {read_tags[0][2]}', "green")
         else:
             self.logger.warning(f'качество дискретных сигналов {read_tags[0][2]}')
+            self.cli_log.log_msg(f'качество дискретных сигналов {read_tags[0][2]}', "red")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         for k in range(len(args)):
@@ -461,12 +470,13 @@ class AIRead:
     def __init__(self):
         self.opc = client()
         self.opc.connect('arOPC.arOpcServer.1')
+        self.cli_log = CLILog(True, __name__)
         self.logger = logging.getLogger(__name__)
 
     def ai_read(self, teg: str) -> float:
         """
         Метод считывания аналоговых значений из OPC сервера, по входам измеряющим напряжение в стенде.
-        :param teg: принимает значение тега который нужно прочитать ('AI0' или 'AI2')
+        :param teg: Принимает значение тега который нужно прочитать ('AI0' или 'AI2')
         :return: возвращает вычисленное значение напряжения в первичных величинах.
         """
         read_tags: list = []
@@ -480,15 +490,18 @@ class AIRead:
         read_tags.clear()
 
         self.logger.debug("старт считывания аналоговых входов ПЛК")
+        self.cli_log.log_msg("старт считывания аналоговых входов ПЛК", "gray")
 
         gr_ai = 'AI.AI.'
         read_tags = self.opc.read(ai_teg_list, group=gr_ai, update=1, include_error=True)
         self.opc.remove(gr_ai)
         self.logger.info(f'считанные значения {read_tags}')
+        self.cli_log.log_msg(f'считанные значения {read_tags}', "orange")
         if read_tags[0][2] == 'Good':
             pass
         else:
             self.logger.warning(f'качество аналогового сигнала {read_tags[1]}')
+            self.cli_log.log_msg(f'качество аналогового сигнала {read_tags[1]}', "red")
             raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_ai0 = read_tags[0][1]
@@ -496,13 +509,16 @@ class AIRead:
         if teg == 'AI0':
             calc_volt = analog_inp_ai0 * analog_max_ai0 / analog_max_code
             self.logger.info(f'возврат результата AI0 = {calc_volt}')
+            self.cli_log.log_msg(f'возврат результата AI0 = {calc_volt}', "orange")
             return calc_volt
         elif teg == 'AI2':
             calc_volt = analog_inp_ai2 * analog_max_ai2 / analog_max_code
             self.logger.info(f'возврат результата AI2 = {calc_volt}')
+            self.cli_log.log_msg(f'возврат результата AI2 = {calc_volt}', "orange")
             return calc_volt
         else:
             self.logger.info(f'возврат результата (небыл получен аргумент) = {analog_inp_ai0}')
+            self.cli_log.log_msg(f'возврат результата (небыл получен аргумент) = {analog_inp_ai0}', "orange")
             return analog_inp_ai0
 
 

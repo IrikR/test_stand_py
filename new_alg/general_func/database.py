@@ -25,7 +25,7 @@ class MySQLConnect:
         self.database = 'simple_database'
         self.auth_plugin = 'mysql_native_password'
         self.mysql_err = mysql.connector.Error
-        self.cli_log = CLILog(True)
+        self.cli_log = CLILog(True, __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
@@ -69,6 +69,7 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
+            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
@@ -92,6 +93,7 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
+            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
@@ -115,6 +117,7 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
+            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
@@ -137,6 +140,7 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
+            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
@@ -159,6 +163,7 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
+            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
