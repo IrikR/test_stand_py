@@ -29,7 +29,7 @@ class MySQLConnect:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def mysql_ins_result(self, my_result, num_test):
+    def mysql_ins_result(self, my_result: str, num_test: str) -> None:
         """
         Запись в БД результата подтеста, (исправен/не исправен и номер подтеста)
         :param my_result: исправен/не исправен
@@ -51,7 +51,7 @@ class MySQLConnect:
             self.logger.error('!!! Ошибка связи с базой данных MySQL !!!')
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_pmz_result(self, my_result):
+    def mysql_pmz_result(self, my_result: str) -> None:
         """
         Запись в БД результатов теста блока ПМЗ
         :param my_result:
@@ -75,7 +75,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_tzp_result(self, my_result):
+    def mysql_tzp_result(self, my_result: str) -> None:
         """
         Запись в БД результатов теста блока ТЗП
         :param my_result:
@@ -99,7 +99,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_umz_result(self, my_result):
+    def mysql_umz_result(self, my_result: str) -> None:
         """
         Запись в БД результатов теста блока УМЗ
         :param my_result:
@@ -123,7 +123,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_ubtz_btz_result(self, my_result):
+    def mysql_ubtz_btz_result(self, my_result: str) -> None:
         """
         Запись в БД результатов теста блока УБТЗ
         :param my_result:
@@ -146,7 +146,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_ubtz_tzp_result(self, my_result):
+    def mysql_ubtz_tzp_result(self, my_result: str) -> None:
         """
         Запись в БД результатов теста проверки ТЗП, блока УБТЗ
         :param my_result:
@@ -169,7 +169,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_connect(self, request: str):
+    def mysql_connect(self, request: str) -> None:
         """
         Подключение к БД
         :param request:
@@ -187,7 +187,7 @@ class MySQLConnect:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def mysql_block_bad(self):
+    def mysql_block_bad(self) -> None:
         """
         Запись в БД если блок неисправен.
         :return:
@@ -197,7 +197,7 @@ class MySQLConnect:
         self.mysql_connect(upd_bad)
         self.mysql_connect(upd_good)
 
-    def mysql_block_good(self):
+    def mysql_block_good(self) -> None:
         """
         Запись в БД если блок исправен.
         :return:
@@ -207,7 +207,7 @@ class MySQLConnect:
         self.mysql_connect(upd_bad)
         self.mysql_connect(upd_good)
 
-    def mysql_error(self, n_err: int):
+    def mysql_error(self, n_err: int) -> None:
         """
         Запись в БД номера неисправности
         :param n_err: номер неисправности
@@ -217,7 +217,7 @@ class MySQLConnect:
         upd = ('UPDATE simple_database.python_message SET pyth_error = "' + str(n_err) + '" WHERE id_pyth_mes = 1')
         self.mysql_connect(upd)
 
-    def mysql_add_message(self, mess: str):
+    def mysql_add_message(self, mess: str) -> None:
         """
         Запись в БД для динамического отслеживания прогресса испытания.
         :param mess: Текстовое сообщение
@@ -240,7 +240,7 @@ class MySQLConnect:
             self.logger.error('Ошибка связи с базой данных MySQL.')
             self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
-    def progress_level(self, level: float):
+    def progress_level(self, level: float) -> None:
         """
         Запись в БД времени прогресса выполнения испытания.
         :param level: Число с пл. точкой
@@ -250,11 +250,11 @@ class MySQLConnect:
         upd = f'UPDATE simple_database.progress SET level_progress = {level} WHERE (id_pro = 1);'
         self.mysql_connect(upd)
 
-    def read_err(self, err_code):
+    def read_err(self, err_code: int) -> str:
         """
         Считывает из БД описание неисправности по номеру неисправности.
         :param err_code:
-        :return:
+        :return text_0:
         """
         with mysql.connector.connect(host=self.host, user=self.user, password=self.password,
                                      database=self.database, auth_plugin=self.auth_plugin) as conn:

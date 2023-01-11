@@ -26,7 +26,7 @@ class ResetRelay:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def reset_all(self):
+    def reset_all(self) -> None:
         self.logger.debug("отключение всех реле")
         self.cli_log.log_msg("отключение всех реле", "gray")
         self.ctrl_kl.ctrl_relay('KL1', False)
@@ -111,7 +111,7 @@ class ResetRelay:
         self.logger.debug("все реле отключены")
         self.cli_log.log_msg("все реле отключены", "gray")
 
-    def sbros_perv_obm(self):
+    def sbros_perv_obm(self) -> None:
         self.logger.debug("отключение реле первичной обмотки")
         self.cli_log.log_msg("отключение реле первичной обмотки", "gray")
         self.ctrl_kl.ctrl_relay('KL38', False)
@@ -127,7 +127,7 @@ class ResetRelay:
         self.logger.debug("реле первичной обмотки отключены")
         self.cli_log.log_msg("реле первичной обмотки отключены", "gray")
 
-    def sbros_vtor_obm(self):
+    def sbros_vtor_obm(self) -> None:
         self.logger.debug("отключение реле вторичной обмотки")
         self.cli_log.log_msg("отключение реле вторичной обмотки", "gray")
         self.ctrl_kl.ctrl_relay('KL48', False)
@@ -146,31 +146,31 @@ class ResetRelay:
         self.logger.debug("реле вторичной обмотки отключены")
         self.cli_log.log_msg("реле вторичной обмотки отключены", "gray")
 
-    def stop_procedure_1(self):
+    def stop_procedure_1(self) -> None:
         self.logger.debug("отключение реле процедуры 1")
         self.cli_log.log_msg("отключение реле процедуры 1", "gray")
         self.ctrl_kl.ctrl_relay('KL62', False)
         self.ctrl_kl.ctrl_relay('KL37', False)
 
-    def stop_procedure_21(self):
+    def stop_procedure_21(self) -> None:
         self.stop_procedure_1()
         self.logger.debug("отключение реле процедуры 2.1")
         self.cli_log.log_msg("отключение реле процедуры 2.1", "gray")
         self.ctrl_kl.ctrl_relay('KL43', False)
 
-    def stop_procedure_22(self):
+    def stop_procedure_22(self) -> None:
         self.stop_procedure_1()
         self.logger.debug("отключение реле процедуры 2.2")
         self.cli_log.log_msg("отключение реле процедуры 2.2", "gray")
         self.ctrl_kl.ctrl_relay('KL44', False)
 
-    def stop_procedure_2(self):
+    def stop_procedure_2(self) -> None:
         self.stop_procedure_1()
         self.logger.debug("отключение реле процедуры 2")
         self.cli_log.log_msg("отключение реле процедуры 2", "gray")
         self.sbros_perv_obm()
 
-    def stop_procedure_31(self):
+    def stop_procedure_31(self) -> None:
         self.logger.debug("отключение реле процедуры 3.1")
         self.cli_log.log_msg("отключение реле процедуры 3.1", "gray")
         self.ctrl_kl.ctrl_relay('KL62', False)
@@ -179,7 +179,7 @@ class ResetRelay:
         self.ctrl_kl.ctrl_relay('KL43', False)
         self.ctrl_kl.ctrl_relay('KL60', False)
 
-    def stop_procedure_32(self):
+    def stop_procedure_32(self) -> None:
         self.logger.debug("отключение реле процедуры 3.2")
         self.cli_log.log_msg("отключение реле процедуры 3.2", "gray")
         self.ctrl_kl.ctrl_relay('KL62', False)
@@ -188,7 +188,7 @@ class ResetRelay:
         self.ctrl_kl.ctrl_relay('KL44', False)
         self.ctrl_kl.ctrl_relay('KL54', False)
 
-    def stop_procedure_3(self):
+    def stop_procedure_3(self) -> None:
         self.logger.debug("отключение реле процедуры 3")
         self.cli_log.log_msg("отключение реле процедуры 3", "gray")
         self.ctrl_kl.ctrl_relay('KL62', False)
@@ -197,7 +197,7 @@ class ResetRelay:
         self.sbros_perv_obm()
         self.sbros_vtor_obm()
 
-    def sbros_kl63_proc_1_21_31(self):
+    def sbros_kl63_proc_1_21_31(self) -> None:
         """
         Используется для сброса после процедуры 1 -> 2.1 -> 3.1.
         :return:
@@ -208,7 +208,7 @@ class ResetRelay:
         sleep(0.1)
         self.stop_procedure_31()
 
-    def sbros_kl63_proc_1_22_32(self):
+    def sbros_kl63_proc_1_22_32(self) -> None:
         """
         Используется для сброса после процедуры 1 -> 2.2 -> 3.2
         :return:
@@ -219,7 +219,7 @@ class ResetRelay:
         sleep(0.1)
         self.stop_procedure_32()
 
-    def sbros_kl63_proc_all(self):
+    def sbros_kl63_proc_all(self) -> None:
         self.ctrl_kl.ctrl_relay('KL63', False)
         self.logger.debug("отключение реле KL63")
         self.cli_log.log_msg("отключение реле KL63", "blue")
@@ -237,7 +237,7 @@ class ResetProtection:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def sbros_zashit_mtz5(self):
+    def sbros_zashit_mtz5(self) -> None:
         self.logger.debug("сброс защит МТЗ-5, KL1 1.5сек")
         self.cli_log.log_msg("сброс защит МТЗ-5, KL1 1.5сек", "gray")
         self.ctrl_kl.ctrl_relay('KL1', False)
@@ -253,7 +253,7 @@ class ResetProtection:
         self.logger.debug("таймаут 2 сек, выполнен сброс защит")
         self.cli_log.log_msg("таймаут 2 сек, выполнен сброс защит", "gray")
 
-    def sbros_zashit_kl1(self):
+    def sbros_zashit_kl1(self) -> None:
         self.logger.debug("сброс защит KL1 1.5сек")
         self.cli_log.log_msg("сброс защит KL1 1.5сек", "gray")
         self.ctrl_kl.ctrl_relay('KL1', True)
@@ -269,7 +269,7 @@ class ResetProtection:
         self.logger.debug('таймаут 2 сек, выполнен сброс защит')
         self.cli_log.log_msg('таймаут 2 сек, выполнен сброс защит', "gray")
 
-    def sbros_zashit_kl30(self, *, time_on: float = 0.5, time_off: float = 0.5):
+    def sbros_zashit_kl30(self, *, time_on: float = 0.5, time_off: float = 0.5) -> None:
         self.logger.debug(f"сброс защит KL30, {time_on =}, {time_off =}")
         self.cli_log.log_msg(f"сброс защит KL30, {time_on =}, {time_off =}", "gray")
         self.ctrl_kl.ctrl_relay('KL30', True)
@@ -283,7 +283,7 @@ class ResetProtection:
         self.logger.debug('таймаут, выполнен сброс защит')
         self.cli_log.log_msg('таймаут, выполнен сброс защит', "gray")
 
-    def sbros_testa_bp_0(self):
+    def sbros_testa_bp_0(self) -> None:
         """
         Сброс реле в алгоритме проверки БП (bp).
         Используется в тесте 2.0.
@@ -301,7 +301,7 @@ class ResetProtection:
         self.logger.debug("отключены реле KL77, KL65, KL76, KL66, KL78")
         self.cli_log.log_msg("отключены реле KL77, KL65, KL76, KL66, KL78", "blue")
 
-    def sbros_testa_bp_1(self):
+    def sbros_testa_bp_1(self) -> None:
         """
         Сброс реле в алгоритме проверки БП (bp).
         Используется в тесте 4.0 и 3.0.
@@ -312,7 +312,7 @@ class ResetProtection:
         self.logger.debug("отключены реле KL75")
         self.cli_log.log_msg("отключены реле KL75", "blue")
 
-    def sbros_zashit_ubtz(self):
+    def sbros_zashit_ubtz(self) -> None:
         """
         Метод используется для сброса защит блока УБТЗ (ubtz).
         :return:
@@ -329,7 +329,7 @@ class ResetProtection:
         self.logger.debug("отключены KL1, KL31")
         self.cli_log.log_msg("отключены KL1, KL31", "blue")
 
-    def sbros_zashit_kl24(self):
+    def sbros_zashit_kl24(self) -> None:
         """
         Сброс защит блока через KL24.
         :return:

@@ -422,7 +422,7 @@ class DIRead:
                           'in_b4': 'Выходы.inputs.inp_12', 'in_b5': 'Выходы.inputs.inp_13',
                           'in_b6': 'Выходы.inputs.inp_14', 'in_b7': 'Выходы.inputs.inp_15'}
 
-    def di_read(self, *args):
+    def di_read(self, *args) -> [bool]:
         """
         Считывает в OPC сервере состояние тегов.
             from OpenOPC import client
@@ -629,7 +629,7 @@ class CtrlRead:
                            'Q113_6': 'Устройство.tg.in_Q113_6',
                            'Q113_7': 'Устройство.tg.in_Q113_7'}
 
-    def ctrl_read(self, relay):
+    def ctrl_read(self, relay: str):
 
         # position: list = []
         # tag_list = []

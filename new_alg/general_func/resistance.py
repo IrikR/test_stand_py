@@ -41,7 +41,7 @@ class Resistor:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def resist_ohm(self, ohm):
+    def resist_ohm(self, ohm: int) -> None:
 
         if ohm == 0:
             self.ctrl_kl.ctrl_relay('KL3', True)
@@ -165,7 +165,7 @@ class Resistor:
             self.logger.debug("включено 255 ом")
             self.cli_log.log_msg("включено 255 ом", "blue")
 
-    def resist_kohm(self, kohm):
+    def resist_kohm(self, kohm: int) -> None:
 
         if kohm == 0:
             self.ctrl_kl.ctrl_relay('KL13', True)
@@ -289,7 +289,7 @@ class Resistor:
             self.logger.debug("включено 590 ком")
             self.cli_log.log_msg("включено 590 ком", "blue")
 
-    def resist_10_to_20_ohm(self):
+    def resist_10_to_20_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL3', True)
         self.ctrl_kl.ctrl_relay('KL6', True)
         self.ctrl_kl.ctrl_relay('KL8', True)
@@ -298,27 +298,27 @@ class Resistor:
         self.logger.debug("переключение с 10 ом на 20 ом")
         self.cli_log.log_msg("переключение с 10 ом на 20 ом", "blue")
 
-    def resist_10_to_35_ohm(self):
+    def resist_10_to_35_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL5', False)
         self.ctrl_kl.ctrl_relay('KL6', True)
         self.ctrl_kl.ctrl_relay('KL8', False)
         self.logger.debug("переключение с 10 ом на 35 ом")
         self.cli_log.log_msg("переключение с 10 ом на 35 ом", "blue")
 
-    def resist_10_to_100_ohm(self):
+    def resist_10_to_100_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL9', False)
         self.ctrl_kl.ctrl_relay('KL8', False)
         self.logger.debug("переключение с 10 ом на 100 ом")
         self.cli_log.log_msg("переключение с 10 ом на 100 ом", "blue")
 
-    def resist_10_to_46_ohm(self):
+    def resist_10_to_46_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL7', False)
         self.ctrl_kl.ctrl_relay('KL6', True)
         self.ctrl_kl.ctrl_relay('KL8', False)
         self.logger.debug("переключение с 10 ом на 46 ом")
         self.cli_log.log_msg("переключение с 10 ом на 46 ом", "blue")
 
-    def resist_10_to_50_ohm(self):
+    def resist_10_to_50_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL7', False)
         self.ctrl_kl.ctrl_relay('KL5', False)
         self.ctrl_kl.ctrl_relay('KL6', True)
@@ -326,7 +326,7 @@ class Resistor:
         self.logger.debug("переключение с 10 ом на 50 ом")
         self.cli_log.log_msg("переключение с 10 ом на 50 ом", "blue")
 
-    def resist_10_to_110_ohm(self):
+    def resist_10_to_110_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL9', False)
         self.ctrl_kl.ctrl_relay('KL4', True)
         self.ctrl_kl.ctrl_relay('KL5', False)
@@ -336,18 +336,18 @@ class Resistor:
         self.logger.debug("переключение с 10 ом на 110 ом")
         self.cli_log.log_msg("переключение с 10 ом на 110 ом", "blue")
 
-    def resist_35_to_110_ohm(self):
+    def resist_35_to_110_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL9', False)
         self.ctrl_kl.ctrl_relay('KL7', False)
         self.logger.debug("переключение с 35 ом на 110 ом")
         self.cli_log.log_msg("переключение с 35 ом на 110 ом", "blue")
 
-    def resist_10_to_137_ohm(self):
+    def resist_10_to_137_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL10', False)
         self.logger.debug("переключение с 10 ом на 137 ом")
         self.cli_log.log_msg("переключение с 10 ом на 137 ом", "blue")
 
-    def resist_0_to_50_ohm(self):
+    def resist_0_to_50_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL3', False)
         self.ctrl_kl.ctrl_relay('KL4', False)
         self.ctrl_kl.ctrl_relay('KL5', False)
@@ -356,7 +356,7 @@ class Resistor:
         self.logger.debug("переключение с 0 ом на 50 ом")
         self.cli_log.log_msg("переключение с 0 ом на 50 ом", "blue")
 
-    def resist_0_to_100_ohm(self):
+    def resist_0_to_100_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL5', False)
         self.ctrl_kl.ctrl_relay('KL6', False)
         self.ctrl_kl.ctrl_relay('KL8', False)
@@ -364,13 +364,13 @@ class Resistor:
         self.logger.debug("переключение с 0 ом на 100 ом")
         self.cli_log.log_msg("переключение с 0 ом на 100 ом", "blue")
 
-    def resist_0_to_63_ohm(self):
+    def resist_0_to_63_ohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL9', False)
         self.ctrl_kl.ctrl_relay('KL4', False)
         self.logger.debug("переключение с 0 ом на 63 ом")
         self.cli_log.log_msg("переключение с 0 ом на 63 ом", "blue")
 
-    def resist_220_to_100_kohm(self):
+    def resist_220_to_100_kohm(self) -> None:
         self.ctrl_kl.ctrl_relay('KL18', False)
         self.ctrl_kl.ctrl_relay('KL19', True)
         self.ctrl_kl.ctrl_relay('KL17', True)

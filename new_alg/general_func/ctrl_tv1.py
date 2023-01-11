@@ -22,7 +22,7 @@ class PervObmTV1:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def perv_obm_tv1(self, calc_vol: float = 0.0):
+    def perv_obm_tv1(self, calc_vol: float = 0.0) -> None:
 
         if calc_vol < 3.67:
             self.logger.debug(f"перв. обм. 1: на вход получили: {calc_vol:.2f}, "
@@ -626,7 +626,7 @@ class VtorObmTV1:
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
-    def vtor_obm_tv1(self, calc_vol: float = 0.0):
+    def vtor_obm_tv1(self, calc_vol: float = 0.0) -> None:
 
         if calc_vol < 3.66:
             self.logger.debug(f"втор. обм. 1: на вход получили: {calc_vol:.2f}, "

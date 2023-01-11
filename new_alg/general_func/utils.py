@@ -29,7 +29,7 @@ class CLILog:
         kernel32 = ctypes.windll.kernel32
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
-    def log_msg(self, *args):
+    def log_msg(self, *args) -> None:
         """
         red - для неисправности
         orange - для измерений
@@ -72,7 +72,7 @@ class CLILog:
             pass
 
     @staticmethod
-    def progress_bar(percent=0, max_it=100):
+    def progress_bar(percent: int=0, max_it: int=100) -> None:
         """
         Функция предназначена для отображения в терминале прогресса выполнения.
         :param percent: Текущая итерация

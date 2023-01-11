@@ -28,7 +28,7 @@ class ReadOPCServer:
         self.logger = logging.getLogger(__name__)
         self.cli_log = CLILog(True, __name__)
 
-    def _write_condition_1(self, test_num: int, subtest_num: float):
+    def _write_condition_1(self, test_num: int, subtest_num: float) -> None:
         """
         Метод для записи результатов начала теста.
         Используется для логирования и записи результатов в БД, в методах опроса дискретных входов ПЛК.
@@ -41,7 +41,7 @@ class ReadOPCServer:
         self.mysql_conn.mysql_ins_result(f"идёт тест {subtest_num}", f'{test_num}')
         self.mysql_conn.mysql_add_message(f"идёт тест: {subtest_num}, подтест: {test_num}")
 
-    def _write_condition_true(self, test_num: int, subtest_num: float):
+    def _write_condition_true(self, test_num: int, subtest_num: float) -> None:
         """
         Метод для записи результатов если тест успешен.
         Используется для логирования и записи результатов в БД, в методах опроса дискретных входов ПЛК.
@@ -54,7 +54,7 @@ class ReadOPCServer:
         self.mysql_conn.mysql_ins_result(f"исправен", f'{test_num}')
         self.mysql_conn.mysql_add_message(f"Исправен. тест: {subtest_num}, подтест: {test_num}")
 
-    def _write_condition_false(self, test_num: int, subtest_num: float):
+    def _write_condition_false(self, test_num: int, subtest_num: float) -> None:
         """
         Метод для записи результатов если тест не успешен.
         Используется для логирования и записи результатов в БД, в методах опроса дискретных входов ПЛК.
@@ -279,7 +279,7 @@ class RWError:
         self.logger = logging.getLogger(__name__)
         self.cli_log = CLILog(True, __name__)
 
-    def rw_err(self, err_code):
+    def rw_err(self, err_code: int) -> None:
         """
         Метод для записи и вывода информации по коду неисправности блока.
         :param err_code:
@@ -352,7 +352,7 @@ class ProcedureFull:
         self.cli_log = CLILog(True, __name__)
 
     def procedure_1_full(self, *, test_num: int = 1, subtest_num: float = 1.0, coef_min_volt: float = 0.6,
-                         coef_max_volt: float = 1.1):
+                         coef_max_volt: float = 1.1) -> bool:
         """
         1.1. Проверка вероятности наличия короткого замыкания на входе измерительной цепи блока.
         :return: Bool
