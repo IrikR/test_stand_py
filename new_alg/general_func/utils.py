@@ -1,12 +1,9 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+__all__ = ["CLILog"]
 
 import ctypes
 from datetime import datetime
-
-# from .exception import *
-
-__all__ = ["CLILog"]
 
 
 class CLILog:
@@ -29,7 +26,41 @@ class CLILog:
         kernel32 = ctypes.windll.kernel32
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
-    def log_msg(self, *args) -> None:
+    def lev_debug(self, msg: str, msg_color: [int, str]):
+        if self.log == "debug":
+            if msg_color == 7 or msg_color == 'gray':
+                # серый
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[37m {msg}")
+            else:
+                # черный, если пришел неизвестный аргумент
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[0;0m {msg}")
+        else:
+            pass
+
+    def lev_info(self, msg: str, msg_color: [int, str]):
+        if self.log == "info" or self.log == "debug":
+            if msg_color == 2 or msg_color == 'green':
+                # зеленый green
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[32m {msg}")
+            elif msg_color == 3 or msg_color == 'orange':
+                # оранжевый orange
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[33m {msg}")
+            elif msg_color == 4 or msg_color == 'blue':
+                # синий blue
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[34m {msg}")
+            elif msg_color == 5 or msg_color == 'purple':
+                # фиолетовый purple
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[35m {msg}")
+            elif msg_color == 6 or msg_color == 'skyblue':
+                # голубой blue
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[36m {msg}")
+            else:
+                # черный, если пришел неизвестный аргумент
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[0;0m {msg}")
+        else:
+            pass
+
+    def lev_warning(self, msg: str, msg_color: [int, str]) -> None:
         """
         red - для неисправности
         orange - для измерений
@@ -38,33 +69,15 @@ class CLILog:
         purple - для процедур
         skyblue - для сухих контактов
         gray - для основного текста
-        :param args:
+        :param msg: str
+        :param msg_color: int, str
         :return: string
         """
 
-        if self.log is True:
-            msg, lev = args
-            if lev == 1 or lev == 'red':
+        if self.log == "warning" or self.log == "info" or self.log == "debug":
+            if msg_color == 1 or msg_color == 'red':
                 # красный Red
                 print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[31m {msg}")
-            elif lev == 2 or lev == 'green':
-                # зеленый green
-                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[32m {msg}")
-            elif lev == 3 or lev == 'orange':
-                # оранжевый orange
-                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[33m {msg}")
-            elif lev == 4 or lev == 'blue':
-                # синий blue
-                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[34m {msg}")
-            elif lev == 5 or lev == 'purple':
-                # фиолетовый purple
-                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[35m {msg}")
-            elif lev == 6 or lev == 'skyblue':
-                # голубой blue
-                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[36m {msg}")
-            elif lev == 7 or lev == 'gray':
-                # серый
-                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[37m {msg}")
             else:
                 # черный, если пришел неизвестный аргумент
                 print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[0;0m {msg}")
