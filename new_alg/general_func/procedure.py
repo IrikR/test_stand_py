@@ -4,11 +4,11 @@
 import logging
 from time import sleep
 
-from .ctrl_tv1 import *
 from .exception import *
-from .modbus import *
 from .reset import ResetRelay
 from .utils import CLILog
+from .opc_full import ConnectOPC
+from .ctrl_tv1 import PervObmTV1, VtorObmTV1
 
 __all__ = ["Procedure"]
 
@@ -48,11 +48,12 @@ class Procedure:
         self.perv_obm = PervObmTV1()
         self.vtor_obm = VtorObmTV1()
         self.reset = ResetRelay()
-        self.ctrl_kl = CtrlKL()
-        self.read_mb = ReadMB()
-        self.di_read = DIRead()
-        self.ai_read = AIRead()
-        self.cli_log = CLILog(True, __name__)
+        self.conn_opc = ConnectOPC()
+        # self.ctrl_kl = CtrlKL()
+        # self.read_mb = ReadMB()
+        # self.di_read = DIRead()
+        # self.ai_read = AIRead()
+        self.cli_log = CLILog("info", __name__)
 
     def start_procedure_1(self) -> bool:
         """
@@ -60,46 +61,46 @@ class Procedure:
         :return bool:
         """
         self.logger.debug("процедура 1")
-        self.cli_log.log_msg("процедура 1", "purple")
-        self.reset.sbros_vtor_obm()
+        self.cli_log.lev_info("процедура 1", "purple")
+        self.conn_opc.vtor_obm_tv1_off()
         self.logger.debug("сброс вторичной обмотки")
-        self.cli_log.log_msg("сброс вторичной обмотки", "gray")
-        self.reset.sbros_perv_obm()
+        self.cli_log.lev_debug("сброс вторичной обмотки", "gray")
+        self.conn_opc.perv_obm_tv1_off()
         self.logger.debug("сброс первичной обмотки")
-        self.cli_log.log_msg("сброс первичной обмотки", "gray")
-        self.ctrl_kl.ctrl_relay('KL62', True)
+        self.cli_log.lev_debug("сброс первичной обмотки", "gray")
+        self.conn_opc.ctrl_relay('KL62', True)
         self.logger.debug("включение KL62")
-        self.cli_log.log_msg("включение KL62", "blue")
+        self.cli_log.lev_debug("включение KL62", "blue")
         sleep(1)
-        self.ctrl_kl.ctrl_relay('KL37', True)
+        self.conn_opc.ctrl_relay('KL37', True)
         self.logger.debug("включение KL37")
-        self.cli_log.log_msg("включение KL37", "blue")
+        self.cli_log.lev_debug("включение KL37", "blue")
         sleep(1)
         for i in range(3):
-            in_b0, *_ = self.di_read.di_read('in_b0')
+            in_b0, *_ = self.conn_opc.simplified_read_di(['in_b0'])
             self.logger.debug(f"in_b0 = {in_b0} (False)")
-            self.cli_log.log_msg(f"in_b0 = {in_b0} (False)", "skyblue")
+            self.cli_log.lev_info(f"in_b0 = {in_b0} (False)", "skyblue")
             if in_b0 is False:
                 self.logger.debug(f"попытка: {i}, процедура 1 пройдена")
-                self.cli_log.log_msg(f"попытка: {i}, процедура 1 пройдена", "green")
+                self.cli_log.lev_info(f"попытка: {i}, процедура 1 пройдена", "green")
                 return True
             elif in_b0 is True:
                 self.logger.debug(f"попытка: {i}, процедура 1 не пройдена")
-                self.cli_log.log_msg(f"попытка: {i}, процедура 1 не пройдена", "red")
-                if self.reset.sbros_perv_obm():
+                self.cli_log.lev_warning(f"попытка: {i}, процедура 1 не пройдена", "red")
+                if self.conn_opc.perv_obm_tv1_off():
                     self.logger.debug("сбрасываем первичную обмотку, и пробуем еще раз")
-                    self.cli_log.log_msg("сбрасываем первичную обмотку, и пробуем еще раз", "blue")
+                    self.cli_log.lev_debug("сбрасываем первичную обмотку, и пробуем еще раз", "blue")
                     i += 1
                     continue
         else:
             self.logger.warning("процедура 1 не пройдена")
-            self.cli_log.log_msg("процедура 1 не пройдена", "red")
-            self.ctrl_kl.ctrl_relay('KL62', False)
+            self.cli_log.lev_warning("процедура 1 не пройдена", "red")
+            self.conn_opc.ctrl_relay('KL62', False)
             self.logger.debug("отключение KL62")
-            self.cli_log.log_msg("отключение KL62", "blue")
-            self.ctrl_kl.ctrl_relay('KL37', False)
+            self.cli_log.lev_debug("отключение KL62", "blue")
+            self.conn_opc.ctrl_relay('KL37', False)
             self.logger.debug("отключение KL37")
-            self.cli_log.log_msg("отключение KL37", "blue")
+            self.cli_log.lev_debug("отключение KL37", "blue")
             raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                     "Неисправность узла формирования напряжения в стенде")
 
@@ -109,10 +110,10 @@ class Procedure:
         :return: bool
         """
         self.logger.debug("процедура 2.1")
-        self.cli_log.log_msg("процедура 2.1", "purple")
-        self.ctrl_kl.ctrl_relay('KL43', True)
+        self.cli_log.lev_info("процедура 2.1", "purple")
+        self.conn_opc.ctrl_relay('KL43', True)
         self.logger.debug("включение KL43")
-        self.cli_log.log_msg("включение KL43", "blue")
+        self.cli_log.lev_debug("включение KL43", "blue")
         sleep(1)
         condition = self._subtest_meas_volt()
         if condition:
@@ -128,19 +129,19 @@ class Procedure:
         :return bool:
         """
         self.logger.debug("процедура 2.2")
-        self.cli_log.log_msg("процедура 2.2", "purple")
-        self.ctrl_kl.ctrl_relay('KL44', True)
+        self.cli_log.lev_info("процедура 2.2", "purple")
+        self.conn_opc.ctrl_relay('KL44', True)
         self.logger.debug("включение KL44")
-        self.cli_log.log_msg("включение KL44", "blue")
+        self.cli_log.lev_debug("включение KL44", "blue")
         sleep(1)
         condition = self._subtest_meas_volt()
         if condition:
             self.logger.debug("процедура 2.2 пройдена")
-            self.cli_log.log_msg("процедура 2.2 пройдена", "green")
+            self.cli_log.lev_info("процедура 2.2 пройдена", "green")
             return True
         else:
             self.logger.warning("процедура 2.2 не пройдена")
-            self.cli_log.log_msg("процедура 2.2 не пройдена", "red")
+            self.cli_log.lev_warning("процедура 2.2 не пройдена", "red")
             self.reset.stop_procedure_22()
             raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                     "Неисправность узла формирования напряжения в стенде")
@@ -151,22 +152,23 @@ class Procedure:
         Где U2[i] = напряжение, соответствующее i-ой уставке Сочетание контактов для напряжения U2[i]
         берем из файла «(Тор) TV1.xls»
         :param factor:
-        :param coef_volt: float
-        :param setpoint_volt: float
+        :param coef_volt: float - коэффициент напряжения
+        :param setpoint_volt: float - напряжение уставки
+        :param factor: float - коэффициент повышения напряжения
         :return: float
         """
         self.logger.debug("процедура 2.4")
-        self.cli_log.log_msg("процедура 2.4", "purple")
+        self.cli_log.lev_info("процедура 2.4", "purple")
         calc_volt = factor * setpoint_volt / coef_volt
         self.logger.debug(f"вычисленное U: {calc_volt:.2f}, коэффициент: {factor}")
-        self.cli_log.log_msg(f"вычисленное U: {calc_volt:.2f}, коэффициент: {factor}", "orange")
+        self.cli_log.lev_info(f"вычисленное U: {calc_volt:.2f}, коэффициент: {factor}", "orange")
         self.perv_obm.perv_obm_tv1(calc_volt)
         self.logger.debug("включение первичной обмотки")
-        self.cli_log.log_msg("включение первичной обмотки", "blue")
+        self.cli_log.lev_debug("включение первичной обмотки", "blue")
         sleep(1)
         condition = self._subtest_meas_volt()
         self.logger.info(f"процедура 2.4: {calc_volt = :.2f}, {condition = }")
-        self.cli_log.log_msg(f"процедура 2.4: {calc_volt = :.2f}, {condition = }", "orange")
+        self.cli_log.lev_info(f"процедура 2.4: {calc_volt = :.2f}, {condition = }", "orange")
         if condition:
             return calc_volt
         else:
@@ -182,23 +184,23 @@ class Procedure:
         :return: meas_volt: напряжение
         """
         self.logger.debug("процедура 3.1")
-        self.cli_log.log_msg("процедура 3.1", "purple")
+        self.cli_log.lev_info("процедура 3.1", "purple")
         min_volt = 4.768
         max_volt = 7.152
-        self.ctrl_kl.ctrl_relay('KL60', True)
+        self.conn_opc.ctrl_relay('KL60', True)
         self.logger.debug("включение KL60")
-        self.cli_log.log_msg("включение KL60", "blue")
+        self.cli_log.lev_debug("включение KL60", "blue")
         sleep(3)
-        meas_volt = self.ai_read.ai_read('AI0')
+        meas_volt = self.conn_opc.read_ai('AI0')
         self.logger.info(f"измеренное U: {min_volt = } <= {meas_volt = } <= {max_volt = }")
-        self.cli_log.log_msg(f"измеренное U: {min_volt = } <= {meas_volt = } <= {max_volt = }", "orange")
+        self.cli_log.lev_info(f"измеренное U: {min_volt = } <= {meas_volt = } <= {max_volt = }", "orange")
         if min_volt <= meas_volt <= max_volt:
             self.logger.debug(f"процедура 3.1 пройдена")
-            self.cli_log.log_msg(f"процедура 3.1 пройдена", "green")
+            self.cli_log.lev_info(f"процедура 3.1 пройдена", "green")
             return meas_volt
         else:
             self.logger.warning(f"процедура 3.1 не пройдена")
-            self.cli_log.log_msg(f"процедура 3.1 не пройдена", "red")
+            self.cli_log.lev_warning(f"процедура 3.1 не пройдена", "red")
             self.reset.stop_procedure_31()
             raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                     "Неисправность узла формирования напряжения в стенде")
@@ -214,23 +216,23 @@ class Procedure:
         :return: float: напряжение
         """
         self.logger.debug("процедура 3.2")
-        self.cli_log.log_msg("процедура 3.2", "purple")
-        self.ctrl_kl.ctrl_relay('KL54', True)
-        self.cli_log.log_msg("Включение KL54", "blue")
+        self.cli_log.lev_info("процедура 3.2", "purple")
+        self.conn_opc.ctrl_relay('KL54', True)
+        self.cli_log.lev_debug("Включение KL54", "blue")
         sleep(3)
         min_volt = 41.232
         max_volt = 61.848
-        meas_volt = self.ai_read.ai_read('AI0')
+        meas_volt = self.conn_opc.read_ai('AI0')
         self.logger.info(f'процедура 3.2 напряжение: {min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}')
-        self.cli_log.log_msg(f'процедура 3.2 напряжение: {min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}', "orange")
+        self.cli_log.lev_info(f'процедура 3.2 напряжение: {min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}', "orange")
         if min_volt <= meas_volt <= max_volt:
             self.logger.debug(f"процедура 3.2 пройдена")
-            self.cli_log.log_msg(f"процедура 3.2 пройдена", "green")
+            self.cli_log.lev_info(f"процедура 3.2 пройдена", "green")
             coef_volt = meas_volt / 51.54
             return coef_volt
         else:
             self.logger.warning(f"процедура 3.2 не пройдена")
-            self.cli_log.log_msg(f"процедура 3.2 не пройдена", "red")
+            self.cli_log.lev_warning(f"процедура 3.2 не пройдена", "red")
             self.reset.stop_procedure_32()
             raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                     "Неисправность узла формирования напряжения в стенде")
@@ -247,21 +249,21 @@ class Procedure:
         :return bool:
         """
         self.logger.debug("процедура 3.4")
-        self.cli_log.log_msg("процедура 3.4", "purple")
+        self.cli_log.lev_info("процедура 3.4", "purple")
         self.vtor_obm.vtor_obm_tv1(calc_volt)
         sleep(3)
         min_volt = 0.88 * setpoint_volt
         max_volt = 1.11 * setpoint_volt
-        meas_volt = self.ai_read.ai_read('AI0')
+        meas_volt = self.conn_opc.read_ai('AI0')
         self.logger.info(f'процедура 3.4 напряжение: {min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}')
-        self.cli_log.log_msg(f'процедура 3.4 напряжение: {min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}', "orange")
+        self.cli_log.lev_info(f'процедура 3.4 напряжение: {min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}', "orange")
         if min_volt <= meas_volt <= max_volt:
             self.logger.debug(f"процедура 3.4 пройдена")
-            self.cli_log.log_msg(f"процедура 3.4 пройдена", "green")
+            self.cli_log.lev_info(f"процедура 3.4 пройдена", "green")
             return True
         else:
             self.logger.warning(f"процедура 3.4 не пройдена")
-            self.cli_log.log_msg(f"процедура 3.4 не пройдена", "red")
+            self.cli_log.lev_warning(f"процедура 3.4 не пройдена", "red")
             self.reset.stop_procedure_3()
             return False
 
@@ -291,11 +293,11 @@ class Procedure:
                     max_volt = coef_max * meas_volt
                     self.logger.info(f"изм. напряжение умноженное на {coef_min} и на {coef_max}: "
                                      f"{min_volt = }, {max_volt = }")
-                    self.cli_log.log_msg(f"изм. напряжение умноженное на {coef_min} и на {coef_max}: "
+                    self.cli_log.lev_info(f"изм. напряжение умноженное на {coef_min} и на {coef_max}: "
                                          f"{min_volt = }, {max_volt = }", "orange")
                     return min_volt, max_volt
         self.logger.warning('Неисправность узла формирования напряжения в стенде')
-        self.cli_log.log_msg('Неисправность узла формирования напряжения в стенде', "red")
+        self.cli_log.lev_warning('Неисправность узла формирования напряжения в стенде', "red")
         raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                 "Неисправность узла формирования напряжения в стенде")
 
@@ -314,17 +316,20 @@ class Procedure:
                 coef_volt = self.start_procedure_32()
                 if coef_volt != 0.0:
                     self.logger.info(f"коэффициент сети:\t {coef_volt:.2f}")
-                    self.cli_log.log_msg(f"коэффициент сети:\t {coef_volt:.2f}", "orange")
+                    self.cli_log.lev_info(f"коэффициент сети:\t {coef_volt:.2f}", "orange")
                     return coef_volt
         self.logger.warning('Неисправность узла формирования напряжения в стенде')
-        self.cli_log.log_msg('Неисправность узла формирования напряжения в стенде', "red")
+        self.cli_log.lev_warning('Неисправность узла формирования напряжения в стенде', "red")
         raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                 "Неисправность узла формирования напряжения в стенде")
 
     def procedure_1_24_34(self, coef_volt: float, setpoint_volt: float, factor: float = 1.0) -> bool:
         """
-            Выполняется последовательно процедура 1 --> 2.4 --> 3.4
-            :return: bool
+        Выполняется последовательно процедура 1 --> 2.4 --> 3.4
+        :param coef_volt: float - коэффициент напряжения
+        :param setpoint_volt: float - напряжение уставки
+        :param factor: float - коэффициент повышения напряжения
+        :return: bool
         """
         if self.start_procedure_1():
             calc_volt = self.start_procedure_24(coef_volt=coef_volt, setpoint_volt=setpoint_volt, factor=factor)
@@ -336,14 +341,14 @@ class Procedure:
     def procedure_x4_to_x5(self, coef_volt: float, setpoint_volt: float) -> bool:
         """
         Процедура последовательно выполняет процедуры 1, 2.4, 3.4,
-        если происходит какая-то ошибка, выполняет те же процедуры с напряжением увеличенным в 1.1 раза.
-        :param coef_volt:
-        :param setpoint_volt:
-        :return:
+        если происходит какая-то ошибка, выполняет те же процедуры с напряжением увеличенным в 1.1 раза
+        :param coef_volt: float - коэффициент напряжения
+        :param setpoint_volt: float - напряжение уставки
+        :return: bool
         """
         self.logger.debug("процедура \"procedure_x4_to_x5\", при неудачном выполнении процедур 1, 2.4, 3.4 "
                           "будут выполнены процедуры 1, 2.5, 3.5")
-        self.cli_log.log_msg("процедура \"procedure_x4_to_x5\", при неудачном выполнении процедур 1, 2.4, 3.4 "
+        self.cli_log.lev_debug("процедура \"procedure_x4_to_x5\", при неудачном выполнении процедур 1, 2.4, 3.4 "
                              "будут выполнены процедуры 1, 2.5, 3.5", "purple")
         if self.procedure_1_24_34(coef_volt=coef_volt, setpoint_volt=setpoint_volt, factor=1.0):
             return True
@@ -354,17 +359,17 @@ class Procedure:
             else:
                 self.logger.warning("Выходное напряжение не соответствует заданию.\n "
                                     "Неисправность узла формирования напряжения в стенде")
-                self.cli_log.log_msg("Выходное напряжение не соответствует заданию.\n "
+                self.cli_log.lev_warning("Выходное напряжение не соответствует заданию.\n "
                                      "Неисправность узла формирования напряжения в стенде", "red")
                 raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                         "Неисправность узла формирования напряжения в стенде")
 
     def sbros_vtor_obm(self) -> bool:
-        in_ai = self.ai_read.ai_read('AI0')
+        in_ai = self.conn_opc.read_ai('AI0')
         if in_ai <= 1.1:
             return True
         if in_ai > 1.1:
-            self.reset.sbros_vtor_obm()
+            self.conn_opc.vtor_obm_tv1_off()
             return True
         else:
             return False
@@ -375,23 +380,23 @@ class Procedure:
         :return: Bool
         """
         self.logger.debug("измерение U в процедуре 2.х")
-        self.cli_log.log_msg("измерение U в процедуре 2.х", "purple")
+        self.cli_log.lev_info("измерение U в процедуре 2.х", "purple")
         for i in range(3):
-            meas_volt = self.ai_read.ai_read('AI0')
+            meas_volt = self.conn_opc.read_ai('AI0')
             self.logger.info(f"измерение U: {meas_volt:.2f}")
-            self.cli_log.log_msg(f"измерение U: {meas_volt:.2f}", "orange")
+            self.cli_log.lev_info(f"измерение U: {meas_volt:.2f}", "orange")
             if meas_volt <= 1.1:
                 self.logger.debug("напряжение соответствует")
-                self.cli_log.log_msg("напряжение соответствует", "green")
+                self.cli_log.lev_info("напряжение соответствует", "green")
                 return True
             elif meas_volt > 1.1:
                 self.logger.warning("напряжение не соответствует")
-                self.cli_log.log_msg("напряжение не соответствует", "red")
+                self.cli_log.lev_warning("напряжение не соответствует", "red")
                 self.sbros_vtor_obm()
                 self.logger.debug("сброс вторичной обмотки")
-                self.cli_log.log_msg("сброс вторичной обмотки", "blue")
+                self.cli_log.lev_debug("сброс вторичной обмотки", "blue")
                 self.logger.debug("повторение измерения")
-                self.cli_log.log_msg("повторение измерения", "gray")
+                self.cli_log.lev_info("повторение измерения", "gray")
                 i += 1
                 continue
             return False
