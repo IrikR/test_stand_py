@@ -39,7 +39,10 @@ class CLILog:
 
     def lev_info(self, msg: str, msg_color: [int, str]):
         if self.log == "info" or self.log == "debug":
-            if msg_color == 2 or msg_color == 'green':
+            if msg_color == 7 or msg_color == 'gray':
+                # серый
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[37m {msg}")
+            elif msg_color == 2 or msg_color == 'green':
                 # зеленый green
                 print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[32m {msg}")
             elif msg_color == 3 or msg_color == 'orange':
@@ -75,7 +78,10 @@ class CLILog:
         """
 
         if self.log == "warning" or self.log == "info" or self.log == "debug":
-            if msg_color == 1 or msg_color == 'red':
+            if msg_color == 7 or msg_color == 'gray':
+                # серый
+                print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[37m {msg}")
+            elif msg_color == 1 or msg_color == 'red':
                 # красный Red
                 print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[31m {msg}")
             else:
