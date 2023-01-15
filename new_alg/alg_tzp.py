@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 ПРОВЕРЕН
 Алгоритм проверки
@@ -12,39 +10,35 @@
 Производитель: Нет производителя, Пульсар
 Уникальный номер: 63, 64
 
-
 """
+
+__all__ = ["TestTZP"]
 
 import logging
 import sys
-from time import time, sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
-from .general_func.modbus import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.reset import ResetRelay, ResetProtection
-from .general_func.subtest import ReadOPCServer, ProcedureFull
+from .general_func.reset import ResetProtection, ResetRelay
+from .general_func.subtest import ProcedureFull
+from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
-from .general_func.utils import CLILog
-
-__all__ = ["TestTZP"]
 
 
 class TestTZP:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.reset_relay = ResetRelay()
         self.reset_protect = ResetProtection()
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
-        self.ai_read = AIRead()
-        self.di_read = DIRead()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
-        self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self._list_ust_num = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
         self._list_ust_volt = (25.7, 29.8, 34.3, 39.1, 43.7, 48.5)
@@ -74,15 +68,18 @@ class TestTZP:
         Тест 1. Проверка исходного состояния блока:
         :return:
         """
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
         self.logger.debug("тест 1")
-        self.cli_log.log_msg("тест 1", "gray")
-        self.di_read.di_read('in_b6', 'in_b7')
+        self.cli_log.lev_info("тест 1", "gray")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         self.mysql_conn.mysql_ins_result('идет тест 1', '1')
-        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.conn_opc.ctrl_relay('KL21', True)
         self.logger.debug("включен KL21")
         self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
-        if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.0, err_code_a=277, err_code_b=278, position_a=False,
-                                         position_b=True, di_b='in_a5'):
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[277, 278],
+                                         position_inp=[False, True],
+                                         di_xx=['inp_01', 'inp_05']):
             return True
         return False
 
@@ -108,8 +105,10 @@ class TestTZP:
         else:
             return False
         self.mysql_conn.mysql_ins_result('идет тест 2.0', '2')
-        if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.0, err_code_a=282, err_code_b=283,
-                                         position_a=True, position_b=False, di_b='in_a5'):
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
+                                         err_code=[282, 283],
+                                         position_inp=[True, False],
+                                         di_xx=['inp_01', 'inp_05']):
             return True
         return False
 
@@ -125,8 +124,10 @@ class TestTZP:
             return False
         self.mysql_conn.mysql_ins_result('идет тест 2.1', '2')
         self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
-        if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.1, err_code_a=284, err_code_b=285,
-                                         position_a=False, position_b=True, di_b='in_a5'):
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.1,
+                                         err_code=[284, 285],
+                                         position_inp=[False, True],
+                                         di_xx=['inp_01', 'inp_05']):
             return True
         return False
 
@@ -162,7 +163,7 @@ class TestTZP:
                 self.mysql_conn.mysql_ins_result('неисправен', '4')
                 self.logger.debug(f'процедура 1, 2.4, 3.4: не пройдена')
                 return False
-            meas_volt = self.ai_read.ai_read('AI0')
+            meas_volt = self.conn_opc.read_ai('AI0')
             self.logger.debug(f'измеренное напряжение: {meas_volt}')
             calc_delta_percent = 0.0044 * meas_volt ** 2 + 2.274 * meas_volt
             self.logger.debug(f'd%: {calc_delta_percent}')
@@ -170,29 +171,29 @@ class TestTZP:
             if 0.9 * i / self._coef_volt <= meas_volt <= 1.1 * i / self._coef_volt:
                 self.logger.debug(f'напряжение соответствует: {meas_volt:.2f}')
                 self.mysql_conn.progress_level(0.0)
-                self.ctrl_kl.ctrl_relay('KL63', True)
+                self.conn_opc.ctrl_relay('KL63', True)
                 self.logger.debug("включение KL63")
-                in_b0, *_ = self.di_read.di_read('in_b0')
-                self.logger.debug(f"in_b0 = {in_b0} (True)")
-                while in_b0 is False:
-                    self.logger.debug(f"in_b0 = {in_b0} (False)")
-                    in_b0, *_ = self.di_read.di_read('in_b0')
+                inp_08, *_ = self.conn_opc.simplified_read_di(['inp_08'])
+                self.logger.debug(f"inp_08 = {inp_08} (True)")
+                while inp_08 is False:
+                    self.logger.debug(f"inp_08 = {inp_08} (False)")
+                    inp_08, *_ = self.conn_opc.simplified_read_di(['inp_08'])
                 start_timer = time()
                 self.logger.debug(f"начало отсчета: {start_timer}")
                 sub_timer = 0
-                in_a1, in_a5 = self.di_read.di_read("in_a1", "in_a5")
-                self.logger.debug(f"in_a1 = {in_a5} (False)")
-                while in_a5 is True and sub_timer <= 370:
+                inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
+                self.logger.debug(f"{inp_01 =} {inp_05 =} (False)")
+                while inp_05 is True and sub_timer <= 370:
                     sleep(0.2)
                     sub_timer = time() - start_timer
                     self.logger.debug(f"времени прошло {sub_timer:.1f}")
                     self.mysql_conn.progress_level(sub_timer)
-                    in_a5, *_ = self.di_read.di_read('in_a5')
-                    self.logger.debug(f"in_a1 = {in_a5} (False)")
+                    inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
+                    self.logger.debug(f"inp_01 = {inp_05} (False)")
                 stop_timer = time()
                 self.logger.debug(f"конец отсчета")
                 self.mysql_conn.progress_level(0.0)
-                self.ctrl_kl.ctrl_relay('KL63', False)
+                self.conn_opc.ctrl_relay('KL63', False)
                 self.logger.debug(f"отключение KL63")
                 calc_delta_t = stop_timer - start_timer
                 self.logger.debug(f"dt: {calc_delta_t}")
@@ -203,9 +204,9 @@ class TestTZP:
                                                   f'дельта t: {calc_delta_t:.1f}')
                 self.mysql_conn.mysql_add_message(f'уставка {self._list_ust_num[k]} '
                                                   f'дельта %: {calc_delta_percent:.2f}')
-                in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-                self.logger.debug(f"in_a1 = {in_a1} (True), in_a5 = {in_a5} (False), время: {calc_delta_t}")
-                if calc_delta_t <= 360 and in_a1 is True and in_a5 is False:
+                inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+                self.logger.debug(f"inp_01 = {inp_01} (True), inp_05 = {inp_05} (False), время: {calc_delta_t}")
+                if calc_delta_t <= 360 and inp_01 is True and inp_05 is False:
                     # Если в период времени до 6 минут входа DI.A1, DI.A5 занимают
                     # состояние, указанное в таблице выше, то переходим к п.3.6.
                     if self.subtest_35():
@@ -247,9 +248,11 @@ class TestTZP:
         self.logger.debug("сброс защит")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.5, err_code_a=284, err_code_b=285,
-                                         position_a=False, position_b=True, di_b='in_a5'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.5,
+                                         err_code=[284, 285],
+                                         position_inp=[False, True],
+                                         di_xx=['inp_01', 'inp_05']):
             return True
         return False
 
@@ -275,33 +278,35 @@ class TestTZP:
                 self.result_test_tzp()
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.result_test_tzp()
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
+
 
 if __name__ == '__main__':
     test_tzp = TestTZP()
