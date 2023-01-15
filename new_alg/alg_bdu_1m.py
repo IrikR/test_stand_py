@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -9,33 +8,31 @@
 Производитель: Пульсар, Нет производителя
 """
 
-import sys
-import logging
+__all__ = ["TestBDU1M"]
 
+import logging
+import sys
 from time import sleep
 
-from .general_func.exception import *
-from .general_func.subtest import ReadOPCServer, SubtestBDU1M
 from .general_func.database import *
-from .general_func.modbus import *
-from .general_func.resistance import Resistor
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.reset import ResetRelay
-from .gui.msgbox_1 import *
+from .general_func.resistance import Resistor
+from .general_func.subtest import SubtestBDU1M
 from .general_func.utils import CLILog
-
-__all__ = ["TestBDU1M"]
+from .gui.msgbox_1 import *
 
 
 class TestBDU1M:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.resist = Resistor()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.subtest = SubtestBDU1M()
-        self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
         # C:\Stend\project_class
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBDU1M.log",
@@ -51,7 +48,9 @@ class TestBDU1M:
         """
             Тест 1. Проверка исходного состояния блока
         """
-        if self.di_read_full.subtest_1di(test_num=1, subtest_num=1.0, err_code=199, position=False, di_a='in_a2'):
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0, err_code=[199],
+                                         position_inp=[False], di_xx=['inp_02']):
             return True
         return False
 
@@ -59,28 +58,29 @@ class TestBDU1M:
         """
             Тест 2. Проверка включения / выключения блока от кнопки «Пуск / Стоп».
         """
-        self.ctrl_kl.ctrl_relay('KL22', True)
+        self.conn_opc.ctrl_relay('KL22', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL21', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL2', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL2', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL33', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL33', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL32', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL32', True)
         self.logger.debug("включены KL22, KL21, KL2, KL33, KL32")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.0, err_code=201, position=False, di_a='in_a2'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0, err_code=[201],
+                                         position_inp=[False], di_xx=['inp_02']):
             return True
         return False
 
@@ -98,15 +98,16 @@ class TestBDU1M:
         """
             2.4. Выключение блока от кнопки «Стоп»
         """
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.3, err_code=207, position=False, di_a='in_a2'):
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL1', False)
-            self.ctrl_kl.ctrl_relay('KL22', True)
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.3, err_code=[207],
+                                         position_inp=[False], di_xx=['inp_02']):
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL1', False)
+            self.conn_opc.ctrl_relay('KL22', True)
             self.logger.debug("отключен KL25, KL1 и включен KL22")
             return True
         return False
@@ -127,8 +128,9 @@ class TestBDU1M:
         self.resist.resist_10_to_20_ohm()
         sleep(3)
         self.logger.debug("таймаут 3 сек")
-        self.cli_log.log_msg("таймаут 3 сек", "gray")
-        if self.di_read_full.subtest_1di(test_num=3, subtest_num=3.2, err_code=209, position=True, di_a='in_a2'):
+        self.cli_log.lev_debug("таймаут 3 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.2, err_code=[209],
+                                         position_inp=[True], di_xx=['inp_02']):
             return True
         return False
 
@@ -149,10 +151,11 @@ class TestBDU1M:
         self.resist.resist_10_to_100_ohm()
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_1di(test_num=4, subtest_num=4.2, err_code=211, position=False, di_a='in_a2'):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.2, err_code=[211],
+                                         position_inp=[False], di_xx=['inp_02']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL25', False)
             self.logger.debug("отключен KL12, KL25")
             return True
         return False
@@ -170,16 +173,17 @@ class TestBDU1M:
         """
             Тест 5. Защита от потери управляемости при замыкании проводов ДУ
         """
-        self.ctrl_kl.ctrl_relay('KL11', True)
+        self.conn_opc.ctrl_relay('KL11', True)
         self.logger.debug("включен KL11")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_1di(test_num=5, subtest_num=5.2, err_code=213, position=False, di_a='in_a2'):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL1', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL11', False)
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.2, err_code=[213],
+                                         position_inp=[False], di_xx=['inp_02']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL1', False)
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL11', False)
             self.logger.debug("отключены KL12, KL1, KL25, KL11")
             return True
         return False
@@ -194,12 +198,13 @@ class TestBDU1M:
         return False
 
     def st_test_62(self) -> bool:
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_1di(test_num=6, subtest_num=6.2, err_code=215, position=False, di_a='in_a2'):
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.2, err_code=[215],
+                                         position_inp=[False], di_xx=['inp_02']):
             return True
         return False
 
@@ -227,27 +232,28 @@ class TestBDU1M:
             if self.st_test_bdu_1m():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
