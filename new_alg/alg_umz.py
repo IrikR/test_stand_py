@@ -10,36 +10,32 @@
 Производитель: Нет производителя
 """
 
-import sys
-import logging
+__all__ = ["TestUMZ"]
 
+import logging
+import sys
 from time import sleep
 
-from .general_func.exception import *
 from .general_func.database import *
-from .general_func.modbus import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.subtest import ProcedureFull, ReadOPCServer
 from .general_func.reset import ResetRelay
+from .general_func.subtest import ProcedureFull
+from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
-from .general_func.utils import CLILog
-
-__all__ = ["TestUMZ"]
 
 
 class TestUMZ:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.reset = ResetRelay()
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
-        self.ai_read = AIRead()
-        self.di_read = DIRead()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
-        self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.list_ust_volt = (22.6, 27.1, 31.9, 36.5, 41.3, 46.4, 50.2, 54.7, 59.3, 63.8, 68.4)
         self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
@@ -92,8 +88,9 @@ class TestUMZ:
         return False
 
     def st_test_11(self) -> bool:
-        if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.1, err_code_a=476, err_code_b=477,
-                                         position_a=False, position_b=True, di_a='in_a1', di_b='in_a2'):
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.1, err_code=[476, 477],
+                                         position_inp=[False, True],
+                                         di_xx=['inp_01', 'in_02']):
             return True
         return False
 
@@ -144,19 +141,19 @@ class TestUMZ:
             progress_msg = f'канал АБ дельта t'
             self.mysql_conn.mysql_ins_result(f'{progress_msg} {self.k}', '2')
             for i1 in range(5):
-                self.calc_delta_t_ab = self.ctrl_kl.ctrl_ai_code_v0(109)
+                self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
                 if self.calc_delta_t_ab != 9999:
                     break
                 else:
                     my_msg(self.msg_4, 'darkgrey')
                     continue
             self.list_delta_t_ab.append(f'{self.calc_delta_t_ab:.1f}')
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
             if in_a1 is True and in_a5 is False:
                 # Δ%= 0,00004762*(U4)2+9,5648* U4
                 progress_msg = f'канал АБ дельта %'
                 self.mysql_conn.mysql_ins_result(f'{progress_msg} {self.k}', '2')
-                self.meas_volt_ab = self.ai_read.ai_read('AI0')
+                self.meas_volt_ab = self.conn_opc.read_ai('AI0')
                 calc_delta_percent_ab = 0.00004762 * self.meas_volt_ab ** 2 + 9.5648 * self.meas_volt_ab
                 self.list_delta_percent_ab.append(f'{calc_delta_percent_ab:.2f}')
                 self.test_setpoint_ab = True
@@ -166,7 +163,7 @@ class TestUMZ:
                                                   f'дельта %: {calc_delta_percent_ab:.2f}')
             else:
                 self.test_setpoint_ab = False
-            self.ctrl_kl.ctrl_relay('KL73', True)
+            self.conn_opc.ctrl_relay('KL73', True)
             if my_msg(self.msg_4):
                 pass
             else:
@@ -174,19 +171,19 @@ class TestUMZ:
             progress_msg = f'канал ВГ дельта t'
             self.mysql_conn.mysql_ins_result(f'{progress_msg} {self.k}', '2')
             for i2 in range(5):
-                self.calc_delta_t_vg = self.ctrl_kl.ctrl_ai_code_v0(109)
+                self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
                 if self.calc_delta_t_ab != 9999:
                     break
                 else:
                     my_msg(self.msg_4, "darkgrey")
                     continue
             self.list_delta_t_vg.append(f'{self.calc_delta_t_vg:.1f}')
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
             if in_a1 is True and in_a5 is False:
                 # Δ%= 0,00004762*(U4)2+9,5648* U4
                 progress_msg = f'канал ВГ дельта %'
                 self.mysql_conn.mysql_ins_result(f'{progress_msg} {self.k}', '2')
-                self.meas_volt_vg = self.ai_read.ai_read('AI0')
+                self.meas_volt_vg = self.conn_opc.read_ai('AI0')
                 calc_delta_percent_vg = 0.00004762 * self.meas_volt_vg ** 2 + 9.5648 * self.meas_volt_vg
                 self.list_delta_percent_vg.append(f'{calc_delta_percent_vg:.2f}')
                 self.test_setpoint_vg = True
@@ -196,7 +193,7 @@ class TestUMZ:
                                                   f'дельта %: {calc_delta_percent_vg:.2f}')
             else:
                 self.test_setpoint_vg = False
-            self.ctrl_kl.ctrl_relay('KL73', False)
+            self.conn_opc.ctrl_relay('KL73', False)
             self.reset.stop_procedure_3()
             if my_msg(self.msg_4):
                 pass
@@ -240,7 +237,7 @@ class TestUMZ:
             pass
         else:
             return False
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+        in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
         if in_a1 is False and in_a5 is True:
             return True
         elif in_a1 is True:
@@ -258,9 +255,9 @@ class TestUMZ:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             return False
         for i3 in range(5):
-            self.calc_delta_t_ab = self.ctrl_kl.ctrl_ai_code_v0(109)
+            self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
             if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_ab = True
                 break
@@ -268,16 +265,16 @@ class TestUMZ:
                 my_msg(self.msg_4, "darkgrey")
                 self.test_setpoint_ab = False
                 continue
-        self.meas_volt_ab = self.ai_read.ai_read('AI0')
-        self.ctrl_kl.ctrl_relay('KL73', True)
+        self.meas_volt_ab = self.conn_opc.read_ai('AI0')
+        self.conn_opc.ctrl_relay('KL73', True)
         if my_msg(self.msg_4):
             pass
         else:
             return False
         for i4 in range(5):
-            self.calc_delta_t_vg = self.ctrl_kl.ctrl_ai_code_v0(109)
+            self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
             if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_vg = True
                 break
@@ -285,8 +282,8 @@ class TestUMZ:
                 my_msg(self.msg_4, "darkgrey")
                 self.test_setpoint_vg = False
                 continue
-        self.meas_volt_vg = self.ai_read.ai_read('AI0')
-        self.ctrl_kl.ctrl_relay('KL73', False)
+        self.meas_volt_vg = self.conn_opc.read_ai('AI0')
+        self.conn_opc.ctrl_relay('KL73', False)
         self.reset.stop_procedure_3()
         # Δ%= 0,00004762*(U4)2+9,5648* U4
         calc_delta_percent_ab = 0.00004762 * self.meas_volt_ab ** 2 + 9.5648 * self.meas_volt_ab
@@ -325,9 +322,9 @@ class TestUMZ:
         else:
             return False
         for i3 in range(5):
-            self.calc_delta_t_ab = self.ctrl_kl.ctrl_ai_code_v0(109)
+            self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
             if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_ab = True
                 break
@@ -335,7 +332,7 @@ class TestUMZ:
                 my_msg(self.msg_4, "darkgrey")
                 self.test_setpoint_ab = False
                 continue
-        self.meas_volt_ab = self.ai_read.ai_read('AI0')
+        self.meas_volt_ab = self.conn_opc.read_ai('AI0')
         self.reset.stop_procedure_3()
         # Δ%= 0,00004762*(U4)2+9,5648* U4
         calc_delta_percent_ab = 0.00004762 * self.meas_volt_ab ** 2 + 9.5648 * self.meas_volt_ab
@@ -355,15 +352,15 @@ class TestUMZ:
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             return False
-        self.ctrl_kl.ctrl_relay('KL73', True)
+        self.conn_opc.ctrl_relay('KL73', True)
         if my_msg(self.msg_4):
             pass
         else:
             return False
         for i4 in range(5):
-            self.calc_delta_t_vg = self.ctrl_kl.ctrl_ai_code_v0(109)
+            self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
             if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_vg = True
                 break
@@ -371,8 +368,8 @@ class TestUMZ:
                 my_msg(self.msg_4, "darkgrey")
                 self.test_setpoint_vg = False
                 continue
-        self.meas_volt_vg = self.ai_read.ai_read('AI0')
-        self.ctrl_kl.ctrl_relay('KL73', False)
+        self.meas_volt_vg = self.conn_opc.read_ai('AI0')
+        self.conn_opc.ctrl_relay('KL73', False)
         self.reset.stop_procedure_3()
         # Δ%= 0,00004762*(U4)2+9,5648* U4
         calc_delta_percent_vg = 0.00004762 * self.meas_volt_vg ** 2 + 9.5648 * self.meas_volt_vg
@@ -415,32 +412,33 @@ class TestUMZ:
                 self.result_umz()
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.result_umz()
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
