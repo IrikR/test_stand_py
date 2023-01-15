@@ -11,35 +11,33 @@
 
 """
 
+__all__ = ["TestUBTZ"]
+
 import logging
 import sys
 from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
-from .general_func.modbus import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.reset import ResetRelay, ResetProtection
-from .general_func.subtest import ReadOPCServer, ProcedureFull
+from .general_func.reset import ResetProtection, ResetRelay
+from .general_func.subtest import ProcedureFull
+from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
-from .general_func.utils import CLILog
-
-__all__ = ["TestUBTZ"]
 
 
 class TestUBTZ:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.reset_relay = ResetRelay()
         self.reset_protect = ResetProtection()
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
-        self.di_read = DIRead()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
-        self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.list_ust_bmz_num = (1, 2, 3, 4, 5, 6, 7)
         self.list_ust_tzp_num = (1, 2, 3, 4, 5, 6, 7)
@@ -83,16 +81,16 @@ class TestUBTZ:
         else:
             return False
         self.mysql_conn.mysql_ins_result("идёт тест 1.0", '1')
-        self.ctrl_kl.ctrl_relay('KL22', True)
-        self.ctrl_kl.ctrl_relay('KL66', True)
+        self.conn_opc.ctrl_relay('KL22', True)
+        self.conn_opc.ctrl_relay('KL66', True)
         self.reset_protect.sbros_zashit_ubtz()
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=1, subtest_num=1.0,
-                                         err_code_a=451, err_code_b=452, err_code_c=453, err_code_d=454,
-                                         position_a=False, position_b=True, position_c=False, position_d=True,
-                                         di_a='in_a1', di_b='in_a5', di_c='in_a2', di_d='in_a6'):
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[451, 452, 453, 454],
+                                         position_inp=[False, True, False, True],
+                                         di_xx=['inp_01', 'inp_05', 'inp_02', 'inp_06']):
             return True
         return False
 
@@ -132,14 +130,14 @@ class TestUBTZ:
                 return False
             # 3.1.  Проверка срабатывания блока от сигнала нагрузки:
             for qw in range(4):
-                self.calc_delta_t_bmz = self.ctrl_kl.ctrl_ai_code_v0(109)
+                self.calc_delta_t_bmz = self.conn_opc.ctrl_ai_code_v0(109)
                 self.logger.debug(f'тест 2, дельта t\t{self.calc_delta_t_bmz:.1f}')
                 if self.calc_delta_t_bmz == 9999:
                     self.reset_protect.sbros_zashit_ubtz()
                     continue
                 else:
                     break
-            in_a1, in_a2, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a2', 'in_a5', 'in_a6')
+            in_a1, in_a2, in_a5, in_a6 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02', 'inp_05', 'inp_06'])
             self.reset_relay.stop_procedure_3()
             if self.calc_delta_t_bmz < 10:
                 self.list_delta_t_bmz.append(f'< 10')
@@ -216,24 +214,24 @@ class TestUBTZ:
                 self.mysql_conn.mysql_ins_result("тест 3 неисправен TV1", '1')
                 return False
             # 4.4.  Проверка срабатывания блока от сигнала нагрузки:
-            self.ctrl_kl.ctrl_relay('KL63', True)
+            self.conn_opc.ctrl_relay('KL63', True)
             self.mysql_conn.progress_level(0.0)
-            in_b1, *_ = self.di_read.di_read('in_b1')
+            in_b1, *_ = self.conn_opc.simplified_read_di(['inp_b1'])
             a = 0
             while in_b1 is False and a < 10:
                 a += 1
-                in_b1, *_ = self.di_read.di_read('in_b1')
+                in_b1, *_ = self.conn_opc.simplified_read_di(['inp_09'])
             start_timer = time()
             sub_timer = 0
-            in_a6, *_ = self.di_read.di_read('in_a6')
+            in_a6, *_ = self.conn_opc.simplified_read_di(['inp_06'])
             while in_a6 is True and sub_timer <= 370:
                 sub_timer = time() - start_timer
                 self.logger.debug(f'времени прошло: {sub_timer}')
                 self.mysql_conn.progress_level(sub_timer)
                 sleep(0.2)
-                in_a6, *_ = self.di_read.di_read('in_a6')
+                in_a6, *_ = self.conn_opc.simplified_read_di(['inp_06'])
             stop_timer = time()
-            in_a1, in_a2, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a2', 'in_a5', 'in_a6')
+            in_a1, in_a2, in_a5, in_a6 = self.conn_opc.simplified_read_di(['in_01', 'in_02', 'in_05', 'in_06'])
             self.logger.debug(f'{in_a1 = } (F), {in_a2 = } (F), {in_a5 = } (T), {in_a6 = } (T)')
             self.reset_relay.stop_procedure_3()
             self.mysql_conn.progress_level(0.0)
@@ -267,8 +265,8 @@ class TestUBTZ:
                     self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_tzp_num[m]}: '
                                                       f'не срабатывает сброс защит')
                     return False
-        self.ctrl_kl.ctrl_relay('KL22', False)
-        self.ctrl_kl.ctrl_relay('KL66', False)
+        self.conn_opc.ctrl_relay('KL22', False)
+        self.conn_opc.ctrl_relay('KL66', False)
         self.logger.debug(f"ТЗП дельта t: {self.list_delta_t_tzp}")
         self.mysql_conn.mysql_ins_result("исправен", '1')
         return True
@@ -288,7 +286,7 @@ class TestUBTZ:
             return False
         # 3.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         for wq in range(4):
-            self.calc_delta_t_bmz = self.ctrl_kl.ctrl_ai_code_v0(109)
+            self.calc_delta_t_bmz = self.conn_opc.ctrl_ai_code_v0(109)
             self.logger.debug(f'тест 3 delta t:\t{self.calc_delta_t_bmz:.1f}')
             if self.calc_delta_t_bmz == 9999:
                 self.reset_protect.sbros_zashit_ubtz()
@@ -296,7 +294,7 @@ class TestUBTZ:
             else:
                 break
         self.reset_relay.stop_procedure_3()
-        in_a1, in_a2, in_a5, in_a6 = self.di_read.di_read('in_a1', 'in_a2', 'in_a5', 'in_a6')
+        in_a1, in_a2, in_a5, in_a6 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02', 'inp_05', 'inp_06'])
         if self.calc_delta_t_bmz < 10:
             self.list_delta_t_bmz[-1] = f'< 10'
         elif self.calc_delta_t_bmz == 9999:
@@ -330,11 +328,11 @@ class TestUBTZ:
         self.reset_protect.sbros_zashit_ubtz()
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=test_num, subtest_num=subtest_num,
-                                         err_code_a=460, err_code_b=461, err_code_c=462, err_code_d=463,
-                                         position_a=False, position_b=True, position_c=False, position_d=True,
-                                         di_a='in_a1', di_b='in_a5', di_c='in_a2', di_d='in_a6'):
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=test_num, subtest_num=subtest_num,
+                                         err_code=[460, 461, 462, 463],
+                                         position_inp=[False, True, False, True],
+                                         di_xx=['inp_01', 'inp_05', 'inp_02', 'inp_06']):
             return True
         self.mysql_conn.mysql_add_message(f'тест {test_num}: не срабатывает сброс защит')
         return False
@@ -366,32 +364,33 @@ class TestUBTZ:
                 self.result_test_ubtz()
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.result_test_ubtz()
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
