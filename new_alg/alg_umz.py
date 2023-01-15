@@ -80,6 +80,7 @@ class TestUMZ:
         Тест 1. Проверка исходного состояния блока:
         :return:
         """
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
                 if my_msg(self.msg_3):
@@ -90,7 +91,7 @@ class TestUMZ:
     def st_test_11(self) -> bool:
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.1, err_code=[476, 477],
                                          position_inp=[False, True],
-                                         di_xx=['inp_01', 'in_02']):
+                                         di_xx=['inp_01', 'inp_02']):
             return True
         return False
 
@@ -148,7 +149,7 @@ class TestUMZ:
                     my_msg(self.msg_4, 'darkgrey')
                     continue
             self.list_delta_t_ab.append(f'{self.calc_delta_t_ab:.1f}')
-            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if in_a1 is True and in_a5 is False:
                 # Δ%= 0,00004762*(U4)2+9,5648* U4
                 progress_msg = f'канал АБ дельта %'
@@ -178,7 +179,7 @@ class TestUMZ:
                     my_msg(self.msg_4, "darkgrey")
                     continue
             self.list_delta_t_vg.append(f'{self.calc_delta_t_vg:.1f}')
-            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if in_a1 is True and in_a5 is False:
                 # Δ%= 0,00004762*(U4)2+9,5648* U4
                 progress_msg = f'канал ВГ дельта %'
@@ -237,7 +238,7 @@ class TestUMZ:
             pass
         else:
             return False
-        in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
+        in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         if in_a1 is False and in_a5 is True:
             return True
         elif in_a1 is True:
@@ -257,7 +258,7 @@ class TestUMZ:
         for i3 in range(5):
             self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_ab = True
                 break
@@ -274,7 +275,7 @@ class TestUMZ:
         for i4 in range(5):
             self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_vg = True
                 break
@@ -324,7 +325,7 @@ class TestUMZ:
         for i3 in range(5):
             self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_ab = True
                 break
@@ -360,7 +361,7 @@ class TestUMZ:
         for i4 in range(5):
             self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
-            in_a1, in_a5 = self.conn_opc.simplified_read_di(['in_a1', 'in_a5'])
+            in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_vg = True
                 break
