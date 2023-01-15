@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -10,34 +8,31 @@
 
 """
 
-import sys
-import logging
+__all__ = ["TestBDUDR01"]
 
+import logging
+import sys
 from time import sleep
 
-from .general_func.exception import *
-from .general_func.subtest import Subtest4in, ReadOPCServer
 from .general_func.database import *
-from .general_func.modbus import *
-from .general_func.resistance import Resistor
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.reset import ResetRelay
-from .gui.msgbox_1 import *
+from .general_func.resistance import Resistor
+from .general_func.subtest import Subtest4in
 from .general_func.utils import CLILog
-
-
-__all__ = ["TestBDUDR01"]
+from .gui.msgbox_1 import *
 
 
 class TestBDUDR01:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.resist = Resistor()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.subtest = Subtest4in()
-        self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBDUDR01.log",
@@ -55,9 +50,11 @@ class TestBDUDR01:
         :return:
         :rtype bool:
         """
-        if self.di_read_full.subtest_4di(test_num=1, subtest_num=1.0, err_code_a=216, err_code_b=217, err_code_c=218,
-                                         err_code_d=219, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0, 
+                                         err_code=[216, 217, 218, 219], 
+                                         position_inp=[False, False, False, False], 
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
             return True
         return False
 
@@ -66,11 +63,12 @@ class TestBDUDR01:
         Тест 2. Проверка включения/выключения канала № 1 (К1) блока от кнопки «Пуск/Стоп».
         """
         self.logger.debug("старт теста 2.0")
-        self.ctrl_kl.ctrl_relay('KL2', True)
+        self.conn_opc.ctrl_relay('KL2', True)
         self.logger.debug("включен KL2")
-        if self.di_read_full.subtest_4di(test_num=2, subtest_num=2.0, err_code_a=220, err_code_b=221, err_code_c=222,
-                                         err_code_d=223, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
+                                         err_code=[220, 221, 222, 223],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
             return True
         return False
 
@@ -83,11 +81,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=2, subtest_num=2.1, resistance=10,
                                   err_code_a=224, err_code_b=225, err_code_c=226, err_code_d=227,
                                   position_a=True, position_b=True, position_c=False, position_d=False,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=2, subtest_num=2.2, relay='KL1',
                                       err_code_a=228, err_code_b=229, err_code_c=230, err_code_d=231,
                                       position_a=True, position_b=True, position_c=False, position_d=False,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -96,16 +94,17 @@ class TestBDUDR01:
         2.4. Выключение 1 канала блока от кнопки «Стоп»
         """
         self.logger.debug("старт теста 2.3")
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=2, subtest_num=2.3, err_code_a=232, err_code_b=233, err_code_c=234,
-                                         err_code_d=235, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL1', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.3,
+                                         err_code=[232, 233, 234, 235],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL1', False)
             self.logger.debug("отключены KL1, KL25")
             return True
         return False
@@ -119,11 +118,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=3, subtest_num=3.0, resistance=10,
                                   err_code_a=224, err_code_b=225, err_code_c=226, err_code_d=227,
                                   position_a=True, position_b=True, position_c=False, position_d=False,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=3, subtest_num=3.1, relay='KL1',
                                       err_code_a=228, err_code_b=229, err_code_c=230, err_code_d=231,
                                       position_a=True, position_b=True, position_c=False, position_d=False,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -135,13 +134,14 @@ class TestBDUDR01:
         self.resist.resist_10_to_110_ohm()
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=3, subtest_num=3.2, err_code_a=236, err_code_b=237, err_code_c=238,
-                                         err_code_d=239, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL1', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.2,
+                                         err_code=[236, 237, 238, 239],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL1', False)
             self.logger.debug("отключены KL12, KL25, KL1")
             return True
         return False
@@ -155,11 +155,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=4, subtest_num=4.0, resistance=10,
                                   err_code_a=224, err_code_b=225, err_code_c=226, err_code_d=227,
                                   position_a=True, position_b=True, position_c=False, position_d=False,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=4, subtest_num=4.1, relay='KL1',
                                       err_code_a=228, err_code_b=229, err_code_c=230, err_code_d=231,
                                       position_a=True, position_b=True, position_c=False, position_d=False,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -168,18 +168,19 @@ class TestBDUDR01:
         4. Защита от потери управляемости 1 канала блока при замыкании проводов ДУ
         """
         self.logger.debug("старт теста 4.2")
-        self.ctrl_kl.ctrl_relay('KL11', True)
+        self.conn_opc.ctrl_relay('KL11', True)
         self.logger.debug("включен KL11")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=4, subtest_num=4.3, err_code_a=240, err_code_b=241, err_code_c=242,
-                                         err_code_d=243, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL1', False)
-            self.ctrl_kl.ctrl_relay('KL11', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.3,
+                                         err_code=[240, 241, 242, 243],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL1', False)
+            self.conn_opc.ctrl_relay('KL11', False)
             self.logger.debug("отключены KL12, KL25, KL1, KL11")
             return True
         return False
@@ -193,11 +194,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=5, subtest_num=5.0, resistance=10,
                                   err_code_a=224, err_code_b=225, err_code_c=226, err_code_d=227,
                                   position_a=True, position_b=True, position_c=False, position_d=False,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=5, subtest_num=5.1, relay='KL1',
                                       err_code_a=228, err_code_b=229, err_code_c=230, err_code_d=231,
                                       position_a=True, position_b=True, position_c=False, position_d=False,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -206,16 +207,17 @@ class TestBDUDR01:
         Тест 5. Защита от потери управляемости 1 канала блока при обрыве проводов ДУ
         """
         self.logger.debug("старт теста 5.2")
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=5, subtest_num=5.2, err_code_a=244, err_code_b=245, err_code_c=246,
-                                         err_code_d=247, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL1', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.2,
+                                         err_code=[244, 245, 246, 247],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL1', False)
             self.logger.debug("отключены KL1, KL25")
             return True
         return False
@@ -225,16 +227,17 @@ class TestBDUDR01:
         Тест 6. Проверка включения/выключения канала № 2 (К2) блока от кнопки «Пуск/Стоп».
         """
         self.logger.debug("старт теста 6.0")
-        self.ctrl_kl.ctrl_relay('KL2', True)
-        self.ctrl_kl.ctrl_relay('KL26', True)
-        self.ctrl_kl.ctrl_relay('KL28', True)
+        self.conn_opc.ctrl_relay('KL2', True)
+        self.conn_opc.ctrl_relay('KL26', True)
+        self.conn_opc.ctrl_relay('KL28', True)
         self.logger.debug("включены KL2, KL26, KL28")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=6, subtest_num=6.0, err_code_a=248, err_code_b=249, err_code_c=250,
-                                         err_code_d=251, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.0,
+                                         err_code=[248, 249, 250, 251],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
             return True
         return False
 
@@ -247,11 +250,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=6, subtest_num=6.1, resistance=10,
                                   err_code_a=252, err_code_b=253, err_code_c=254, err_code_d=255,
                                   position_a=False, position_b=False, position_c=True, position_d=True,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=6, subtest_num=6.2, relay='KL29',
                                       err_code_a=256, err_code_b=257, err_code_c=258, err_code_d=259,
                                       position_a=False, position_b=False, position_c=True, position_d=True,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -260,16 +263,17 @@ class TestBDUDR01:
         6.4. Выключение 2 канала блока от кнопки «Стоп»
         """
         self.logger.debug("старт теста 6.3")
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=6, subtest_num=6.3, err_code_a=260, err_code_b=261, err_code_c=262,
-                                         err_code_d=263, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL29', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.3,
+                                         err_code=[260, 261, 262, 263],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL29', False)
             self.logger.debug("отключены KL25, KL29")
             return True
         return False
@@ -283,11 +287,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=7, subtest_num=7.0, resistance=10,
                                   err_code_a=252, err_code_b=253, err_code_c=254, err_code_d=255,
                                   position_a=False, position_b=False, position_c=True, position_d=True,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=7, subtest_num=7.1, relay='KL29',
                                       err_code_a=256, err_code_b=257, err_code_c=258, err_code_d=259,
                                       position_a=False, position_b=False, position_c=True, position_d=True,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -299,13 +303,14 @@ class TestBDUDR01:
         self.resist.resist_10_to_110_ohm()
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=7, subtest_num=7.2, err_code_a=264, err_code_b=265, err_code_c=266,
-                                         err_code_d=267, position_a=False, position_b=False, position_c=False,
-                                         position_d=False, di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL29', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=7, subtest_num=7.2,
+                                         err_code=[264, 265, 266, 267],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL29', False)
             self.logger.debug("отключены KL12, KL25, KL29")
             return True
         return False
@@ -319,11 +324,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=8, subtest_num=8.0, resistance=10,
                                   err_code_a=252, err_code_b=253, err_code_c=254, err_code_d=255,
                                   position_a=False, position_b=False, position_c=True, position_d=True,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=8, subtest_num=8.1, relay='KL29',
                                       err_code_a=256, err_code_b=257, err_code_c=258, err_code_d=259,
                                       position_a=False, position_b=False, position_c=True, position_d=True,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -332,19 +337,19 @@ class TestBDUDR01:
         8. Защита от потери управляемости 2 канала блока при замыкании проводов ДУ
         """
         self.logger.debug("старт теста 8.2")
-        self.ctrl_kl.ctrl_relay('KL11', True)
+        self.conn_opc.ctrl_relay('KL11', True)
         self.logger.debug("включен KL11")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=8, subtest_num=8.2,
-                                         err_code_a=268, err_code_b=269, err_code_c=270, err_code_d=271,
-                                         position_a=False, position_b=False, position_c=False, position_d=False,
-                                         di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL29', False)
-            self.ctrl_kl.ctrl_relay('KL11', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=8, subtest_num=8.2,
+                                         err_code=[268, 269, 270, 271],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL29', False)
+            self.conn_opc.ctrl_relay('KL11', False)
             self.logger.debug("отключены KL12, KL25, KL29, KL11")
             return True
         return False
@@ -358,11 +363,11 @@ class TestBDUDR01:
         if self.subtest.subtest_a(test_num=9, subtest_num=9.0, resistance=10,
                                   err_code_a=252, err_code_b=253, err_code_c=254, err_code_d=255,
                                   position_a=False, position_b=False, position_c=True, position_d=True,
-                                  di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                  di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
             if self.subtest.subtest_b(test_num=9, subtest_num=9.1, relay='KL29',
                                       err_code_a=256, err_code_b=257, err_code_c=258, err_code_d=259,
                                       position_a=False, position_b=False, position_c=True, position_d=True,
-                                      di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+                                      di_a='inp_01', di_b='inp_02', di_c='inp_03', di_d='inp_04'):
                 return True
         return False
 
@@ -371,15 +376,15 @@ class TestBDUDR01:
         Тест 9. Защита от потери управляемости 1 канала блока при обрыве проводов ДУ
         """
         self.logger.debug("старт теста 9.2")
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=9, subtest_num=9.2,
-                                         err_code_a=272, err_code_b=273, err_code_c=274, err_code_d=275,
-                                         position_a=False, position_b=False, position_c=False, position_d=False,
-                                         di_a='in_a1', di_b='in_a2', di_c='in_a3', di_d='in_a4'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=9, subtest_num=9.2,
+                                         err_code=[272, 273, 274, 275],
+                                         position_inp=[False, False, False, False],
+                                         di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
             return True
         return False
 
@@ -414,27 +419,28 @@ class TestBDUDR01:
             if self.st_test_bdu_dr01():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_debug('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
