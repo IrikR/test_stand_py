@@ -61,6 +61,7 @@ class TestBDU1:
         Тест 1. Проверка исходного состояния блока.
         :return: Bool
         """
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0, err_code=[30], di_xx=['inp_01'],
                                          position_inp=[False]):
             return True
@@ -76,7 +77,7 @@ class TestBDU1:
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
-        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0, err_code=30, di_xx='inp_01',
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0, err_code=[30], di_xx=['inp_01'],
                                          position_inp=[False]):
             return True
         return False
@@ -96,7 +97,7 @@ class TestBDU1:
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
-        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.1, err_code=21, di_xx='inp_01',
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.1, err_code=[21], di_xx=['inp_01'],
                                          position_inp=[True]):
             return True
         return False
@@ -115,7 +116,7 @@ class TestBDU1:
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
-        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.2, err_code=23, di_xx='inp_01',
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.2, err_code=[23], di_xx=['inp_01'],
                                          position_inp=[False]):
             return True
         return False
@@ -142,7 +143,7 @@ class TestBDU1:
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
-        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.0, err_code=28, di_xx='inp_01',
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.0, err_code=[28], di_xx=['inp_01'],
                                          position_inp=[False]):
             return True
         return False
@@ -163,7 +164,7 @@ class TestBDU1:
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
-        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.0, err_code=29, di_xx='inp_01',
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.0, err_code=[29], di_xx=['inp_01'],
                                          position_inp=[False]):
             self.conn_opc.ctrl_relay('KL12', True)
             return True
@@ -189,7 +190,7 @@ class TestBDU1:
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
-        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.0, err_code=3, di_xx='inp_01',
+        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.0, err_code=[3], di_xx=['inp_01'],
                                          position_inp=[False]):
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL11', False)
@@ -215,7 +216,7 @@ class TestBDU1:
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
-        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.0, err_code=29, di_xx='in_a1',
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.0, err_code=[29], di_xx=['inp_01'],
                                          position_inp=[False]):
             return True
         return False
