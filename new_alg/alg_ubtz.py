@@ -72,6 +72,7 @@ class TestUBTZ:
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
     def st_test_10(self) -> bool:
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
         self.logger.debug("старт теста 1.0")
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
