@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -10,33 +8,31 @@
 Производитель: Без Производителя, Горэкс-Светотехника.
 """
 
+__all__ = ["TestBUAPSHM"]
+
 import logging
 import sys
 from time import sleep
 
 from .general_func.database import *
 from .general_func.exception import *
-from .general_func.modbus import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.reset import ResetRelay
 from .general_func.resistance import Resistor
-from .general_func.subtest import Subtest2in, ReadOPCServer
-from .gui.msgbox_1 import *
+from .general_func.subtest import Subtest2in
 from .general_func.utils import CLILog
-
-
-__all__ = ["TestBUAPSHM"]
+from .gui.msgbox_1 import *
 
 
 class TestBUAPSHM:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.resist = Resistor()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.subtest = Subtest2in()
-        self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBUAPShM.log",
@@ -53,19 +49,23 @@ class TestBUAPSHM:
         Тест 1. Проверка исходного состояния контактов блока:
         1.1. Проверка состояния контактов блока при подаче напряжения питания
         """
-        self.logger.debug("старт теста 1.0")
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.0, err_code_a=99, err_code_b=100, position_a=False,
-                                         position_b=False):
-            self.ctrl_kl.ctrl_relay('KL21', True)
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[99, 100],
+                                         position_inp=[False, False],
+                                         di_xx=['inp_01', 'inp_02']):
+            self.conn_opc.ctrl_relay('KL21', True)
             self.logger.debug("включен KL21")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
-            self.cli_log.log_msg("таймаут 1 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.1, err_code_a=101, err_code_b=102,
-                                             position_a=False, position_b=False):
+            self.cli_log.lev_debug("таймаут 1 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.1,
+                                             err_code=[101, 102],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
                 return True
         return False
 
@@ -77,16 +77,18 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 2.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=2, subtest_num=2.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
-            self.ctrl_kl.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
-            self.cli_log.log_msg("таймаут 1 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.1, err_code_a=105, err_code_b=106,
-                                             position_a=False, position_b=False):
+            self.cli_log.lev_debug("таймаут 1 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.1,
+                                             err_code=[105, 106],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
                 return True
         return False
 
@@ -98,16 +100,18 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 3.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=3, subtest_num=3.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.resist.resist_10_to_110_ohm()
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=3, subtest_num=3.1, err_code_a=107, err_code_b=108,
-                                             position_a=False, position_b=False):
-                self.ctrl_kl.ctrl_relay('KL12', False)
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.1,
+                                             err_code=[107, 108],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
+                self.conn_opc.ctrl_relay('KL12', False)
                 self.logger.debug("отключен KL12")
                 return True
         return False
@@ -119,18 +123,20 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 4.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=4, subtest_num=4.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
-            self.ctrl_kl.ctrl_relay('KL11', True)
+            self.conn_opc.ctrl_relay('KL11', True)
             self.logger.debug("включен KL11")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=4, subtest_num=4.1, err_code_a=109, err_code_b=110,
-                                             position_a=False, position_b=False):
-                self.ctrl_kl.ctrl_relay('KL12', False)
-                self.ctrl_kl.ctrl_relay('KL11', False)
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.1,
+                                             err_code=[109, 110],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
+                self.conn_opc.ctrl_relay('KL12', False)
+                self.conn_opc.ctrl_relay('KL11', False)
                 self.logger.debug("отключены KL12, KL11")
                 return True
         return False
@@ -142,16 +148,18 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 5.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=5, subtest_num=5.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
-            self.ctrl_kl.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=5, subtest_num=5.1, err_code_a=111, err_code_b=112,
-                                             position_a=False, position_b=False):
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.1,
+                                             err_code=[111, 112],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
                 return True
         return False
 
@@ -164,21 +172,23 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 6.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL26', True)
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        self.conn_opc.ctrl_relay('KL26', True)
         self.logger.debug("включен KL26")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=6, subtest_num=6.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
-            self.ctrl_kl.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
-            self.cli_log.log_msg("таймаут 1 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=6, subtest_num=6.1, err_code_a=115, err_code_b=116,
-                                             position_a=False, position_b=False):
+            self.cli_log.lev_debug("таймаут 1 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.1,
+                                             err_code=[115, 116],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
                 return True
         return False
 
@@ -190,16 +200,18 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 1.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=7, subtest_num=7.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.resist.resist_10_to_110_ohm()
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=7, subtest_num=7.1, err_code_a=117, err_code_b=118,
-                                             position_a=False, position_b=False):
-                self.ctrl_kl.ctrl_relay('KL12', False)
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=7, subtest_num=7.1,
+                                             err_code=[117, 118],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
+                self.conn_opc.ctrl_relay('KL12', False)
                 self.logger.debug("отключен KL12")
                 return True
         return False
@@ -211,18 +223,20 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 1.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=8, subtest_num=8.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
-            self.ctrl_kl.ctrl_relay('KL11', True)
+            self.conn_opc.ctrl_relay('KL11', True)
             self.logger.debug("включен KL11")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=8, subtest_num=8.1, err_code_a=119, err_code_b=120,
-                                             position_a=False, position_b=False):
-                self.ctrl_kl.ctrl_relay('KL12', False)
-                self.ctrl_kl.ctrl_relay('KL11', False)
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=8, subtest_num=8.1,
+                                             err_code=[119, 120],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
+                self.conn_opc.ctrl_relay('KL12', False)
+                self.conn_opc.ctrl_relay('KL11', False)
                 self.logger.debug("отключены KL12, KL11")
                 return True
         return False
@@ -234,16 +248,18 @@ class TestBUAPSHM:
         self.logger.debug("старт теста 1.0")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=9, subtest_num=9.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
-            self.ctrl_kl.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug("отключен KL12")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_2di(test_num=9, subtest_num=9.1, err_code_a=121, err_code_b=122,
-                                             position_a=False, position_b=False):
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=9, subtest_num=9.1,
+                                             err_code=[121, 122],
+                                             position_inp=[False, False],
+                                             di_xx=['inp_01', 'inp_02']):
                 return True
         return False
 
@@ -265,27 +281,28 @@ class TestBUAPSHM:
             if self.st_test_bu_apsh_m():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f's{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
