@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -8,35 +6,30 @@
 Производитель: Пульсар.
 """
 
-import sys
-import logging
+__all__ = ["TestBZMPP1"]
 
+import logging
+import sys
 from time import sleep, time
 
-from .general_func.exception import *
 from .general_func.database import *
-from .general_func.modbus import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.reset import ResetRelay, ResetProtection
-from .general_func.subtest import ReadOPCServer
-from .gui.msgbox_1 import *
+from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.utils import CLILog
-
-__all__ = ["TestBZMPP1"]
+from .gui.msgbox_1 import *
 
 
 class TestBZMPP1:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.proc = Procedure()
         self.reset = ResetRelay()
-        self.ai_read = AIRead()
-        self.mb_ctrl = CtrlKL()
-        self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.reset_protect = ResetProtection()
-        self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.ust: float = 14.64
         self.ust_pmz: float = 25.2
@@ -68,7 +61,8 @@ class TestBZMPP1:
         """
         Тест 1. Проверка исходного состояния блока:
         """
-        self.di_read.di_read('in_b6', 'in_b7')
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             return True
         return False
@@ -84,18 +78,18 @@ class TestBZMPP1:
         else:
             self.mysql_conn.mysql_ins_result("неисправен TV1", "1")
             return False
-        self.mb_ctrl.ctrl_relay('KL73', True)
+        self.conn_opc.ctrl_relay('KL73', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL90', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL90', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL63', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', True)
         min_volt = 0.6 * meas_volt_ust
         max_volt = 1.0 * meas_volt_ust
-        meas_volt = self.ai_read.ai_read('AI0')
+        meas_volt = self.conn_opc.read_ai('AI0')
         self.logger.debug(f'напряжение после включения KL63 '
                           f'{min_volt} <= {meas_volt} <= {max_volt}')
         if min_volt <= meas_volt <= max_volt:
@@ -124,20 +118,20 @@ class TestBZMPP1:
 
     def st_test_13(self) -> bool:
         self.logger.debug("идёт тест 1.3")
-        self.mb_ctrl.ctrl_relay('KL67', True)
+        self.conn_opc.ctrl_relay('KL67', True)
         timer_test_1 = 0
         start_timer_test_1 = time()
         while timer_test_1 <= 120:
             sleep(0.2)
             timer_test_1 = time() - start_timer_test_1
-            in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
+            inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
             self.logger.debug(f'времени прошло\t{timer_test_1:.1f}')
-            if in_a1 is True and in_a6 is False:
+            if inp_01 is True and inp_06 is False:
                 break
             else:
                 continue
-        in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
-        if in_a1 is True and in_a6 is False:
+        inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
+        if inp_01 is True and inp_06 is False:
             pass
         else:
             self.mysql_conn.mysql_ins_result("неисправен", "1")
@@ -163,16 +157,16 @@ class TestBZMPP1:
 
     def st_test_22(self) -> bool:
         self.logger.debug("идёт тест 2.2")
-        self.mb_ctrl.ctrl_relay('KL63', True)
+        self.conn_opc.ctrl_relay('KL63', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL63', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', False)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
-        if in_a1 is False and in_a6 is True:
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
+        if inp_01 is False and inp_06 is True:
             pass
         else:
             self.logger.debug("положение выходов не соответствует")
@@ -206,36 +200,36 @@ class TestBZMPP1:
 
     def st_test_31(self) -> bool:
         self.logger.debug("идёт тест 3.1")
-        self.mb_ctrl.ctrl_relay('KL81', True)
+        self.conn_opc.ctrl_relay('KL81', True)
         sleep(0.1)
         self.logger.debug("таймаут 0.1 сек")
-        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL63', True)
-        in_b1, *_ = self.di_read.di_read('in_b1')
+        self.cli_log.lev_debug("таймаут 0.1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', True)
+        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
         i = 0
-        while in_b1 is False and i <= 10:
-            in_b1, *_ = self.di_read.di_read('in_b1')
+        while inp_09 is False and i <= 10:
+            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
             i += 1
         start_timer = time()
-        in_a6, *_ = self.di_read.di_read('in_a6')
+        inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
         stop_timer = 0
-        while in_a6 is False and stop_timer <= 12:
-            in_a6, *_ = self.di_read.di_read('in_a6')
+        while inp_06 is False and stop_timer <= 12:
+            inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
             stop_timer = time() - start_timer
         self.timer_test_5_2 = stop_timer
         self.logger.debug(f'таймер тест 3: {self.timer_test_5_2:.1f}')
-        in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
-        if in_a1 is False and in_a6 is True and self.timer_test_5_2 <= 12:
+        inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
+        if inp_01 is False and inp_06 is True and self.timer_test_5_2 <= 12:
             pass
         else:
             self.logger.debug("положение выходов не соответствует")
             self.mysql_conn.mysql_ins_result("неисправен", "3")
             self.reset.sbros_kl63_proc_all()
-            self.mb_ctrl.ctrl_relay('KL81', False)
+            self.conn_opc.ctrl_relay('KL81', False)
             return False
         self.logger.debug("положение выходов соответствует")
         self.reset.sbros_kl63_proc_all()
-        self.mb_ctrl.ctrl_relay('KL81', False)
+        self.conn_opc.ctrl_relay('KL81', False)
         return True
 
     def st_test_32(self) -> bool:
@@ -243,16 +237,16 @@ class TestBZMPP1:
         3.5. Сброс защит после проверки
         """
         self.logger.debug("идёт тест 3.2")
-        self.mb_ctrl.ctrl_relay('KL24', True)
+        self.conn_opc.ctrl_relay('KL24', True)
         sleep(4)
         self.logger.debug("таймаут 4 сек")
-        self.cli_log.log_msg("таймаут 4 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL24', False)
+        self.cli_log.lev_debug("таймаут 4 сек", "gray")
+        self.conn_opc.ctrl_relay('KL24', False)
         sleep(0.7)
         self.logger.debug("таймаут 0.7 сек")
-        self.cli_log.log_msg("таймаут 0.7 сек", "gray")
-        in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
-        if in_a1 is True and in_a6 is False:
+        self.cli_log.lev_debug("таймаут 0.7 сек", "gray")
+        inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
+        if inp_01 is True and inp_06 is False:
             pass
         else:
             self.logger.debug("положение выходов не соответствует")
@@ -281,23 +275,23 @@ class TestBZMPP1:
         4.2.  Проверка срабатывания блока от сигнала нагрузки:
         """
         self.logger.debug("идёт тест 4.1")
-        self.mb_ctrl.ctrl_relay('KL63', True)
-        in_b1, *_ = self.di_read.di_read('in_b1')
+        self.conn_opc.ctrl_relay('KL63', True)
+        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
         k = 0
-        while in_b1 is False and k <= 10:
-            in_b1, *_ = self.di_read.di_read('in_b1')
+        while inp_09 is False and k <= 10:
+            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
             k += 1
         start_timer = time()
-        in_a6, *_ = self.di_read.di_read('in_a6')
+        inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
         stop_timer = 0
-        while in_a6 is False and stop_timer <= 360:
-            in_a6, *_ = self.di_read.di_read('in_a6')
+        while inp_06 is False and stop_timer <= 360:
+            inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
             stop_timer = time() - start_timer
             self.logger.debug(f'таймер тест 4: {stop_timer:.1f}')
         self.timer_test_6_2 = stop_timer
         self.logger.debug(f'таймер тест 4: {self.timer_test_6_2:.1f}')
-        in_a1, in_a6 = self.di_read.di_read('in_a1', 'in_a6')
-        if in_a1 is False and in_a6 is True and self.timer_test_6_2 <= 360:
+        inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
+        if inp_01 is False and inp_06 is True and self.timer_test_6_2 <= 360:
             pass
         else:
             self.logger.debug("положение выходов не соответствует")
@@ -327,9 +321,11 @@ class TestBZMPP1:
         self.reset_protect.sbros_zashit_kl24()
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_2di(test_num=test_num, subtest_num=subtest_num, err_code_a=345, err_code_b=345,
-                                         position_a=True, position_b=False, di_a='in_a1', di_b='in_a6'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=test_num, subtest_num=subtest_num, 
+                                         err_code=[345, 345],
+                                         position_inp=[True, False], 
+                                         di_xx=['inp_01', 'inp_06']):
             return True
         return False
 
@@ -357,32 +353,34 @@ class TestBZMPP1:
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
+
 
 if __name__ == '__main__':
     test_bzmp_p1 = TestBZMPP1()
