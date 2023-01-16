@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -11,35 +9,33 @@
 
 """
 
-import sys
-import logging
+__all__ = ["TestMMTZD"]
 
+import logging
+import sys
 from time import sleep
 
-from .general_func.exception import *
 from .general_func.database import *
-from .general_func.modbus import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.reset import ResetRelay, ResetProtection
+from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.subtest import ProcedureFull
+from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
-from .general_func.utils import CLILog
-
-__all__ = ["TestMMTZD"]
 
 
 class TestMMTZD:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.reset_relay = ResetRelay()
         self.reset_protect = ResetProtection()
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
-        self.ctrl_kl = CtrlKL()
-        self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.list_ust_num = (10, 20, 30, 40, 50)
         # self.ust = (7.7, 16.5, 25.4, 31.9, 39.4)
@@ -74,24 +70,25 @@ class TestMMTZD:
         Тест 1. Проверка исходного состояния блока:
         :return:
         """
-        self.di_read.di_read('in_b6', 'in_b7')
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
                 return True
         return False
 
     def st_test_11(self) -> bool:
-        self.ctrl_kl.ctrl_relay('KL33', True)
+        self.conn_opc.ctrl_relay('KL33', True)
         self.reset_protect.sbros_zashit_kl1()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        if in_a1 is True and in_a5 is True:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        if inp_01 is True and inp_05 is True:
             pass
         else:
             self.mysql_conn.mysql_ins_result("неисправен", "1")
-            if in_a1 is False:
+            if inp_01 is False:
                 self.logger.debug("положение входа 1 не соответствует")
                 self.mysql_conn.mysql_error(412)
-            elif in_a5 is False:
+            elif inp_05 is False:
                 self.logger.debug("положение входа 5 не соответствует")
                 self.mysql_conn.mysql_error(413)
             return False
@@ -134,18 +131,18 @@ class TestMMTZD:
                 self.mysql_conn.mysql_ins_result('неисправен', '2')
                 return False
             # 2.1.  Проверка срабатывания блока от сигнала нагрузки:
-            self.ctrl_kl.ctrl_ai_code_v1(106)
+            self.conn_opc.ctrl_ai_code_v1(106)
             sleep(3)
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             self.reset_relay.stop_procedure_3()
-            if in_a1 is False and in_a5 is False:
+            if inp_01 is False and inp_05 is False:
                 self.logger.debug("положение выходов блока соответствует")
                 if self.subtest_23():
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_2[k]}')
                 else:
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_2[k]}')
                     return False
-            elif in_a1 is True:
+            elif inp_01 is True:
                 if self.subtest_22(i):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_2[k]}')
                 else:
@@ -153,7 +150,7 @@ class TestMMTZD:
                     self.mysql_conn.mysql_error(415)
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_2[k]}')
                     return False
-            elif in_a5 is True:
+            elif inp_05 is True:
                 if self.subtest_22(i):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_2[k]}')
                 else:
@@ -170,10 +167,10 @@ class TestMMTZD:
         Тест 3. Проверка срабатывания защиты III канала по уставкам.
         :return:
         """
-        self.ctrl_kl.ctrl_relay('KL73', True)
+        self.conn_opc.ctrl_relay('KL73', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
         if my_msg(self.msg_5):
             pass
         else:
@@ -193,17 +190,17 @@ class TestMMTZD:
                 pass
             else:
                 self.mysql_conn.mysql_ins_result('неисправен', '3')
-            self.ctrl_kl.ctrl_ai_code_v1(106)
+            self.conn_opc.ctrl_ai_code_v1(106)
             sleep(3)
-            in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+            inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             self.reset_relay.stop_procedure_3()
-            if in_a1 is False and in_a5 is False:
+            if inp_01 is False and inp_05 is False:
                 if self.subtest_33():
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_3[x]}')
                 else:
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_3[x]}')
                     return False
-            elif in_a1 is True:
+            elif inp_01 is True:
                 if self.subtest_32(y):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_3[x]}')
                 else:
@@ -211,7 +208,7 @@ class TestMMTZD:
                     self.mysql_conn.mysql_error(419)
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_3[x]}')
                     return False
-            elif in_a5 is True:
+            elif inp_05 is True:
                 if self.subtest_32(y):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_3[x]}')
                 else:
@@ -230,14 +227,14 @@ class TestMMTZD:
         :return:
         """
         self.reset_protect.sbros_zashit_kl1()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        if in_a1 is True and in_a5 is True:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        if inp_01 is True and inp_05 is True:
             pass
-        elif in_a1 is False:
+        elif inp_01 is False:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             self.mysql_conn.mysql_error(417)
             return False
-        elif in_a5 is False:
+        elif inp_05 is False:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             self.mysql_conn.mysql_error(418)
             return False
@@ -246,25 +243,25 @@ class TestMMTZD:
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
         # 2.2.2.  Проверка срабатывания блока от сигнала нагрузки:
-        self.ctrl_kl.ctrl_ai_code_v1(107)
+        self.conn_opc.ctrl_ai_code_v1(107)
         sleep(3)
         self.logger.debug("таймаут 3 сек")
-        self.cli_log.log_msg("таймаут 3 сек", "gray")
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+        self.cli_log.lev_debug("таймаут 3 сек", "gray")
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         self.reset_relay.stop_procedure_3()
-        if in_a1 is False and in_a5 is False:
+        if inp_01 is False and inp_05 is False:
             if self.subtest_23():
                 return True
             else:
                 return False
-        elif in_a1 is True:
+        elif inp_01 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             self.mysql_conn.mysql_error(415)
             if self.subtest_23():
                 return True
             else:
                 return False
-        elif in_a5 is True:
+        elif inp_05 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             self.mysql_conn.mysql_error(416)
             if self.subtest_23():
@@ -278,14 +275,14 @@ class TestMMTZD:
         :return:
         """
         self.reset_protect.sbros_zashit_kl1()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        if in_a1 is True and in_a5 is True:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        if inp_01 is True and inp_05 is True:
             return True
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
-            if in_a1 is False:
+            if inp_01 is False:
                 self.mysql_conn.mysql_error(417)
-            elif in_a5 is False:
+            elif inp_05 is False:
                 self.mysql_conn.mysql_error(418)
             return False
 
@@ -296,14 +293,14 @@ class TestMMTZD:
         :return:
         """
         self.reset_protect.sbros_zashit_kl1()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        if in_a1 is True and in_a5 is True:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        if inp_01 is True and inp_05 is True:
             pass
-        elif in_a1 is False:
+        elif inp_01 is False:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             self.mysql_conn.mysql_error(417)
             return False
-        elif in_a5 is False:
+        elif inp_05 is False:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             self.mysql_conn.mysql_error(418)
             return False
@@ -313,25 +310,25 @@ class TestMMTZD:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             return False
         # 2.2.2.  Проверка срабатывания блока от сигнала нагрузки:
-        self.ctrl_kl.ctrl_ai_code_v1(107)
+        self.conn_opc.ctrl_ai_code_v1(107)
         sleep(3)
         self.logger.debug("таймаут 3 сек")
-        self.cli_log.log_msg("таймаут 3 сек", "gray")
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
+        self.cli_log.lev_debug("таймаут 3 сек", "gray")
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         self.reset_relay.stop_procedure_3()
-        if in_a1 is False and in_a5 is False:
+        if inp_01 is False and inp_05 is False:
             if self.subtest_33():
                 return True
             else:
                 return False
-        elif in_a1 is True:
+        elif inp_01 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             self.mysql_conn.mysql_error(419)
             if self.subtest_33():
                 return True
             else:
                 return False
-        elif in_a5 is True:
+        elif inp_05 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             self.mysql_conn.mysql_error(420)
             if self.subtest_33():
@@ -345,14 +342,14 @@ class TestMMTZD:
         :return:
         """
         self.reset_protect.sbros_zashit_kl1()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        if in_a1 is True and in_a5 is True:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        if inp_01 is True and inp_05 is True:
             return True
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
-            if in_a1 is False:
+            if inp_01 is False:
                 self.mysql_conn.mysql_error(417)
-            elif in_a5 is False:
+            elif inp_05 is False:
                 self.mysql_conn.mysql_error(418)
             return False
 
@@ -371,31 +368,32 @@ class TestMMTZD:
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
