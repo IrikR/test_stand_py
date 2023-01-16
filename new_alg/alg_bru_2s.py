@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -11,32 +9,30 @@
 
 """
 
-import sys
-import logging
-
-from .general_func.exception import *
-from .general_func.database import *
-from .general_func.modbus import *
-from .general_func.subtest import SubtestBDU, ReadOPCServer
-from .general_func.resistance import Resistor
-from .general_func.reset import ResetRelay
-from .gui.msgbox_1 import *
-from .general_func.utils import CLILog
-
-
 __all__ = ["TestBRU2S"]
+
+import logging
+import sys
+
+from .general_func.database import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
+from .general_func.reset import ResetRelay
+from .general_func.resistance import Resistor
+from .general_func.subtest import SubtestBDU
+from .general_func.utils import CLILog
+from .gui.msgbox_1 import *
 
 
 class TestBRU2S:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.resist = Resistor()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.sub_test = SubtestBDU()
-        self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.msg_1 = "Переведите тумблер «П/А» на блоке в положение «П» и нажмите кнопку «ОК» " \
                      "Если на блоке нет тумблера «П/А» нажмите кнопку «Отмена»"
@@ -56,7 +52,11 @@ class TestBRU2S:
         Тест 1. Проверка исходного состояния блока:
         :return: bool:
         """
-        if self.di_read_full.subtest_1di(test_num=1, subtest_num=1.0, err_code=47):
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[47],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
             return True
         return False
 
@@ -66,9 +66,12 @@ class TestBRU2S:
         :return: bool:
         """
         self.logger.debug(f"старт теста: 2, подтест: 0")
-        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.conn_opc.ctrl_relay('KL21', True)
         self.logger.debug(f'включение KL21')
-        if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.0, err_code=48, position=False):
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
+                                         err_code=[48],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
             return True
         return False
 
@@ -90,10 +93,13 @@ class TestBRU2S:
         """
         self.mysql_conn.mysql_add_message(f"старт теста: 2, подтест: 3")
         self.logger.debug(f"старт теста: 1, подтест: 0")
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug(f'отключение KL12')
-        if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.3, err_code=51, position=False):
-            self.ctrl_kl.ctrl_relay('KL25', False)
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.3,
+                                         err_code=[51],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            self.conn_opc.ctrl_relay('KL25', False)
             self.logger.debug(f'отключение KL25')
             return True
         return False
@@ -116,9 +122,12 @@ class TestBRU2S:
         """
         self.logger.debug(f"старт теста: 3, подтест: 2")
         self.resist.resist_ohm(150)
-        if self.di_read_full.subtest_1di(test_num=3, subtest_num=3.2, err_code=52, position=False):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.2,
+                                         err_code=[52],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL25', False)
             self.logger.debug(f'отключение KL12, KL25')
             return True
         return False
@@ -140,12 +149,15 @@ class TestBRU2S:
         :return: bool:
         """
         self.logger.debug(f"старт теста: 4, подтест: 2")
-        self.ctrl_kl.ctrl_relay('KL11', True)
+        self.conn_opc.ctrl_relay('KL11', True)
         self.logger.debug(f'отключение KL11')
-        if self.di_read_full.subtest_1di(test_num=4, subtest_num=4.2, err_code=53, position=False):
-            self.ctrl_kl.ctrl_relay('KL12', False)
-            self.ctrl_kl.ctrl_relay('KL25', False)
-            self.ctrl_kl.ctrl_relay('KL11', False)
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.2,
+                                         err_code=[53],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            self.conn_opc.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL25', False)
+            self.conn_opc.ctrl_relay('KL11', False)
             self.logger.debug(f'отключение KL12, KL25, KL11')
             return True
         return False
@@ -167,10 +179,13 @@ class TestBRU2S:
         :return: bool:
         """
         self.logger.debug(f"старт теста: 5, подтест: 2")
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         self.logger.debug(f'отключение KL12')
-        if self.di_read_full.subtest_1di(test_num=5, subtest_num=5.2, err_code=54, position=False):
-            self.ctrl_kl.ctrl_relay('KL25', False)
+        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.2,
+                                         err_code=[54],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            self.conn_opc.ctrl_relay('KL25', False)
             self.logger.debug(f'отключение KL25'
                               f'')
             return True
@@ -211,10 +226,13 @@ class TestBRU2S:
         """
         self.logger.debug(f"старт теста: 6, подтест: 1")
         self.resist.resist_kohm(200)
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.conn_opc.ctrl_relay('KL12', True)
         self.logger.debug(f'включение KL12')
-        if self.di_read_full.subtest_1di(test_num=6, subtest_num=6.0, err_code=55, position=False):
-            self.ctrl_kl.ctrl_relay('KL12', False)
+        if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.0,
+                                         err_code=[55],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug(f'отключение KL12')
             return True
         return False
@@ -227,10 +245,13 @@ class TestBRU2S:
         """
         self.logger.debug(f"старт теста: 7, подтест: 0")
         self.resist.resist_kohm(30)
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.conn_opc.ctrl_relay('KL12', True)
         self.logger.debug(f'включение KL12')
-        if self.di_read_full.subtest_1di(test_num=7, subtest_num=7.0, err_code=56, position=False):
-            self.ctrl_kl.ctrl_relay('KL12', False)
+        if self.conn_opc.subtest_read_di(test_num=7, subtest_num=7.0,
+                                         err_code=[56],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug(f'отключение KL12')
             return True
         return False
@@ -255,27 +276,28 @@ class TestBRU2S:
             if self.st_test_bru_2s():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
