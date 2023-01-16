@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -11,34 +9,31 @@
 
 """
 
-import sys
-import logging
+__all__ = ["TestBUPMVIR"]
 
+import logging
+import sys
 from time import sleep
 
-from .general_func.exception import *
 from .general_func.database import *
-from .general_func.modbus import *
-from .general_func.subtest import SubtestBDU, ReadOPCServer
-from .general_func.resistance import Resistor
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.reset import ResetRelay
-from .gui.msgbox_1 import *
+from .general_func.resistance import Resistor
+from .general_func.subtest import SubtestBDU
 from .general_func.utils import CLILog
-
-
-__all__ = ["TestBUPMVIR"]
+from .gui.msgbox_1 import *
 
 
 class TestBUPMVIR:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.resist = Resistor()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
         self.subtest = SubtestBDU()
-        self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBUPMVIR.log",
@@ -55,10 +50,13 @@ class TestBUPMVIR:
         Тест 1. Проверка исходного состояния блока:
         :return: bool
         """
-        if self.di_read_full.subtest_1di(test_num=1, subtest_num=1.0, err_code=47):
-            pass
-        else:
-            return False
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[47],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            return True
+        return False
 
     def st_test_11(self) -> bool:
         """
@@ -66,9 +64,14 @@ class TestBUPMVIR:
         :return: Bool
         """
         self.logger.debug("старт теста 1.1")
-        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.cli_log.lev_info("старт теста 1.1", "gray")
+        self.conn_opc.ctrl_relay('KL21', True)
         self.logger.debug("включение KL21")
-        if self.di_read_full.subtest_1di(test_num=1, subtest_num=1.1, err_code=90, position=False):
+        self.cli_log.lev_info("включение KL21", "blue")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.1,
+                                         err_code=[90],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
             return True
         return False
 
@@ -80,12 +83,16 @@ class TestBUPMVIR:
         """
         if self.subtest.subtest_a_bupmvir(test_num=2, subtest_num=2.0):
             # 2.2. Выключение блока от кнопки «Стоп» при сопротивлении 10 Ом
-            self.ctrl_kl.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug("отключение KL12")
+            self.cli_log.lev_info("отключение KL12", "blue")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_1di(test_num=2, subtest_num=2.1, err_code=92, position=False):
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.1,
+                                             err_code=[92],
+                                             position_inp=[False],
+                                             di_xx=['inp_01']):
                 return True
         return False
 
@@ -95,21 +102,28 @@ class TestBUPMVIR:
         :return: Bool
         """
         self.logger.debug("старт теста 3.0")
-        self.ctrl_kl.ctrl_relay('KL22', True)
+        self.cli_log.lev_info("старт теста 3.0", "gray")
+        self.conn_opc.ctrl_relay('KL22', True)
         self.logger.debug("включение KL22")
+        self.cli_log.lev_info("включение KL22", "blue")
         self.resist.resist_ohm(10)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        self.conn_opc.ctrl_relay('KL12', True)
         self.logger.debug("включение KL12")
+        self.cli_log.lev_info("включение KL12", "blue")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_1di(test_num=3, subtest_num=3.0, err_code=93, position=False):
-            self.ctrl_kl.ctrl_relay('KL22', False)
-            self.ctrl_kl.ctrl_relay('KL12', False)
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.0,
+                                         err_code=[93],
+                                         position_inp=[False],
+                                         di_xx=['inp_01']):
+            self.conn_opc.ctrl_relay('KL22', False)
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug("отключение KL22, KL12")
+            self.cli_log.lev_info("отключение KL22, KL12", "blue")
             return True
         return False
 
@@ -122,10 +136,14 @@ class TestBUPMVIR:
             self.resist.resist_10_to_137_ohm()
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_1di(test_num=4, subtest_num=4.1, err_code=94, position=False):
-                self.ctrl_kl.ctrl_relay('KL12', False)
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.1,
+                                             err_code=[94],
+                                             position_inp=[False],
+                                             di_xx=['inp_01']):
+                self.conn_opc.ctrl_relay('KL12', False)
                 self.logger.debug("отключение KL12")
+                self.cli_log.lev_info("отключение KL12", "blue")
                 return True
         return False
 
@@ -135,15 +153,20 @@ class TestBUPMVIR:
         :return: Bool
         """
         if self.subtest.subtest_a_bupmvir(test_num=5, subtest_num=5.0):
-            self.ctrl_kl.ctrl_relay('KL11', True)
+            self.conn_opc.ctrl_relay('KL11', True)
             self.logger.debug("включение KL11")
+            self.cli_log.lev_info("включение KL11", "blue")
             sleep(1)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            if self.di_read_full.subtest_1di(test_num=5, subtest_num=5.1, err_code=95, position=False):
-                self.ctrl_kl.ctrl_relay('KL12', False)
-                self.ctrl_kl.ctrl_relay('KL11', False)
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.1,
+                                             err_code=[95],
+                                             position_inp=[False],
+                                             di_xx=['inp_01']):
+                self.conn_opc.ctrl_relay('KL12', False)
+                self.conn_opc.ctrl_relay('KL11', False)
                 self.logger.debug("отключение KL12, KL11")
+                self.cli_log.lev_info("отключение KL12, KL11", "blue")
                 return True
         return False
 
@@ -153,12 +176,16 @@ class TestBUPMVIR:
         :return: bool
         """
         if self.subtest.subtest_a_bupmvir(test_num=6, subtest_num=6.0):
-            self.ctrl_kl.ctrl_relay('KL12', False)
+            self.conn_opc.ctrl_relay('KL12', False)
             self.logger.debug("отключение KL12")
+            self.cli_log.lev_info("отключение KL12", "blue")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
-            self.cli_log.log_msg("таймаут 1 сек", "gray")
-            if self.di_read_full.subtest_1di(test_num=6, subtest_num=6.1, err_code=96, position=False):
+            self.cli_log.lev_debug("таймаут 1 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.1,
+                                             err_code=[96],
+                                             position_inp=[False],
+                                             di_xx=['inp_01']):
                 return True
         return False
 
@@ -168,24 +195,33 @@ class TestBUPMVIR:
         :return: Bool
         """
         if self.subtest.subtest_a_bupmvir(test_num=7, subtest_num=7.0):
-            self.ctrl_kl.ctrl_relay('KL27', False)
-            self.ctrl_kl.ctrl_relay('KL30', True)
+            self.conn_opc.ctrl_relay('KL27', False)
+            self.conn_opc.ctrl_relay('KL30', True)
             self.logger.debug("отключение KL27, KL30")
+            self.cli_log.lev_info("отключение KL27, KL30", "blue")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
-            self.cli_log.log_msg("таймаут 2 сек", "gray")
-            self.ctrl_kl.ctrl_relay('KL27', True)
+            self.cli_log.lev_debug("таймаут 2 сек", "gray")
+            self.conn_opc.ctrl_relay('KL27', True)
             self.logger.debug("включение KL27")
+            self.cli_log.lev_info("включение KL27", "blue")
             sleep(6)
             self.logger.debug("таймаут 6 сек")
-            self.cli_log.log_msg("таймаут 6 сек", "gray")
-            if self.di_read_full.subtest_1di(test_num=7, subtest_num=7.1, err_code=97, position=False):
-                self.ctrl_kl.ctrl_relay('KL30', False)
+            self.cli_log.lev_debug("таймаут 6 сек", "gray")
+            if self.conn_opc.subtest_read_di(test_num=7, subtest_num=7.1,
+                                             err_code=[97],
+                                             position_inp=[False],
+                                             di_xx=['inp_01']):
+                self.conn_opc.ctrl_relay('KL30', False)
                 self.logger.debug("отключение KL30")
+                self.cli_log.lev_info("отключение KL30", "blue")
                 sleep(6)
                 self.logger.debug("таймаут 6 сек")
-                self.cli_log.log_msg("таймаут 6 сек", "gray")
-                if self.di_read_full.subtest_1di(test_num=7, subtest_num=7.2, err_code=98, position=True):
+                self.cli_log.lev_debug("таймаут 6 сек", "gray")
+                if self.conn_opc.subtest_read_di(test_num=7, subtest_num=7.2,
+                                                 err_code=[98],
+                                                 position_inp=[True],
+                                                 di_xx=['inp_01']):
                     return True
         return False
 
@@ -210,27 +246,28 @@ class TestBUPMVIR:
             if self.st_test_bu_pmvir():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
