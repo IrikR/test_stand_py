@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -10,6 +8,8 @@
 Производитель: Строй-энергомаш, ТЭТЗ-Инвест, нет производителя
 """
 
+__all__ = ["TestBP"]
+
 import logging
 import math
 import sys
@@ -17,14 +17,10 @@ from time import sleep
 
 from .general_func.database import *
 from .general_func.exception import *
-from .general_func.modbus import *
-from .general_func.reset import ResetRelay, ResetProtection
-from .general_func.subtest import ReadOPCServer
-from .gui.msgbox_1 import *
+from .general_func.opc_full import ConnectOPC
+from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.utils import CLILog
-
-
-__all__ = ["TestBP"]
+from .gui.msgbox_1 import *
 
 
 class TestBP:
@@ -34,14 +30,11 @@ class TestBP:
     """
 
     def __init__(self):
-        self.mb_ctrl = CtrlKL()
-        self.ai_read = AIRead()
-        self.di_read = DIRead()
+        self.conn_opc = ConnectOPC()
         self.reset_relay = ResetRelay()
         self.reset_protect = ResetProtection()
         self.mysql_conn = MySQLConnect()
-        self.di_read_full = ReadOPCServer()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.capacitor_capacitance: float = 0.0
         self.capacitor_capacitance_d: float = 0.0
@@ -63,18 +56,19 @@ class TestBP:
         Тест 1. Проверка исходного состояния блока:
         Переключение АЦП на AI.1 канал
         """
-        self.logger.debug("старт теста 1.0")
-        self.di_read.di_read('in_b6', 'in_b7')
+
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             pass
         else:
             return False
         self.mysql_conn.mysql_ins_result("идёт тест 1", "1")
-        self.mb_ctrl.ctrl_relay('KL78', True)
-        if self.di_read_full.subtest_4di(test_num=1, subtest_num=1.0,
-                                         err_code_a=344, err_code_b=344, err_code_c=344, err_code_d=344,
-                                         position_a=True, position_b=False, position_c=True, position_d=False,
-                                         di_a='in_a6', di_b='in_a1', di_c='in_a7', di_d='in_a2'):
+        self.conn_opc.ctrl_relay('KL78', True)
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[344, 344, 344, 344],
+                                         position_inp=[True, False, True, False],
+                                         di_xx=['inp_06', 'inp_01', 'inp_07', 'inp_02']):
             return True
         return False
 
@@ -85,23 +79,23 @@ class TestBP:
         """
         self.logger.debug("старт теста 2.0")
         self.mysql_conn.mysql_ins_result("идёт тест 2.1", "2")
-        self.mb_ctrl.ctrl_relay('KL77', True)
+        self.conn_opc.ctrl_relay('KL77', True)
         sleep(0.3)
         self.logger.debug("таймаут 0.3 сек")
-        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL65', True)
+        self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
+        self.conn_opc.ctrl_relay('KL65', True)
         sleep(0.3)
         self.logger.debug("таймаут 0.3 сек")
-        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL66', True)
+        self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
+        self.conn_opc.ctrl_relay('KL66', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL76', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL76', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        charge_1 = self.ai_read.ai_read('AI2')
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        charge_1 = self.conn_opc.read_ai('AI2')
         self.logger.info(f'заряд конденсатора по истечении 5с:\t{charge_1} В')
         if charge_1 != 999:
             pass
@@ -110,8 +104,8 @@ class TestBP:
             return False
         sleep(15)
         self.logger.debug("таймаут 15 сек")
-        self.cli_log.log_msg("таймаут 15 сек", "gray")
-        charge_2 = self.ai_read.ai_read('AI2')
+        self.cli_log.lev_debug("таймаут 15 сек", "gray")
+        charge_2 = self.conn_opc.read_ai('AI2')
         self.logger.info(f'заряд конденсатора по истечении 15с:\t{charge_2} В')
         if charge_2 != 999:
             pass
@@ -140,14 +134,14 @@ class TestBP:
             return False
         # 2.3. Форсированный разряд
         self.mysql_conn.mysql_ins_result("идёт тест 2.3", "2")
-        self.mb_ctrl.ctrl_relay('KL79', True)
+        self.conn_opc.ctrl_relay('KL79', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.mb_ctrl.ctrl_relay('KL79', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL79', False)
         sleep(0.3)
         self.logger.debug("таймаут 0.3 сек")
-        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
+        self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
         self.mysql_conn.mysql_ins_result("исправен", "2")
         self.mysql_conn.mysql_ins_result(f'{self.capacitor_capacitance:.1f}', "3")
         self.mysql_conn.mysql_ins_result(f'{self.capacitor_capacitance_d:.1f}', "4")
@@ -159,14 +153,14 @@ class TestBP:
         """
         self.logger.debug("старт теста 3.0")
         self.mysql_conn.mysql_ins_result("идёт тест 3", "5")
-        self.mb_ctrl.ctrl_relay('KL75', True)
+        self.conn_opc.ctrl_relay('KL75', True)
         sleep(0.3)
         self.logger.debug("таймаут 0.3 сек")
-        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=5, subtest_num=5.0,
-                                         err_code_a=344, err_code_b=344, err_code_c=344, err_code_d=344,
-                                         position_a=False, position_b=True, position_c=False, position_d=True,
-                                         di_a='in_a6', di_b='in_a1', di_c='in_a7', di_d='in_a2'):
+        self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.0,
+                                         err_code=[344, 344, 344, 344],
+                                         position_inp=[False, True, False, True],
+                                         di_xx=['inp_06', 'inp_01', 'inp_07', 'inp_02']):
             self.reset_protect.sbros_testa_bp_1()
             self.mysql_conn.mysql_ins_result("неисправен", "5")
             return True
@@ -179,7 +173,7 @@ class TestBP:
         """
         self.logger.debug("старт теста 4.0")
         self.mysql_conn.mysql_ins_result("идёт тест 4", "6")
-        meas_volt = self.ai_read.ai_read('AI2')
+        meas_volt = self.conn_opc.read_ai('AI2')
         calc_volt = meas_volt * (103 / 3)
         self.logger.debug(f'вычисленное напряжение, должно быть больше 6\t{calc_volt:.2f}')
         if calc_volt >= 6:
@@ -205,27 +199,28 @@ class TestBP:
             if self.st_test_bp():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
