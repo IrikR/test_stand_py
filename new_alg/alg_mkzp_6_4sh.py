@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -10,32 +8,29 @@
 Производитель: ЗМТ «Энергия»
 """
 
-import sys
-import logging
+__all__ = ["TestMKZP6"]
 
+import logging
+import sys
 from time import sleep
 
-from .general_func.exception import *
 from .general_func.database import *
-from .general_func.modbus import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
 from .general_func.reset import ResetRelay
-from .gui.msgbox_1 import *
 from .general_func.utils import CLILog
-
-__all__ = ["TestMKZP6"]
+from .gui.msgbox_1 import *
 
 
 class TestMKZP6:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.reset = ResetRelay()
         self.proc = Procedure()
-        self.ai_read = AIRead()
-        self.ctrl_kl = CtrlKL()
-        self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.ust_1: float = 45.1
         self.ust_2: float = 15.0
@@ -99,7 +94,8 @@ class TestMKZP6:
         Тест 1
         :return: 
         """
-        self.di_read.di_read('in_b6', 'in_b7')
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             pass
         else:
@@ -113,16 +109,16 @@ class TestMKZP6:
             self.logger.debug('неисправен')
             self.mysql_conn.mysql_ins_result("неисправен", '1')
             return False
-        self.ctrl_kl.ctrl_relay('KL73', True)
+        self.conn_opc.ctrl_relay('KL73', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL90', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL90', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', True)
-        meas_volt = self.ai_read.ai_read('AI0')
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', True)
+        meas_volt = self.conn_opc.read_ai('AI0')
         self.logger.debug(f'измеренное напряжение:\t{meas_volt}')
         if 0.8 * meas_volt_ust <= meas_volt <= 1.0 * meas_volt_ust:
             pass
@@ -143,27 +139,27 @@ class TestMKZP6:
             self.mysql_conn.mysql_ins_result('неисправен', '1')
             return False
         self.reset.stop_procedure_32()
-        self.ctrl_kl.ctrl_relay('KL100', True)
+        self.conn_opc.ctrl_relay('KL100', True)
         sleep(0.3)
         self.logger.debug("таймаут 0.3 сек")
-        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
+        self.conn_opc.ctrl_relay('KL21', True)
         sleep(0.3)
         self.logger.debug("таймаут 0.3 сек")
-        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL36', True)
+        self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
+        self.conn_opc.ctrl_relay('KL36', True)
         sleep(0.3)
         self.logger.debug("таймаут 0.3 сек")
-        self.cli_log.log_msg("таймаут 0.3 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL88', True)
+        self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
+        self.conn_opc.ctrl_relay('KL88', True)
         sleep(2.5)
         self.logger.debug("таймаут 2.5 сек")
-        self.cli_log.log_msg("таймаут 2.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL66', True)
+        self.cli_log.lev_debug("таймаут 2.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL66', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL92', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL92', True)
         return True
 
     def st_test_12(self) -> bool:
@@ -181,8 +177,8 @@ class TestMKZP6:
             return False
         sleep(10)
         self.logger.debug("таймаут 10 сек")
-        self.cli_log.log_msg("таймаут 10 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL99', True)
+        self.cli_log.lev_debug("таймаут 10 сек", "gray")
+        self.conn_opc.ctrl_relay('KL99', True)
         return True
 
     def st_test_13(self) -> bool:
@@ -190,7 +186,7 @@ class TestMKZP6:
         self.mysql_conn.mysql_ins_result("идёт тест 1.4", '1')
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
         if my_msg(self.msg_5):
             pass
         else:
@@ -200,8 +196,8 @@ class TestMKZP6:
             return False
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL99', False)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL99', False)
         return True
 
     def st_test_14(self) -> bool:
@@ -209,7 +205,7 @@ class TestMKZP6:
         self.mysql_conn.mysql_ins_result("идёт тест 1.5", '1')
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
         if my_msg(self.msg_7):
             pass
         else:
@@ -230,11 +226,11 @@ class TestMKZP6:
         self.mysql_conn.mysql_ins_result("идёт тест 2.1", '2')
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL99', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL99', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
         if my_msg(self.msg_9):
             pass
         else:
@@ -242,7 +238,7 @@ class TestMKZP6:
             self.mysql_conn.mysql_ins_result("неисправен", '2')
             my_msg(self.msg_6)
             return False
-        self.ctrl_kl.ctrl_relay('KL98', True)
+        self.conn_opc.ctrl_relay('KL98', True)
         return True
 
     def st_test_21(self) -> bool:
@@ -250,7 +246,7 @@ class TestMKZP6:
         self.mysql_conn.mysql_ins_result("идёт тест 2.2", '2')
         sleep(3)
         self.logger.debug("таймаут 3 сек")
-        self.cli_log.log_msg("таймаут 3 сек", "gray")
+        self.cli_log.lev_debug("таймаут 3 сек", "gray")
         if my_msg(self.msg_11):
             pass
         else:
@@ -258,7 +254,7 @@ class TestMKZP6:
             self.mysql_conn.mysql_ins_result("неисправен", '2')
             my_msg(self.msg_12)
             return False
-        self.ctrl_kl.ctrl_relay('KL98', False)
+        self.conn_opc.ctrl_relay('KL98', False)
         return True
 
     def st_test_22(self) -> bool:
@@ -270,11 +266,11 @@ class TestMKZP6:
             return False
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL97', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL97', True)
         sleep(1.5)
         self.logger.debug("таймаут 1.5 сек")
-        self.cli_log.log_msg("таймаут 1.5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 1.5 сек", "gray")
         if my_msg(self.msg_14):
             pass
         else:
@@ -284,11 +280,11 @@ class TestMKZP6:
             return False
         sleep(1.5)
         self.logger.debug("таймаут 1.5 сек")
-        self.cli_log.log_msg("таймаут 1.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL97', False)
+        self.cli_log.lev_debug("таймаут 1.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL97', False)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
         self.logger.debug('тест 2 пройден')
         self.mysql_conn.mysql_ins_result("исправен", '2')
         if my_msg(self.msg_13):
@@ -304,10 +300,10 @@ class TestMKZP6:
         """
         self.logger.debug('тест 3.1')
         self.mysql_conn.mysql_ins_result("идёт тест 3.1", '3')
-        self.ctrl_kl.ctrl_relay('KL69', True)
+        self.conn_opc.ctrl_relay('KL69', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
         if my_msg(self.msg_16):
             pass
         else:
@@ -315,7 +311,7 @@ class TestMKZP6:
             self.mysql_conn.mysql_ins_result("неисправен", '3')
             my_msg(self.msg_17)
             return False
-        self.ctrl_kl.ctrl_relay('KL69', False)
+        self.conn_opc.ctrl_relay('KL69', False)
         return True
 
     def st_test_31(self) -> bool:
@@ -323,7 +319,7 @@ class TestMKZP6:
         self.mysql_conn.mysql_ins_result("идёт тест 3.2", '3')
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
         if my_msg(self.msg_13):
             if my_msg(self.msg_18):
                 pass
@@ -349,11 +345,11 @@ class TestMKZP6:
             pass
         else:
             return False
-        self.ctrl_kl.ctrl_relay('KL99', False)
+        self.conn_opc.ctrl_relay('KL99', False)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL99', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL99', True)
         return True
 
     def st_test_41(self) -> bool:
@@ -361,7 +357,7 @@ class TestMKZP6:
         self.mysql_conn.mysql_ins_result("идёт тест 4.2", '4')
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
         if my_msg(self.msg_21):
             pass
         else:
@@ -379,12 +375,12 @@ class TestMKZP6:
             return False
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', False)
         self.reset.stop_procedure_3()
         if my_msg(self.msg_23):
             pass
@@ -408,14 +404,14 @@ class TestMKZP6:
         """
         self.logger.debug('тест 5.1')
         self.mysql_conn.mysql_ins_result("идёт тест 5.1", '5')
-        self.ctrl_kl.ctrl_relay('KL99', False)
+        self.conn_opc.ctrl_relay('KL99', False)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL99', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL99', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
         if my_msg(self.msg_25):
             pass
         else:
@@ -435,16 +431,16 @@ class TestMKZP6:
             return False
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', True)
         sleep(0.1)
         self.logger.debug("таймаут 0.1 сек")
-        self.cli_log.log_msg("таймаут 0.1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL81', True)
+        self.cli_log.lev_debug("таймаут 0.1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL81', True)
         sleep(15)
         self.logger.debug("таймаут 15 сек")
-        self.cli_log.log_msg("таймаут 15 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', False)
+        self.cli_log.lev_debug("таймаут 15 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', False)
         self.reset.stop_procedure_3()
         if my_msg(self.msg_27):
             pass
@@ -490,27 +486,32 @@ class TestMKZP6:
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
+        except ModbusConnectException as mce:
+            self.logger.debug(f'{mce}')
+            self.cli_log.lev_warning(f'{mce}', 'red')
+            my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
