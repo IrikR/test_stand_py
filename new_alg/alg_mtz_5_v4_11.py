@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -10,38 +8,34 @@
 Производитель: Завод Электромашина.
 """
 
-import sys
-import logging
+__all__ = ["TestMTZ5V411"]
 
+import logging
+import sys
 from time import sleep, time
 
-from .general_func.exception import *
 from .general_func.database import *
-from .general_func.modbus import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
+from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.subtest import *
-from .general_func.reset import ResetRelay, ResetProtection
+from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
-from .general_func.utils import CLILog
-
-
-__all__ = ["TestMTZ5V411"]
 
 
 class TestMTZ5V411:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.reset_relay = ResetRelay()
         self.reset_protect = ResetProtection()
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
-        self.ai_read = AIRead()
-        self.ctrl_kl = CtrlKL()
-        self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
         self.sub_test = SubtestMTZ5()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.list_ust_tzp_num = (0.8, 1, 1.5, 2, 2.25, 2.5, 3)
         self.list_ust_tzp_volt = (15.4, 19.3, 29.0, 38.5, 43.4, 48.2, 57.9)
@@ -86,7 +80,8 @@ class TestMTZ5V411:
 
         :return: bool
         """
-        self.di_read.di_read('in_b6', 'in_b7')
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
                 return True
@@ -99,18 +94,18 @@ class TestMTZ5V411:
         """
         self.mysql_conn.mysql_ins_result('идёт тест 1.1', '1')
         self.logger.debug("тест 1.1")
-        self.ctrl_kl.ctrl_relay('KL1', True)
+        self.conn_opc.ctrl_relay('KL1', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL2', True)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL2', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.reset_protect.sbros_zashit_mtz5()
-        in_a1, in_a5 = self.di_read.di_read("in_a1", "in_a5")
-        self.logger.debug(f"{in_a1 = } (True), {in_a5 = } (False)")
-        if in_a1 is True and in_a5 is False:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
+        self.logger.debug(f"{inp_01 = } (True), {inp_05 = } (False)")
+        if inp_01 is True and inp_05 is False:
             return True
         self.mysql_conn.mysql_ins_result('неисправен', '1')
         return False
@@ -136,15 +131,15 @@ class TestMTZ5V411:
             pass
         else:
             return False
-        in_a1, in_a5 = self.di_read.di_read("in_a1", "in_a5")
-        self.logger.debug(f"{in_a1 = } (False), {in_a5 = } (True)")
-        if in_a1 is False and in_a5 is True:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
+        self.logger.debug(f"{inp_01 = } (False), {inp_05 = } (True)")
+        if inp_01 is False and inp_05 is True:
             pass
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
-            if in_a1 is True:
+            if inp_01 is True:
                 self.mysql_conn.mysql_error(444)
-            elif in_a5 is False:
+            elif inp_05 is False:
                 self.mysql_conn.mysql_error(445)
             return False
         return True
@@ -161,15 +156,15 @@ class TestMTZ5V411:
         self.logger.debug("тест 2.1")
         self.mysql_conn.mysql_ins_result('идёт тест 2.1', '2')
         self.reset_protect.sbros_zashit_mtz5()
-        in_a1, in_a5 = self.di_read.di_read("in_a1", "in_a5")
-        self.logger.debug(f"{in_a1 = } (True), {in_a5 = } (False)")
-        if in_a1 is True and in_a5 is False:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
+        self.logger.debug(f"{inp_01 = } (True), {inp_05 = } (False)")
+        if inp_01 is True and inp_05 is False:
             pass
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
-            if in_a1 is False:
+            if inp_01 is False:
                 self.mysql_conn.mysql_error(446)
-            elif in_a5 is True:
+            elif inp_05 is True:
                 self.mysql_conn.mysql_error(447)
             return False
         self.mysql_conn.mysql_ins_result('исправен', '2')
@@ -203,14 +198,14 @@ class TestMTZ5V411:
             # 3.1.  Проверка срабатывания блока от сигнала нагрузки:
             self.mysql_conn.mysql_ins_result(f'уставка {self.list_ust_mtz_num[k]}', '3')
             # Δ%= 3.4364*(U4[i])/0.63
-            meas_volt = self.ai_read.ai_read('AI0')
+            meas_volt = self.conn_opc.read_ai('AI0')
             calc_delta_percent_mtz = 3.4364 * meas_volt / 0.63
             self.list_delta_percent_mtz.append(f'{calc_delta_percent_mtz:.2f}')
 
-            calc_delta_t_mtz, in_a1, in_a5 = self.sub_test.subtest_time_calc_mtz()
-            self.logger.debug(f"время срабатывания: {calc_delta_t_mtz}мс: {in_a1 = } (True), {in_a5 = } (False)")
+            calc_delta_t_mtz, inp_01, inp_05 = self.sub_test.subtest_time_calc_mtz()
+            self.logger.debug(f"время срабатывания: {calc_delta_t_mtz}мс: {inp_01 = } (True), {inp_05 = } (False)")
             self.reset_relay.stop_procedure_3()
-            if calc_delta_percent_mtz != 9999 and in_a1 is False and in_a5 is True:
+            if calc_delta_percent_mtz != 9999 and inp_01 is False and inp_05 is True:
                 self.list_delta_t_mtz.append(f'{calc_delta_t_mtz:.1f}')
                 self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_mtz_num[k]}\t'
                                                   f'дельта t: {calc_delta_t_mtz:.1f}\t'
@@ -277,30 +272,30 @@ class TestMTZ5V411:
                 self.mysql_conn.mysql_ins_result("неисправен TV1", "4")
                 return False
             # Δ%= 3.4364*U4[i]/0.63
-            meas_volt = self.ai_read.ai_read('AI0')
+            meas_volt = self.conn_opc.read_ai('AI0')
             calc_delta_percent_tzp = 3.4364 * meas_volt / 0.63
             self.list_delta_percent_tzp.append(f'{calc_delta_percent_tzp:.2f}')
             # 4.4.  Проверка срабатывания блока от сигнала нагрузки:
-            self.ctrl_kl.ctrl_relay('KL63', True)
+            self.conn_opc.ctrl_relay('KL63', True)
             r = 0
-            in_b1, *_ = self.di_read.di_read('in_b1')
-            while in_b1 is False and r <= 5:
-                in_b1, *_ = self.di_read.di_read("in_b1")
+            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
+            while inp_09 is False and r <= 5:
+                inp_09, *_ = self.conn_opc.simplified_read_di(["inp_09"])
                 r += 1
             start_timer_tzp = time()
             delta_t_tzp = 0
-            in_a5, *_ = self.di_read.di_read("in_a5")
-            while in_a5 is False and delta_t_tzp <= 30:
+            inp_05, *_ = self.conn_opc.simplified_read_di(["inp_05"])
+            while inp_05 is False and delta_t_tzp <= 30:
                 delta_t_tzp = time() - start_timer_tzp
-                in_a5, *_ = self.di_read.di_read("in_a5")
+                inp_05, *_ = self.conn_opc.simplified_read_di(["inp_05"])
             stop_timer_tzp = time()
             calc_delta_t_tzp = stop_timer_tzp - start_timer_tzp
 
-            in_a1, in_a5 = self.di_read.di_read("in_a1", "in_a5")
-            self.logger.debug(f"{in_a1 = } (False), {in_a5 = } (True)")
-            self.ctrl_kl.ctrl_relay('KL63', False)
+            inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
+            self.logger.debug(f"{inp_01 = } (False), {inp_05 = } (True)")
+            self.conn_opc.ctrl_relay('KL63', False)
             self.reset_relay.stop_procedure_3()
-            if in_a1 is False and in_a5 is True and calc_delta_t_tzp <= 30:
+            if inp_01 is False and inp_05 is True and calc_delta_t_tzp <= 30:
                 self.list_delta_t_tzp.append(f'{calc_delta_t_tzp:.1f}')
                 self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_tzp_num[m]}\t'
                                                   f'дельта t: {calc_delta_t_tzp:.1f}\t'
@@ -334,15 +329,15 @@ class TestMTZ5V411:
         """
         self.logger.debug("тест 3.2")
         self.reset_protect.sbros_zashit_mtz5()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        self.logger.debug(f"{in_a1 = } is True and {in_a5 = } is False")
-        if in_a1 is True and in_a5 is False:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        self.logger.debug(f"{inp_01 = } is True and {inp_05 = } is False")
+        if inp_01 is True and inp_05 is False:
             pass
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
-            if in_a1 is False:
+            if inp_01 is False:
                 self.mysql_conn.mysql_error(446)
-            elif in_a5 is True:
+            elif inp_05 is True:
                 self.mysql_conn.mysql_error(447)
             return False
         if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=i, factor=1.15):
@@ -351,15 +346,15 @@ class TestMTZ5V411:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             return False
         # 3.2.2.  Проверка срабатывания блока от сигнала нагрузки:
-        meas_volt = self.ai_read.ai_read('AI0')
+        meas_volt = self.conn_opc.read_ai('AI0')
         calc_delta_percent_mtz = 3.4364 * meas_volt / 0.63
         self.list_delta_percent_mtz[-1] = f'{calc_delta_percent_mtz:.2f}'
 
-        calc_delta_t_mtz, in_a1, in_a5 = self.sub_test.subtest_time_calc_mtz()
+        calc_delta_t_mtz, inp_01, inp_05 = self.sub_test.subtest_time_calc_mtz()
 
         self.reset_relay.stop_procedure_3()
 
-        if calc_delta_percent_mtz != 9999 and in_a1 is False and in_a5 is True:
+        if calc_delta_percent_mtz != 9999 and inp_01 is False and inp_05 is True:
             self.list_delta_t_mtz[-1] = f'{calc_delta_t_mtz:.1f}'
             self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_mtz_num[k]}\t'
                                               f'дельта t: {calc_delta_t_mtz:.1f}\t'
@@ -383,18 +378,18 @@ class TestMTZ5V411:
         """
         self.logger.debug("тест 3.3")
         self.reset_protect.sbros_zashit_mtz5()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        self.logger.debug(f"{in_a1 = } is True and {in_a5 = } is False")
-        if in_a1 is True and in_a5 is False:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        self.logger.debug(f"{inp_01 = } is True and {inp_05 = } is False")
+        if inp_01 is True and inp_05 is False:
             return True
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
-            if in_a1 is False:
+            if inp_01 is False:
                 self.mysql_conn.mysql_error(446)
-            elif in_a5 is True:
+            elif inp_05 is True:
                 self.mysql_conn.mysql_error(447)
             return False
-    
+
     def subtest_45(self) -> bool:
         """
         4.6.1. Сброс защит после проверки
@@ -403,15 +398,15 @@ class TestMTZ5V411:
         """
         self.logger.debug("тест 4.5")
         self.reset_protect.sbros_zashit_mtz5()
-        in_a1, in_a5 = self.di_read.di_read('in_a1', 'in_a5')
-        self.logger.debug(f"{in_a1 = } is True and {in_a5 = } is False")
-        if in_a1 is True and in_a5 is False:
+        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+        self.logger.debug(f"{inp_01 = } is True and {inp_05 = } is False")
+        if inp_01 is True and inp_05 is False:
             return True
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '4')
-            if in_a1 is False:
+            if inp_01 is False:
                 self.mysql_conn.mysql_error(446)
-            elif in_a5 is True:
+            elif inp_05 is True:
                 self.mysql_conn.mysql_error(447)
             return False
 
@@ -454,32 +449,33 @@ class TestMTZ5V411:
                 self.result_test_mtz()
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.result_test_mtz()
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
