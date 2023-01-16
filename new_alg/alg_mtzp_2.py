@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -10,34 +8,31 @@
 Производитель: Frecon.
 """
 
-import sys
-import logging
+__all__ = ["TestMTZP2"]
 
+import logging
+import sys
 from time import sleep, time
 
-from .general_func.exception import *
 from .general_func.database import *
-from .general_func.modbus import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.resistance import Resistor
 from .general_func.reset import ResetRelay
-from .gui.msgbox_1 import *
+from .general_func.resistance import Resistor
 from .general_func.utils import CLILog
-
-__all__ = ["TestMTZP2"]
+from .gui.msgbox_1 import *
 
 
 class TestMTZP2:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.reset = ResetRelay()
         self.proc = Procedure()
         self.resist = Resistor()
-        self.ai_read = AIRead()
-        self.ctrl_kl = CtrlKL()
-        self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.ust_1 = 10.9 * 8.2
         self.ust_2 = 8.2 * 8.2
@@ -76,7 +71,8 @@ class TestMTZP2:
         Подтест 1.0
         :return: bool
         """
-        self.di_read.di_read('in_b6', 'in_b7')
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             pass
         else:
@@ -102,16 +98,16 @@ class TestMTZP2:
         Подтест 1.1 продолжение
         :return: bool
         """
-        self.ctrl_kl.ctrl_relay('KL73', True)
+        self.conn_opc.ctrl_relay('KL73', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL91', True)
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL91', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', True)
-        meas_volt = self.ai_read.ai_read('AI0')
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', True)
+        meas_volt = self.conn_opc.read_ai('AI0')
         min_volt = 0.8 * self.meas_volt_ust
         max_volt = 1.0 * self.meas_volt_ust
         self.logger.debug(f'измеренное напряжение\t{min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}')
@@ -147,25 +143,25 @@ class TestMTZP2:
         Подтест 1.3
         :return: bool
         """
-        self.ctrl_kl.ctrl_relay('KL88', True)
+        self.conn_opc.ctrl_relay('KL88', True)
         sleep(10)
         self.logger.debug("таймаут 10 сек")
-        self.cli_log.log_msg("таймаут 10 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL24', True)
-        self.ctrl_kl.ctrl_relay('KL24', False)
+        self.cli_log.lev_debug("таймаут 10 сек", "gray")
+        self.conn_opc.ctrl_relay('KL24', True)
+        self.conn_opc.ctrl_relay('KL24', False)
         sleep(10)
         self.logger.debug("таймаут 10 сек")
-        self.cli_log.log_msg("таймаут 10 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL84', True)
+        self.cli_log.lev_debug("таймаут 10 сек", "gray")
+        self.conn_opc.ctrl_relay('KL84', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL84', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL84', False)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is True and in_a1 is False:
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is True and inp_01 is False:
             pass
         else:
             self.logger.debug('тест 1.3 положение выходов не соответствует')
@@ -181,20 +177,20 @@ class TestMTZP2:
         :return: bool
         """
         self.mysql_conn.mysql_ins_result('идёт тест 2.1', '2')
-        self.ctrl_kl.ctrl_relay('KL92', True)
+        self.conn_opc.ctrl_relay('KL92', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL93', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL93', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL93', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL93', False)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is False and in_a1 is True:
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is False and inp_01 is True:
             pass
         else:
             self.logger.debug('тест 2.1 положение выходов не соответствует')
@@ -211,17 +207,17 @@ class TestMTZP2:
         self.logger.debug('тест 2.1 положение выходов соответствует')
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL94', True)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL94', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL94', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL94', False)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is True and in_a1 is False:
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is True and inp_01 is False:
             pass
         else:
             self.logger.debug('тест 2.2 положение выходов не соответствует')
@@ -240,13 +236,13 @@ class TestMTZP2:
         self.resist.resist_ohm(0)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL12', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is False and in_a1 is True:
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is False and inp_01 is True:
             pass
         else:
             self.logger.debug('тест 3.1 положение выходов не соответствует')
@@ -261,13 +257,13 @@ class TestMTZP2:
         Подтест 3.2
         :return: bool
         """
-        self.ctrl_kl.ctrl_relay('KL25', True)
+        self.conn_opc.ctrl_relay('KL25', True)
         self.resist.resist_ohm(255)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is False and in_a1 is True:
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is False and inp_01 is True:
             pass
         else:
             self.logger.debug('тест 3.2 положение выходов не соответствует')
@@ -282,21 +278,21 @@ class TestMTZP2:
         :return: bool
         """
         self.mysql_conn.mysql_ins_result('идёт тест 3.3', '3')
-        self.ctrl_kl.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL12', False)
         sleep(0.2)
         self.logger.debug("таймаут 0.2 сек")
-        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL12', True)
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is True and in_a1 is False:
+        self.cli_log.lev_debug("таймаут 0.2 сек", "gray")
+        self.conn_opc.ctrl_relay('KL12', True)
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is True and inp_01 is False:
             pass
         else:
             self.logger.debug('тест 3.3 положение выходов не соответствует')
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             return False
         self.logger.debug('тест 3.3 положение выходов соответствует')
-        self.ctrl_kl.ctrl_relay('KL12', False)
-        self.ctrl_kl.ctrl_relay('KL25', False)
+        self.conn_opc.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL25', False)
         self.resist.resist_ohm(255)
         self.mysql_conn.mysql_ins_result('исправен', '3')
         return True
@@ -312,12 +308,12 @@ class TestMTZP2:
             return False
         self.mysql_conn.mysql_ins_result('идёт тест 4.1', '4')
         self.resist.resist_ohm(0)
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.conn_opc.ctrl_relay('KL12', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is False and in_a1 is True:
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is False and inp_01 is True:
             pass
         else:
             self.logger.debug('тест 4.1 положение выходов не соответствует')
@@ -337,13 +333,13 @@ class TestMTZP2:
             self.mysql_conn.mysql_ins_result('неисправен TV1', '4')
             return False
         self.mysql_conn.mysql_ins_result('идёт тест 4.2', '4')
-        self.ctrl_kl.ctrl_relay('KL63', True)
+        self.conn_opc.ctrl_relay('KL63', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', False)
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is True and in_a1 is False:
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', False)
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is True and inp_01 is False:
             pass
         else:
             self.reset.stop_procedure_3()
@@ -352,20 +348,20 @@ class TestMTZP2:
             return False
         self.logger.debug('тест 4.2 положение выходов соответствует')
         self.reset.stop_procedure_3()
-        self.ctrl_kl.ctrl_relay('KL12', False)
-        self.ctrl_kl.ctrl_relay('KL24', True)
+        self.conn_opc.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL24', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL24', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL24', False)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL84', True)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL84', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL84', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL84', False)
         self.mysql_conn.mysql_ins_result('исправен', '4')
         return True
 
@@ -382,21 +378,21 @@ class TestMTZP2:
         self.resist.resist_ohm(0)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL12', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL25', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL25', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.resist.resist_ohm(255)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is False and in_a1 is True:
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is False and inp_01 is True:
             pass
         else:
             self.logger.debug('тест 5.1 положение выходов не соответствует')
@@ -417,24 +413,24 @@ class TestMTZP2:
             self.mysql_conn.mysql_ins_result('неисправен TV1', '5')
             return False
         self.mysql_conn.mysql_ins_result('идёт тест 5.3', '5')
-        self.ctrl_kl.ctrl_relay('KL63', True)
+        self.conn_opc.ctrl_relay('KL63', True)
         start_timer = time()
         __timer = 0
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        while (in_a1 is True or in_b2 is False) and __timer <= 41:
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        while (inp_01 is True or inp_10 is False) and __timer <= 41:
             sleep(0.2)
-            in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
+            inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
             __timer = time() - start_timer
             self.logger.debug(f'времени прошло\t{__timer}')
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is True and in_a1 is False and __timer <= 35:
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is True and inp_01 is False and __timer <= 35:
             pass
         else:
             self.logger.debug('тест 5.3 положение выходов не соответствует')
             self.mysql_conn.mysql_ins_result('неисправен', '5')
             return False
         self.logger.debug('тест 5.3 положение выходов соответствует')
-        self.ctrl_kl.ctrl_relay('KL63', False)
+        self.conn_opc.ctrl_relay('KL63', False)
         self.reset.stop_procedure_3()
         self.sbros_mtzp()
         self.mysql_conn.mysql_ins_result('исправен', '5')
@@ -456,22 +452,22 @@ class TestMTZP2:
         else:
             self.mysql_conn.mysql_ins_result('неисправен TV1', '6')
             return False
-        self.ctrl_kl.ctrl_relay('KL63', True)
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.conn_opc.ctrl_relay('KL63', True)
+        self.conn_opc.ctrl_relay('KL12', True)
         sleep(0.2)
         self.logger.debug("таймаут 0.2 сек")
-        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL25', True)
+        self.cli_log.lev_debug("таймаут 0.2 сек", "gray")
+        self.conn_opc.ctrl_relay('KL25', True)
         self.resist.resist_ohm(255)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL63', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL63', False)
         sleep(0.2)
         self.logger.debug("таймаут 0.2 сек")
-        self.cli_log.log_msg("таймаут 0.2 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is True and in_a1 is False:
+        self.cli_log.lev_debug("таймаут 0.2 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is True and inp_01 is False:
             pass
         else:
             self.reset.stop_procedure_3()
@@ -497,21 +493,21 @@ class TestMTZP2:
         self.resist.resist_ohm(0)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL12', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL12', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL25', True)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        self.conn_opc.ctrl_relay('KL25', True)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.resist.resist_ohm(255)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is False and in_a1 is True:
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is False and inp_01 is True:
             pass
         else:
             self.logger.debug('тест 7.1 положение выходов не соответствует')
@@ -524,17 +520,17 @@ class TestMTZP2:
             self.mysql_conn.mysql_ins_result('неисправен TV1', '7')
             return False
         self.mysql_conn.mysql_ins_result('идёт тест 7.2', '7')
-        self.ctrl_kl.ctrl_relay('KL63', True)
+        self.conn_opc.ctrl_relay('KL63', True)
         start_timer_2 = time()
         __timer_2 = 0
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        while (in_b2 is False or in_a1 is True) and __timer_2 <= 75:
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        while (inp_10 is False or inp_01 is True) and __timer_2 <= 75:
             sleep(0.2)
-            in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
+            inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
             __timer_2 = time() - start_timer_2
             self.logger.debug(f'времени прошло\t{__timer_2}')
-        in_a1, in_b2 = self.di_read.di_read('in_a1', 'in_b2')
-        if in_b2 is True and in_a1 is False and __timer_2 <= 65:
+        inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
+        if inp_10 is True and inp_01 is False and __timer_2 <= 65:
             pass
         else:
             self.reset.sbros_kl63_proc_all()
@@ -552,22 +548,22 @@ class TestMTZP2:
         Общая функция для некоторых функций.
         :return
         """
-        self.ctrl_kl.ctrl_relay('KL12', False)
-        self.ctrl_kl.ctrl_relay('KL25', False)
+        self.conn_opc.ctrl_relay('KL12', False)
+        self.conn_opc.ctrl_relay('KL25', False)
         self.resist.resist_ohm(255)
-        self.ctrl_kl.ctrl_relay('KL24', True)
+        self.conn_opc.ctrl_relay('KL24', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL24', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL24', False)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL84', True)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL84', True)
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
-        self.cli_log.log_msg("таймаут 0.5 сек", "gray")
-        self.ctrl_kl.ctrl_relay('KL84', False)
+        self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
+        self.conn_opc.ctrl_relay('KL84', False)
 
     def st_test_mtzp_2(self) -> [bool]:
         if self.st_test_10():
@@ -595,31 +591,32 @@ class TestMTZP2:
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
