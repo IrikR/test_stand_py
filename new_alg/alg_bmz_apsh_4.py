@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -11,34 +9,32 @@
 
 """
 
-import sys
-import logging
+__all__ = ["TestBMZAPSH4"]
 
-from .general_func.exception import *
+import logging
+import sys
+
 from .general_func.database import *
-from .general_func.modbus import *
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.reset import ResetRelay, ResetProtection
+from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.subtest import ProcedureFull
+from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
-from .general_func.utils import CLILog
-
-
-__all__ = ["TestBMZAPSH4"]
 
 
 class TestBMZAPSH4:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
         self.reset_relay = ResetRelay()
         self.reset_protect = ResetProtection()
-        self.ctrl_kl = CtrlKL()
-        self.di_read = DIRead()
         self.mysql_conn = MySQLConnect()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.list_ust_num = (1, 2, 3, 4, 5)
         self.list_ust = (9.84, 16.08, 23.28, 34.44, 50.04)
@@ -63,14 +59,15 @@ class TestBMZAPSH4:
         """
         # Тест 1. Проверка исходного состояния блока:
         """
-        self.di_read.di_read('in_b6', 'in_b7')
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         msg_1 = "Установите переключатель уставок на блоке в положение 1"
         if my_msg(msg_1):
             pass
         else:
             return False
         self.mysql_conn.mysql_ins_result('идёт тест 1.1', '1')
-        self.ctrl_kl.ctrl_relay('KL66', True)
+        self.conn_opc.ctrl_relay('KL66', True)
         if self.reset_protection(test_num=1, subtest_num=1.0, err_code=342):
             return True
         return False
@@ -111,12 +108,12 @@ class TestBMZAPSH4:
             else:
                 self.mysql_conn.mysql_ins_result('неисправен TV1', '1')
             # 2.1.  Проверка срабатывания блока от сигнала нагрузки:
-            calc_delta_t = self.ctrl_kl.ctrl_ai_code_v0(111)
+            calc_delta_t = self.conn_opc.ctrl_ai_code_v0(111)
             self.logger.debug(f'delta t:\t {calc_delta_t:.1f}')
             self.list_delta_t.append(f'{calc_delta_t:.1f}')
             self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} дельта t: {calc_delta_t:.1f}')
-            in_a1, *_ = self.di_read.di_read('in_a1')
-            if in_a1 is True:
+            inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
+            if inp_01 is True:
                 self.logger.debug("вход 1 соответствует")
                 self.reset_relay.stop_procedure_3()
                 if self.reset_protection(test_num=2, subtest_num=2.2):
@@ -154,12 +151,12 @@ class TestBMZAPSH4:
             pass
         else:
             return False
-        calc_delta_t = self.ctrl_kl.ctrl_ai_code_v0(111)
+        calc_delta_t = self.conn_opc.ctrl_ai_code_v0(111)
         self.logger.info(f'delta t: {calc_delta_t:.1f}')
         self.list_delta_t[-1] = f'{calc_delta_t:.1f}'
         self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} дельта t: {calc_delta_t:.1f}')
-        in_a1, *_ = self.di_read.di_read('in_a1')
-        if in_a1 is True:
+        inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
+        if inp_01 is True:
             pass
         else:
             self.logger.debug("вход 1 не соответствует")
@@ -179,8 +176,8 @@ class TestBMZAPSH4:
         """
         self.logger.debug(f"сброс защит блока, тест {test_num}, подтест {subtest_num}")
         self.reset_protect.sbros_zashit_kl1()
-        in_a1, *_ = self.di_read.di_read('in_a1')
-        if in_a1 is False:
+        inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
+        if inp_01 is False:
             self.logger.debug("вход 1 соответствует")
             return True
         self.logger.debug("вход 1 не соответствует")
@@ -201,31 +198,32 @@ class TestBMZAPSH4:
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         except HardwareException as hwe:
             self.logger.debug(f'{hwe}')
-            self.cli_log.log_msg(f'{hwe}', 'red')
+            self.cli_log.lev_warning(f'{hwe}', 'red')
             my_msg(f'{hwe}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
