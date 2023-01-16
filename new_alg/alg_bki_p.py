@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -12,32 +10,29 @@
 
 """
 
+__all__ = ["TestBKIP"]
+
 import logging
 import sys
 from time import sleep
 
 from .general_func.database import *
 from .general_func.exception import *
-from .general_func.modbus import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.reset import ResetRelay
 from .general_func.resistance import Resistor
-from .general_func.subtest import ReadOPCServer
-from .gui.msgbox_1 import *
 from .general_func.utils import CLILog
-
-
-__all__ = ["TestBKIP"]
+from .gui.msgbox_1 import *
 
 
 class TestBKIP:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.resist = Resistor()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
-        self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         self.msg_1 = 'Переведите тумблер на блоке в режим «Предупредительный»'
         self.msg_2 = 'Переведите тумблер на блоке в режим «Аварийный»'
@@ -56,8 +51,11 @@ class TestBKIP:
         """
         Тест 1. Проверка исходного состояния блока
         """
-        if self.di_read_full.subtest_2di(test_num=1, subtest_num=1.0, err_code_a=30, err_code_b=30,
-                                         position_a=True, position_b=False, di_a='in_a0', di_b='in_a1'):
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[30, 30],
+                                         position_inp=[True, False],
+                                         di_xx=['inp_00', 'inp_01']):
             return True
         return False
 
@@ -71,17 +69,19 @@ class TestBKIP:
         else:
             self.logger.debug("от пользователя пришла отмена")
             return False
-        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.conn_opc.ctrl_relay('KL21', True)
         self.logger.debug("включен KL21")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
         self.resist.resist_kohm(220)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_2di(test_num=2, subtest_num=2.0, err_code_a=31, err_code_b=31,
-                                         position_a=True, position_b=False, di_a='in_a0', di_b='in_a1'):
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
+                                         err_code=[31, 31],
+                                         position_inp=[True, False],
+                                         di_xx=['inp_00', 'inp_01']):
             return True
         return False
 
@@ -92,12 +92,12 @@ class TestBKIP:
         """
         self.logger.debug("старт теста 3.0")
         self.resist.resist_220_to_100_kohm()
-        b = self.ctrl_kl.ctrl_ai_code_100()
+        b = self.conn_opc.ctrl_ai_code_100()
         i = 0
         while b == 2 or i <= 10:
             sleep(0.2)
             i += 1
-            b = self.ctrl_kl.ctrl_ai_code_100()
+            b = self.conn_opc.ctrl_ai_code_100()
             if b == 0:
                 break
             elif b == 1:
@@ -118,11 +118,13 @@ class TestBKIP:
             return False
         sleep(2)
         self.logger.debug("таймаут 2 сек")
-        self.cli_log.log_msg("таймаут 2 сек", "gray")
-        if self.di_read_full.subtest_2di(test_num=4, subtest_num=4.0, err_code_a=33, err_code_b=33,
-                                         position_a=True, position_b=False, di_a='in_a0', di_b='in_a1'):
+        self.cli_log.lev_debug("таймаут 2 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.0,
+                                         err_code=[33, 33],
+                                         position_inp=[True, False],
+                                         di_xx=['inp_00', 'inp_01']):
             return True
-        self.ctrl_kl.ctrl_relay('KL21', False)
+        self.conn_opc.ctrl_relay('KL21', False)
         self.logger.debug("отключен KL21")
         return False
 
@@ -131,14 +133,16 @@ class TestBKIP:
         Тест 5. Работа блока в режиме «Аварийный» при сопротивлении изоляции
         ниже 30 кОм (Подключение на внутреннее сопротивление)
         """
-        self.ctrl_kl.ctrl_relay('KL22', True)
+        self.conn_opc.ctrl_relay('KL22', True)
         self.logger.debug("включен KL22")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_2di(test_num=5, subtest_num=5.0, err_code_a=34, err_code_b=34,
-                                         position_a=False, position_b=True, di_a='in_a0', di_b='in_a1'):
-            self.ctrl_kl.ctrl_relay('KL21', False)
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.0,
+                                         err_code=[34, 34],
+                                         position_inp=[False, True],
+                                         di_xx=['inp_00', 'inp_01']):
+            self.conn_opc.ctrl_relay('KL21', False)
             self.logger.debug("отключен KL21")
             return True
         return False
@@ -157,27 +161,28 @@ class TestBKIP:
             if self.st_test_bki_p():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
