@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НОВЫЙ НЕ ОБКАТАНЫЙ !!!
 
@@ -11,33 +9,29 @@
 
 """
 
-import sys
-import logging
+__all__ = ["TestBKI2T"]
 
+import logging
+import sys
 from time import sleep
 
-from .general_func.exception import *
-from .general_func.subtest import ReadOPCServer
 from .general_func.database import *
-from .general_func.modbus import *
-from .general_func.resistance import Resistor
+from .general_func.exception import *
+from .general_func.opc_full import ConnectOPC
 from .general_func.reset import ResetRelay
-from .gui.msgbox_1 import *
+from .general_func.resistance import Resistor
 from .general_func.utils import CLILog
-
-
-__all__ = ["TestBKI2T"]
+from .gui.msgbox_1 import *
 
 
 class TestBKI2T:
 
     def __init__(self):
+        self.conn_opc = ConnectOPC()
         self.resist = Resistor()
-        self.ctrl_kl = CtrlKL()
         self.mysql_conn = MySQLConnect()
-        self.di_read_full = ReadOPCServer()
         self.reset_relay = ResetRelay()
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBKI2T.log",
@@ -53,10 +47,11 @@ class TestBKI2T:
         """
         Тест 1. Проверка исходного состояния блока:
         """
-        if self.di_read_full.subtest_4di(test_num=1, subtest_num=1.0,
-                                         err_code_a=35, err_code_b=35, err_code_c=36, err_code_d=36,
-                                         position_a=True, position_b=False, position_c=True, position_d=False,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
+                                         err_code=[35, 35, 36, 36],
+                                         position_inp=[True, False, True, False],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             return True
         return False
 
@@ -66,15 +61,15 @@ class TestBKI2T:
         нормальном сопротивлении изоляции контролируемого присоединения
         """
         self.logger.debug("старт теста 2.0")
-        self.ctrl_kl.ctrl_relay('KL21', True)
+        self.conn_opc.ctrl_relay('KL21', True)
         self.logger.debug("включен KL21")
         sleep(5)
         self.logger.debug("таймаут 5 сек")
-        self.cli_log.log_msg("таймаут 5 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=2, subtest_num=2.0,
-                                         err_code_a=37, err_code_b=37, err_code_c=38, err_code_d=38,
-                                         position_a=True, position_b=False, position_c=True, position_d=False,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        self.cli_log.lev_debug("таймаут 5 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
+                                         err_code=[37, 37, 38, 38],
+                                         position_inp=[True, False, True, False],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             return True
         return False
 
@@ -84,16 +79,16 @@ class TestBKI2T:
         уровня сопротивлении изоляции ниже 30 кОм в цепи 1 канала
         """
         self.logger.debug("старт теста 3.0")
-        self.ctrl_kl.ctrl_relay('KL31', True)
+        self.conn_opc.ctrl_relay('KL31', True)
         self.logger.debug("включен KL31")
         self.resist.resist_kohm(12)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=3, subtest_num=3.0,
-                                         err_code_a=39, err_code_b=39, err_code_c=40, err_code_d=40,
-                                         position_a=False, position_b=True, position_c=True, position_d=False,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.0,
+                                         err_code=[39, 39, 40, 40],
+                                         position_inp=[False, True, True, False],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             self.resist.resist_kohm(590)
             return True
         return False
@@ -102,10 +97,10 @@ class TestBKI2T:
         """
         Тест 4. Проверка работы 1 канала (К1) блока от кнопки «Проверка БКИ» в цепи 1 канала
         """
-        if self.di_read_full.subtest_4di(test_num=4, subtest_num=4.0,
-                                         err_code_a=37, err_code_b=37, err_code_c=38, err_code_d=38,
-                                         position_a=True, position_b=False, position_c=True, position_d=False,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.0,
+                                         err_code=[37, 37, 38, 38],
+                                         position_inp=[True, False, True, False],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             return True
         return False
 
@@ -115,18 +110,18 @@ class TestBKI2T:
         :return:
         """
         self.logger.debug("старт теста 4.1")
-        self.ctrl_kl.ctrl_relay('KL23', True)
-        self.ctrl_kl.ctrl_relay('KL22', True)
+        self.conn_opc.ctrl_relay('KL23', True)
+        self.conn_opc.ctrl_relay('KL22', True)
         self.logger.debug("включены KL23, KL22")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=4, subtest_num=4.1,
-                                         err_code_a=41, err_code_b=41, err_code_c=42, err_code_d=42,
-                                         position_a=False, position_b=True, position_c=True, position_d=False,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.1,
+                                         err_code=[41, 41, 42, 42],
+                                         position_inp=[False, True, True, False],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             self.resist.resist_kohm(590)
-            self.ctrl_kl.ctrl_relay('KL22', False)
+            self.conn_opc.ctrl_relay('KL22', False)
             self.logger.debug("отключен KL22")
             return True
         return False
@@ -137,19 +132,19 @@ class TestBKI2T:
         сопротивлении изоляции ниже 30 кОм в цепи 2 канала
         """
         self.logger.debug("старт теста 5.0")
-        self.ctrl_kl.ctrl_relay('KL31', False)
+        self.conn_opc.ctrl_relay('KL31', False)
         self.logger.debug("отключен KL31")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.resist.resist_kohm(12)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=5, subtest_num=5.0,
-                                         err_code_a=43, err_code_b=43, err_code_c=44, err_code_d=44,
-                                         position_a=True, position_b=False, position_c=False, position_d=True,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.0,
+                                         err_code=[43, 43, 44, 44],
+                                         position_inp=[True, False, False, True],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             self.resist.resist_kohm(590)
             return True
         return False
@@ -158,24 +153,24 @@ class TestBKI2T:
         """
         Тест 6. Проверка работы 2 канала (К2) блока от кнопки «Проверка БКИ» в цепи 2 канала
         """
-        if self.di_read_full.subtest_4di(test_num=6, subtest_num=6.0,
-                                         err_code_a=37, err_code_b=37, err_code_c=38, err_code_d=38,
-                                         position_a=True, position_b=False, position_c=True, position_d=False,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.0,
+                                         err_code=[37, 37, 38, 38],
+                                         position_inp=[True, False, True, False],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             return True
         return False
 
     def st_test_61(self) -> bool:
         self.logger.debug("старт теста 6.1")
-        self.ctrl_kl.ctrl_relay('KL22', True)
+        self.conn_opc.ctrl_relay('KL22', True)
         self.logger.debug("включен KL22")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
-        self.cli_log.log_msg("таймаут 1 сек", "gray")
-        if self.di_read_full.subtest_4di(test_num=6, subtest_num=6.1,
-                                         err_code_a=45, err_code_b=45, err_code_c=46, err_code_d=46,
-                                         position_a=True, position_b=False, position_c=False, position_d=True,
-                                         di_a='in_a5', di_b='in_a1', di_c='in_a6', di_d='in_a2'):
+        self.cli_log.lev_debug("таймаут 1 сек", "gray")
+        if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.1,
+                                         err_code=[45, 45, 46, 46],
+                                         position_inp=[True, False, False, True],
+                                         di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             return True
         return False
 
@@ -196,27 +191,28 @@ class TestBKI2T:
             if self.st_test_bki_2t():
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
-                self.cli_log.log_msg('Блок исправен', 'green')
+                self.cli_log.lev_info('Блок исправен', 'green')
                 my_msg('Блок исправен', 'green')
             else:
                 self.mysql_conn.mysql_block_bad()
                 self.logger.debug('Блок неисправен')
-                self.cli_log.log_msg('Блок неисправен', 'red')
+                self.cli_log.lev_warning('Блок неисправен', 'red')
                 my_msg('Блок неисправен', 'red')
         except OSError:
             self.logger.debug("ошибка системы")
-            self.cli_log.log_msg("ошибка системы", 'red')
+            self.cli_log.lev_warning("ошибка системы", 'red')
             my_msg("ошибка системы", 'red')
         except SystemError:
             self.logger.debug("внутренняя ошибка")
-            self.cli_log.log_msg("внутренняя ошибка", 'red')
+            self.cli_log.lev_warning("внутренняя ошибка", 'red')
             my_msg("внутренняя ошибка", 'red')
         except ModbusConnectException as mce:
             self.logger.debug(f'{mce}')
-            self.cli_log.log_msg(f'{mce}', 'red')
+            self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
         finally:
-            self.reset_relay.reset_all()
+            self.conn_opc.full_relay_off()
+            self.conn_opc.opc_close()
             sys.exit()
 
 
