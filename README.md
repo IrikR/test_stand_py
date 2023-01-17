@@ -5,9 +5,9 @@
 + website [https://tornaladka.ru/](https://tornaladka.ru/)
 + email [info@tornaladka.ru](info@tornaladka.ru)
 
-
-![python 3.9.8 x32](https://img.shields.io/pypi/v/:test_stand_py)
-
+> ---
+![python 3.9.8 x32](https://img.shields.io/github/pipenv/locked/python-version/:IrikR/:test_stand_py)
+> ---
 # Алгоритмы проверки блоков управления и защиты шахтных аппаратов
 
 ## Типы проверяемых блоков:
