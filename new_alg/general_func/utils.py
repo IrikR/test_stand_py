@@ -27,7 +27,7 @@ class CLILog:
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
     def lev_debug(self, msg: str, msg_color: [int, str]):
-        if self.log == "debug":
+        if self.log == "debug" or self.log is True:
             if msg_color == 7 or msg_color == 'gray':
                 # серый
                 print(f"\033[37m [{datetime.time(datetime.now())}] {self.name}: \033[37m {msg}")
@@ -74,7 +74,7 @@ class CLILog:
         gray - для основного текста
         :param msg: str
         :param msg_color: int, str
-        :return: string
+        :return:
         """
 
         if self.log == "warning" or self.log == "info" or self.log == "debug":

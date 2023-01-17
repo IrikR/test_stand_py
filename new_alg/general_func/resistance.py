@@ -9,8 +9,8 @@ __all__ = ["Resistor"]
 
 import logging
 
-from .utils import CLILog
 from .opc_full import ConnectOPC
+from .utils import CLILog
 
 
 class Resistor:
@@ -42,7 +42,6 @@ class Resistor:
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
     def resist_ohm(self, ohm: int) -> None:
-
         if ohm == 0:
             self.conn_opc.ctrl_relay('KL3', True)
             self.conn_opc.ctrl_relay('KL4', True)

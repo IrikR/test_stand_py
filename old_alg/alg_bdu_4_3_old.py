@@ -63,12 +63,12 @@ class TestBDU43(object):
         self.__ctrl_kl.ctrl_relay('KL2', True)
         in_a1 = self.__inputs_a()
         if in_a1 is False:
-            pass
+            return True
         else:
             self.__mysql_conn.mysql_error(13)
             self.__mysql_conn.mysql_ins_result("неисправен", '2')
             return False
-        return True
+
 
     def st_test_21_bdu_4_3(self) -> bool:
         """

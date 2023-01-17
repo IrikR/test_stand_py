@@ -3,5 +3,6 @@
 
 NAME = 'general_func'
 
-__all__ = ["exception", "subtest", "database", "utils", "modbus", "ctrl_tv1", "procedure", "reset", "resistance",
+__all__ = ["exception", "subtest", "database", "utils", "ctrl_tv1", "procedure", "reset", "resistance",
+           "rw_result", "opc_full",
            "NAME"]

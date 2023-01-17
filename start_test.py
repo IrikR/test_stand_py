@@ -4,7 +4,7 @@ import argparse
 import textwrap
 
 from new_alg import *
-from old_alg import *
+# from old_alg import *
 
 
 def create_parser():
@@ -86,13 +86,13 @@ class BDU:
             test_bdu_1 = alg_bdu_1.TestBDU1()
             test_bdu_1.full_test_bdu_1()
         elif self.model == "1m":
-            test_bdu_1m = alg_bdu_1m_old.TestBDU1M()
+            test_bdu_1m = alg_bdu_1m.TestBDU1M()
             test_bdu_1m.full_test_bdu_1m()
         elif self.model == "42":
-            test_bdu_4_2 = alg_bdu_4_2_old.TestBDU42()
+            test_bdu_4_2 = alg_bdu_4_2.TestBDU42()
             test_bdu_4_2.full_test_bdu_4_2()
         elif self.model == "43":
-            test_bdu_4_3 = alg_bdu_4_3_old.TestBDU43()
+            test_bdu_4_3 = alg_bdu_4_3.TestBDU43()
             test_bdu_4_3.full_test_bdu_4_3()
         elif self.model == "4tp":
             test_bdu = alg_bdu_014tp.TestBDU014TP()
@@ -104,13 +104,13 @@ class BDU:
             test_bdu_d4_2 = alg_bdu_d4_2.TestBDUD42()
             test_bdu_d4_2.full_test_bdu_d4_2()
         elif self.model == "d":
-            test_bdu = alg_bdu_d_old.TestBDUD()
+            test_bdu = alg_bdu_d.TestBDUD()
             test_bdu.full_test_bdu_d()
         elif self.model == "dr01":
-            test_bdu = alg_bdu_dr01_old.TestBDUDR01()
+            test_bdu = alg_bdu_dr01.TestBDUDR01()
             test_bdu.full_test_bdu_dr01()
         elif self.model == "rt":
-            test_bdu = alg_bdu_r_t_old.TestBDURT()
+            test_bdu = alg_bdu_r_t.TestBDURT()
             test_bdu.full_test_bdu_r_t()
 
 
@@ -124,7 +124,7 @@ class BDZ:
 
     @staticmethod
     def bdz():
-        test_bdz = alg_bdz_old.TestBDZ()
+        test_bdz = alg_bdz.TestBDZ()
         test_bdz.full_test_bdz()
 
 
@@ -142,16 +142,16 @@ class BKI:
 
     def handler_bki(self):
         if self.model == "1t":
-            test_bki = alg_bki_1t_old.TestBKI1T()
+            test_bki = alg_bki_1t.TestBKI1T()
             test_bki.full_test_bki_1t()
         elif self.model == "2t":
-            test_bki = alg_bki_2t_old.TestBKI2T()
+            test_bki = alg_bki_2t.TestBKI2T()
             test_bki.full_test_bki_2t()
         elif self.model == "6":
-            test_bki = alg_bki_6_3sh_old.TestBKI6()
+            test_bki = alg_bki_6_3sh.TestBKI6()
             test_bki.full_test_bki_6_3sh()
         elif self.model == "p":
-            test_bki = alg_bki_p_old.TestBKIP()
+            test_bki = alg_bki_p.TestBKIP()
             test_bki.full_test_bki_p()
 
 
@@ -173,18 +173,18 @@ class BMZ:
 
     def handler_bmz(self):
         if self.model == "2":
-            test_bmz = alg_bmz_2_old.TestBMZ2()
+            test_bmz = alg_bmz_2.TestBMZ2()
             test_bmz.full_test_bmz_2()
         elif self.model == "apsh4":
-            test_bmz = alg_bmz_apsh_4_old.TestBMZAPSH4()
+            test_bmz = alg_bmz_apsh_4.TestBMZAPSH4()
             test_bmz.full_test_bmz_apsh_4()
         elif self.model == "apshm":
-            test_bmz = alg_bmz_apsh_m_old.TestBMZAPSHM()
+            test_bmz = alg_bmz_apsh_m.TestBMZAPSHM()
             test_bmz.full_test_bmz_apsh_m()
 
 
 def bp():
-    test_bp = alg_bp_old.TestBP()
+    test_bp = alg_bp.TestBP()
     test_bp.full_test_bp()
 
 
@@ -200,10 +200,10 @@ class BRU:
 
     def handler_bru(self):
         if self.model == "2s":
-            test_bru = alg_bru_2s_old.TestBRU2S()
+            test_bru = alg_bru_2s.TestBRU2S()
             test_bru.full_test_bru_2s()
         elif self.model == "2sr":
-            test_bru = alg_bru_2sr_old.TestBRU2SR()
+            test_bru = alg_bru_2sr.TestBRU2SR()
             test_bru.full_test_bru_2sr()
 
 
@@ -219,7 +219,7 @@ class BTZ:
 
     def handler_btz(self):
         if self.model == "3":
-            test_btz = alg_btz_3_old.TestBTZ3()
+            test_btz = alg_btz_3.TestBTZ3()
             test_btz.full_test_btz_3()
         elif self.model == "t":
             test_btz_t = alg_btz_t.TestBTZT()
@@ -238,20 +238,20 @@ class BU:
 
     def handler_bu(self):
         if self.model == "apshm":
-            test_bu = alg_bu_apsh_m_old.TestBUAPSHM()
+            test_bu = alg_bu_apsh_m.TestBUAPSHM()
             test_bu.full_test_bu_apsh_m()
         elif self.model == "pmvir":
-            test_bu = alg_bu_pmvir_old.TestBUPMVIR()
+            test_bu = alg_bu_pmvir.TestBUPMVIR()
             test_bu.full_test_bu_pmvir()
 
 
 def bur():
-    test_bur = alg_bur_pmvir_old.TestBURPMVIR()
+    test_bur = alg_bur_pmvir.TestBURPMVIR()
     test_bur.full_test_bur_pmvir()
 
 
 def buz():
-    test_buz = alg_buz_2_old.TestBUZ2()
+    test_buz = alg_buz_2.TestBUZ2()
     test_buz.full_test_buz_2()
 
 
@@ -268,23 +268,23 @@ class BZMP:
 
     def handler_bzmp(self):
         if self.model == "d":
-            test_bzmp = alg_bzmp_d_old.TestBZMPD()
+            test_bzmp = alg_bzmp_d.TestBZMPD()
             test_bzmp.full_test_bzmp_d()
         elif self.model == "p1":
-            test_bzmp = alg_bzmp_p1_old.TestBZMPP1()
+            test_bzmp = alg_bzmp_p1.TestBZMPP1()
             test_bzmp.full_test_bzmp_p1()
         elif self.model == "p":
-            test_bzmp = alg_bzmp_p_old.TestBZMPP()
+            test_bzmp = alg_bzmp_p.TestBZMPP()
             test_bzmp.full_test_bzmp_p()
 
 
 def mkzp():
-    test_mkzp = alg_mkzp_6_4sh_old.TestMKZP6()
-    test_mkzp.full_test_mkzp()
+    test_mkzp = alg_mkzp_6_4sh.TestMKZP6()
+    test_mkzp.full_test_mkzp_6_4sh()
 
 
 def mmtz():
-    test_mmtz = alg_mmtz_d_old.TestMMTZD()
+    test_mmtz = alg_mmtz_d.TestMMTZD()
     test_mmtz.full_test_mmtz_d()
 
 
@@ -301,23 +301,23 @@ class MTZ:
 
     def handler_mtz(self):
         if self.model == "27":
-            test_mtz = alg_mtz_5_v2_7_old.TestMTZ5V27()
-            test_mtz.full_test_mtz_5_v2_7()
+            test_mtz = alg_mtz_5_v2_7.TestMTZ5V27()
+            test_mtz.full_test_mtz_5_v27()
         elif self.model == "28":
-            test_mtz = alg_mtz_5_v2_8_old.TestMTZ5V28()
-            test_mtz.full_test_mtz_5_v2_8()
+            test_mtz = alg_mtz_5_v2_8.TestMTZ5V28()
+            test_mtz.full_test_mtz_5_v28()
         elif self.model == "41":
-            test_mtz = alg_mtz_5_v4_11_old.TestMTZ5V411()
-            test_mtz.full_test_mtz_5_v4_11()
+            test_mtz = alg_mtz_5_v4_11.TestMTZ5V411()
+            test_mtz.full_test_mtz_5_v411()
 
 
 def mtzp():
-    test_mtzp = alg_mtzp_2_old.TestMTZP2()
+    test_mtzp = alg_mtzp_2.TestMTZP2()
     test_mtzp.full_test_mtzp_2()
 
 
 def pmz():
-    test_pmz = alg_pmz_old.TestPMZ()
+    test_pmz = alg_pmz.TestPMZ()
     test_pmz.full_test_pmz()
 
 
@@ -327,12 +327,12 @@ def tzp():
 
 
 def ubtz():
-    test_ubtz = alg_ubtz_old.TestUBTZ()
+    test_ubtz = alg_ubtz.TestUBTZ()
     test_ubtz.full_test_ubtz()
 
 
 def umz():
-    test_umz = alg_umz_old.TestUMZ()
+    test_umz = alg_umz.TestUMZ()
     test_umz.full_test_umz()
 
 

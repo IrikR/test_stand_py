@@ -25,7 +25,7 @@ class MySQLConnect:
         self.database = 'simple_database'
         self.auth_plugin = 'mysql_native_password'
         self.mysql_err = mysql.connector.Error
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
 
@@ -49,7 +49,7 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error('!!! Ошибка связи с базой данных MySQL !!!')
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_pmz_result(self, my_result: [str]) -> None:
         """
@@ -69,11 +69,11 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
-            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
+            self.cli_log.lev_debug(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_tzp_result(self, my_result: [str]) -> None:
         """
@@ -93,11 +93,11 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
-            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
+            self.cli_log.lev_debug(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_umz_result(self, my_result: [str]) -> None:
         """
@@ -117,11 +117,11 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
-            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
+            self.cli_log.lev_debug(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_ubtz_btz_result(self, my_result: [str]) -> None:
         """
@@ -140,11 +140,11 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
-            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
+            self.cli_log.lev_debug(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_ubtz_tzp_result(self, my_result: [str]) -> None:
         """
@@ -163,11 +163,11 @@ class MySQLConnect:
             c.executemany(sql, my_result)
             conn.commit()
             self.logger.info(f"записей в БД: {c.rowcount}")
-            self.cli_log.log_msg(f"записей в БД: {c.rowcount}", "gray")
+            self.cli_log.lev_debug(f"записей в БД: {c.rowcount}", "gray")
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_connect(self, request: str) -> None:
         """
@@ -185,7 +185,7 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def mysql_block_bad(self) -> None:
         """
@@ -238,7 +238,7 @@ class MySQLConnect:
             conn.close()
         except self.mysql_err:
             self.logger.error('Ошибка связи с базой данных MySQL.')
-            self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
     def progress_level(self, level: float) -> None:
         """
@@ -269,7 +269,7 @@ class MySQLConnect:
                 return text_0
             except self.mysql_err:
                 self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-                self.cli_log.log_msg('!!! Ошибка связи с базой данных MySQL !!!', "red")
+                self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
 
 
 if __name__ == '__main__':

@@ -77,7 +77,7 @@ class Procedure:
         self.cli_log.lev_debug("включение KL37", "blue")
         sleep(1)
         for i in range(3):
-            in_b0, *_ = self.conn_opc.simplified_read_di(['in_b0'])
+            in_b0, *_ = self.conn_opc.simplified_read_di(['inp_08'])
             self.logger.debug(f"in_b0 = {in_b0} (False)")
             self.cli_log.lev_info(f"in_b0 = {in_b0} (False)", "skyblue")
             if in_b0 is False:

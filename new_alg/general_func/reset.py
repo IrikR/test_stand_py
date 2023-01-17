@@ -21,7 +21,7 @@ class ResetRelay:
     """
 
     def __init__(self):
-        self.cli_log = CLILog("info", __name__)
+        self.cli_log = CLILog("debug", __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
         self.conn_opc = ConnectOPC()
@@ -112,7 +112,7 @@ class ResetProtection:
     Сброс защиты испытуемого блока.
     """
     def __init__(self):
-        self.cli_log = CLILog(True, __name__)
+        self.cli_log = CLILog("debug", __name__)
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
         self.conn_opc = ConnectOPC()
