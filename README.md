@@ -3,11 +3,10 @@
 ООО "ТОР"
 
 + website [https://tornaladka.ru/](https://tornaladka.ru/)
-+ email [info@tornaladka.ru](info@tornaladka.ru)
++ email [info@tornaladka.ru](mailto:info@tornaladka.ru)
 
 > ---
 ![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/IrikR/test_stand_py?color=blue)
-
 > ---
 # Алгоритмы проверки блоков управления и защиты шахтных аппаратов
 
