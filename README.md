@@ -6,7 +6,8 @@
 + email [info@tornaladka.ru](info@tornaladka.ru)
 
 > ---
-![python](https://img.shields.io/github/pipenv/locked/python-version/:IrikR/:test_stand_py)
+![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/IrikR/test_stand_py?color=blue)
+
 > ---
 # Алгоритмы проверки блоков управления и защиты шахтных аппаратов
 
