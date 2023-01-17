@@ -4,7 +4,8 @@
 + email [info@tornaladka.ru](info@tornaladka.ru)
 
 
-![python](https://img.shields.io/github/pipenv/locked/python-version/:IrikR/:test_stand_py)
+[//]: # (![python 3.9.8 x32]&#40;https://img.shields.io/pypi/v/:test_stand_py&#41;)
+
 # Алгоритмы проверки блоков защит 
 
 ## Типы проверяемых блоков:
