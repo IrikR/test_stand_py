@@ -54,3 +54,18 @@ def bdu_1m():
 ```
 таким образом будет произведен вызов обновленного алгоритма проверки.
 Скрипт _start_test.py_ запускает только обновленные версии.
+
+Компиляция скриптов.
+
+Для компиляции всех скриптов необходимо вызвать программу _compileall.py_, которая находится в директории **Lib** 
+интерпретатора **Python**, в моем случае это _C:\Python39_x32\Lib\compileall.py_, и указать полный путь к директории 
+в которой находятся скрипты, опять же в моем случае это _"D:\python_dev\dev_python_398_x32\test_stand_all_version\proj
+ect_class\"_.
+```commandline
+C:\Python39_x32\Lib\compileall.py D:\python_dev\dev_python_398_x32\test_stand_all_version\project_class\
+```
+При удачном компилировании будет выведено следующее (в моем же случае)
+```commandline
+Compiling 'D:\\python_dev\\dev_python_398_x32\\test_stand_all_version\\project_class\\test_ubtz_class.py'...
+Compiling 'D:\\python_dev\\dev_python_398_x32\\test_stand_all_version\\project_class\\test_umz_class.py'...
+```
