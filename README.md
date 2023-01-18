@@ -7,6 +7,7 @@
 
 > ---
 ![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/IrikR/test_stand_py?color=blue)
+![GitHub](https://img.shields.io/github/license/irikr/test_stand_py?color=blue)
 > ---
 # Алгоритмы проверки блоков управления и защиты шахтных аппаратов
 
