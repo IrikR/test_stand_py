@@ -21,12 +21,12 @@
   python.exe .\test_bdu_1_class.py
   ```
 + Вариант 2:
-  > Из директории в которой находится скрипт start_test.py 
-  > python.exe .\start_test.py --block наименование_блока -m модель_блока
+  > Из директории в которой находится скрипт _start_test.py_ 
+  > _python.exe .\start_test.py --block наименование_блока -m модель_блока_
   ```commandline
   python.exe .\start_test.py --block mtz -m 27
   ```
-> Для детального описания по скрипту start_test.py 
+> Для детального описания по скрипту _start_test.py_ 
 ```commandline
 python.exe .\start_test.py --help
 ```
