@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_mkzp_6_4sh_old import *
+from old_alg.alg_mkzp_6_4sh_old import TestMKZP6
+# from new_alg.alg_mkzp_6_4sh import TestMKZP6
 
 
 def mkzp():

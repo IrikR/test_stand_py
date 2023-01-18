@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_umz_old import *
+from old_alg.alg_umz_old import TestUMZ
+# from new_alg.alg_umz import TestUMZ
 
 
 def umz():

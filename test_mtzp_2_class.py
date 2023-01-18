@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_mtzp_2_old import *
+from old_alg.alg_mtzp_2_old import TestMTZP2
+# from new_alg.alg_mtzp_2 import TestMTZP2
 
 
 def mtzp():

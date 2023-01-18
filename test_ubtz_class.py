@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_ubtz_old import *
+from old_alg.alg_ubtz_old import TestUBTZ
+# from new_alg.alg_ubtz import TestUBTZ
 
 
 def ubtz():

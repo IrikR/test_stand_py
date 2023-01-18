@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_bu_apsh_m_old import *
+from old_alg.alg_bu_apsh_m_old import TestBUAPSHM
+# from new_alg.alg_bu_apsh_m import TestBUAPSHM
 
 
 def bu_apshm():

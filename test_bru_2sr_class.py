@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_bru_2sr_old import *
+from old_alg.alg_bru_2sr_old import TestBRU2SR
+# from new_alg.alg_bru_2sr import TestBRU2SR
 
 
 def bru_2sr():

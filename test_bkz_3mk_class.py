@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from new_alg.alg_bkz_3mk import *
+from new_alg.alg_bkz_3mk import TestBKZ3MK
 
 
 def bkz_3mk():

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_bki_2t_old import *
+from old_alg.alg_bki_2t_old import TestBKI2T
+# from new_alg.alg_bki_2t import TestBKI2T
 
 
 def bki_2t():

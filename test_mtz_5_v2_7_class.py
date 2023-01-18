@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_mtz_5_v2_7_old import *
+from old_alg.alg_mtz_5_v2_7_old import TestMTZ5V27
+# from new_alg.alg_mtz_5_v2_7 import TestMTZ5V27
 
 
 def mtz_5_v27():

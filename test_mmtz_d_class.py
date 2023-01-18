@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_mmtz_d_old import *
+from old_alg.alg_mmtz_d_old import TestMMTZD
+# from new_alg.alg_mmtz_d import TestMMTZD
 
 
 def mmtz():

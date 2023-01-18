@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_bki_6_3sh_old import *
+from old_alg.alg_bki_6_3sh_old import TestBKI6
+# from new_alg.alg_bki_6_3sh import TestBKI6
 
 
 def bki_6_3sh():

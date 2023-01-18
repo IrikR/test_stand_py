@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from new_alg.alg_bdu_014tp import *
+from new_alg.alg_bdu_014tp import TestBDU014TP
 
 
 def bdu_014tp():

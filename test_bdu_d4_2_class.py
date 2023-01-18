@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from new_alg.alg_bdu_d4_2 import *
+from new_alg.alg_bdu_d4_2 import TestBDUD42
 
 
 def bdu_d4_2():

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from new_alg.alg_tzp import *
+from new_alg.alg_tzp import TestTZP
 
 
 def tzp():

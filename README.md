@@ -30,3 +30,27 @@
 ```commandline
 python.exe .\start_test.py --help
 ```
+
+Для запуска нового алгоритма вместо старого, необходимо открыть файл с именем `test_*_class.py`,
+```python
+from old_alg.alg_bdu_1m_old import TestBDU1M
+# from new_alg.alg_bdu_1m import TestBDU1M
+
+
+def bdu_1m():
+    test_bdu_1m = TestBDU1M()
+    test_bdu_1m.full_test_bdu_1m()
+```
+и раскоментировать строку начинающуюся со слов `from new_alg`, и закоментировать строку начинающуюся со
+слов `from old_alg`
+```python
+# from old_alg.alg_bdu_1m_old import TestBDU1M
+from new_alg.alg_bdu_1m import TestBDU1M
+
+
+def bdu_1m():
+    test_bdu_1m = TestBDU1M()
+    test_bdu_1m.full_test_bdu_1m()
+```
+таким образом будет произведен вызов обновленного алгоритма проверки.
+Скрипт _start_test.py_ запускает только обновленные версии.

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_bzmp_p1_old import *
+from old_alg.alg_bzmp_p1_old import TestBZMPP1
+# from new_alg.alg_bzmp_p1 import TestBZMPP1
 
 
 def bzmp_p1():

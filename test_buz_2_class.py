@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_buz_2_old import *
+from old_alg.alg_buz_2_old import TestBUZ2
+# from new_alg.alg_buz_2 import TestBUZ2
 
 
 def buz():

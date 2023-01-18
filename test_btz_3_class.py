@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_btz_3_old import *
+from old_alg.alg_btz_3_old import TestBTZ3
+# from new_alg.alg_btz_3 import TestBTZ3
 
 
 def btz_3():

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from new_alg.alg_btz_t import *
+from new_alg.alg_btz_t import TestBTZT
 
 
 def btz_t():

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_pmz_old import *
+from old_alg.alg_pmz_old import TestPMZ
+# from new_alg.alg_pmz import TestPMZ
 
 
 def pmz():
