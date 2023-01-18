@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from old_alg.alg_bki_p_old import *
+from old_alg.alg_bki_p_old import TestBKIP
+# from new_alg.alg_bki_p import TestBKIP
 
 
 def bki_p():
