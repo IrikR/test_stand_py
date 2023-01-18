@@ -103,11 +103,11 @@ class TestMTZ5V411:
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.reset_protect.sbros_zashit_mtz5()
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
-        self.logger.debug(f"{inp_01 = } (True), {inp_05 = } (False)")
-        if inp_01 is True and inp_05 is False:
+        if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.1,
+                                         err_code=[431, 432],
+                                         position_inp=[True, False],
+                                         di_xx=["inp_01", "inp_05"]):
             return True
-        self.mysql_conn.mysql_ins_result('неисправен', '1')
         return False
 
     def st_test_12(self) -> bool:
@@ -131,18 +131,12 @@ class TestMTZ5V411:
             pass
         else:
             return False
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
-        self.logger.debug(f"{inp_01 = } (False), {inp_05 = } (True)")
-        if inp_01 is False and inp_05 is True:
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result('неисправен', '2')
-            if inp_01 is True:
-                self.mysql_conn.mysql_error(444)
-            elif inp_05 is False:
-                self.mysql_conn.mysql_error(445)
-            return False
-        return True
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
+                                         err_code=[444, 445],
+                                         position_inp=[False, True],
+                                         di_xx=["inp_01", "inp_05"]):
+            return True
+        return False
 
     def st_test_21(self) -> bool:
         """
@@ -156,19 +150,12 @@ class TestMTZ5V411:
         self.logger.debug("тест 2.1")
         self.mysql_conn.mysql_ins_result('идёт тест 2.1', '2')
         self.reset_protect.sbros_zashit_mtz5()
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
-        self.logger.debug(f"{inp_01 = } (True), {inp_05 = } (False)")
-        if inp_01 is True and inp_05 is False:
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result('неисправен', '2')
-            if inp_01 is False:
-                self.mysql_conn.mysql_error(446)
-            elif inp_05 is True:
-                self.mysql_conn.mysql_error(447)
-            return False
-        self.mysql_conn.mysql_ins_result('исправен', '2')
-        return True
+        if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.1,
+                                         err_code=[446, 447],
+                                         position_inp=[True, False],
+                                         di_xx=["inp_01", "inp_05"]):
+            return True
+        return False
 
     def st_test_30(self) -> bool:
         """
