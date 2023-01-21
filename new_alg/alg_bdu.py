@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 !!! НА ИСПЫТАНИИ !!!
 
@@ -50,6 +48,7 @@ class TestBDU:
         """
         Тест 1. проверка исходного состояния блока
         """
+        self.logger.debug(f"старт теста {__doc__}")
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0, err_code=[47], position_inp=[False],
                                          di_xx=['inp_01']):
