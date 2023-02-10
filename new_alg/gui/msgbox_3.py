@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Окно для взаимодействия пользователя с алгоритмом проверки.
+"""
 
 __all__ = ["my_msg_3"]
 
@@ -8,7 +10,6 @@ import PySimpleGUI as sg
 
 def my_msg_3(msg: str, bgcolor='#37474F', btncolor='#2D3D45', fontcolor='#1F1F1F'):
     """
-        Окно для взаимодействия пользователя с алгоритмом проверки.
         По умолчанию цвет окна темно серый #37474F
         :param msg: текст который необходимо вывести в окне
         :param bgcolor: 'green': '#1E8C1E', 'darkgrey': '#37474F', 'red': '#A61E1E', 'yellow': '#CEFF00',
