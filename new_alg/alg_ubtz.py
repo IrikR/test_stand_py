@@ -22,6 +22,7 @@ from .general_func.procedure import *
 from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.subtest import ProcedureFull
 from .general_func.utils import CLILog
+from .general_func.rw_result import DIError
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
 
@@ -35,6 +36,7 @@ class TestUBTZ:
         self.proc = Procedure()
         self.proc_full = ProcedureFull()
         self.mysql_conn = MySQLConnect()
+        self.di_error = DIError()
         self.cli_log = CLILog("debug", __name__)
 
         self.list_ust_bmz_num = (1, 2, 3, 4, 5, 6, 7)
@@ -112,6 +114,7 @@ class TestUBTZ:
         k = 0
         for i in self.list_ust_bmz_volt:
             msg_result_bmz = my_msg_2(f'{self.msg_3} {self.list_ust_bmz_num[k]}')
+
             if msg_result_bmz == 0:
                 pass
             elif msg_result_bmz == 1:
@@ -122,11 +125,13 @@ class TestUBTZ:
                 k += 1
                 continue
             self.mysql_conn.mysql_ins_result(f'уставка БМЗ {self.list_ust_bmz_num[k]}', '1')
+
             if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=i):
                 pass
             else:
                 self.mysql_conn.mysql_ins_result('неисправен TV1', '1')
                 return False
+
             # 3.1.  Проверка срабатывания блока от сигнала нагрузки:
             for qw in range(4):
                 self.calc_delta_t_bmz = self.conn_opc.ctrl_ai_code_v0(109)
@@ -136,7 +141,9 @@ class TestUBTZ:
                     continue
                 else:
                     break
+
             in_a1, in_a2, in_a5, in_a6 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02', 'inp_05', 'inp_06'])
+
             self.reset_relay.stop_procedure_3()
             if self.calc_delta_t_bmz < 10:
                 self.list_delta_t_bmz.append(f'< 10')
@@ -160,14 +167,9 @@ class TestUBTZ:
                     continue
             else:
                 self.logger.debug('тест 2 положение выходов не соответствует')
-                if in_a1 is False:
-                    self.mysql_conn.mysql_error(456)
-                elif in_a5 is True:
-                    self.mysql_conn.mysql_error(457)
-                elif in_a2 is True:
-                    self.mysql_conn.mysql_error(458)
-                elif in_a6 is False:
-                    self.mysql_conn.mysql_error(459)
+                self.di_error.di_error(current_position=[in_a1, in_a5, in_a2, in_a6],
+                                       expected_position=[True, False, False, True],
+                                       err_code=[456, 457, 458, 459])
                 if self.subtest_32(i=i, k=k):
                     if self.subtest_33_or_45(test_num=2, subtest_num=2.0):
                         k += 1
@@ -248,14 +250,9 @@ class TestUBTZ:
                                                       f'не срабатывает сброс защит')
                     return False
             else:
-                if in_a1 is True:
-                    self.mysql_conn.mysql_error(451)
-                elif in_a5 is True:
-                    self.mysql_conn.mysql_error(452)
-                elif in_a2 is True:
-                    self.mysql_conn.mysql_error(453)
-                elif in_a6 is True:
-                    self.mysql_conn.mysql_error(454)
+                self.di_error.di_error(current_position=[in_a1, in_a5, in_a2, in_a6],
+                                       expected_position=[False, True, False, True],
+                                       err_code=[451, 452, 453, 454])
                 self.mysql_conn.mysql_ins_result("тест 3 неисправен", '1')
                 if self.subtest_33_or_45(test_num=3, subtest_num=3.0):
                     m += 1
@@ -283,6 +280,7 @@ class TestUBTZ:
         else:
             self.mysql_conn.mysql_ins_result("неисправен TV1", '1')
             return False
+
         # 3.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         for wq in range(4):
             self.calc_delta_t_bmz = self.conn_opc.ctrl_ai_code_v0(109)
@@ -292,8 +290,9 @@ class TestUBTZ:
                 continue
             else:
                 break
+
         self.reset_relay.stop_procedure_3()
-        in_a1, in_a2, in_a5, in_a6 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02', 'inp_05', 'inp_06'])
+
         if self.calc_delta_t_bmz < 10:
             self.list_delta_t_bmz[-1] = f'< 10'
         elif self.calc_delta_t_bmz == 9999:
@@ -302,22 +301,31 @@ class TestUBTZ:
             self.list_delta_t_bmz[-1] = f'{self.calc_delta_t_bmz:.1f}'
         self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_bmz_num[k]}: '
                                           f'дельта t: {self.calc_delta_t_bmz:.1f}')
-        self.logger.debug(f'{in_a1 = }, {in_a2 = }, {in_a5 = }, {in_a6 = }')
-        if in_a1 is True and in_a5 is False and in_a2 is False and in_a6 is True:
-            pass
-        else:
-            self.logger.debug("тест 3.2 положение выходов не соответствует")
-            if in_a1 is True:
-                self.mysql_conn.mysql_error(464)
-            elif in_a5 is True:
-                self.mysql_conn.mysql_error(465)
-            elif in_a2 is True:
-                self.mysql_conn.mysql_error(466)
-            elif in_a6 is True:
-                self.mysql_conn.mysql_error(467)
-            return False
-        self.logger.debug("тест 3.2 положение выходов соответствует")
-        return True
+
+        if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.2,
+                                         err_code=[464, 465, 466, 467],
+                                         position_inp=[True, False, False, True],
+                                         di_xx=['inp_01', 'inp_05', 'inp_02', 'inp_06']):
+            return True
+        return False
+
+        # in_a1, in_a2, in_a5, in_a6 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02', 'inp_05', 'inp_06'])
+        # self.logger.debug(f'{in_a1 = }, {in_a2 = }, {in_a5 = }, {in_a6 = }')
+        # if in_a1 is True and in_a5 is False and in_a2 is False and in_a6 is True:
+        #     pass
+        # else:
+        #     self.logger.debug("тест 3.2 положение выходов не соответствует")
+        #     if in_a1 is True:
+        #         self.mysql_conn.mysql_error(464)
+        #     elif in_a5 is True:
+        #         self.mysql_conn.mysql_error(465)
+        #     elif in_a2 is True:
+        #         self.mysql_conn.mysql_error(466)
+        #     elif in_a6 is True:
+        #         self.mysql_conn.mysql_error(467)
+        #     return False
+        # self.logger.debug("тест 3.2 положение выходов соответствует")
+        # return True
 
     def subtest_33_or_45(self, test_num: int, subtest_num: float) -> bool:
         """
@@ -391,31 +399,3 @@ class TestUBTZ:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_ubtz = TestUBTZ()
-    test_ubtz.full_test_ubtz()
-    # reset_test_ubtz = ResetRelay()
-    # mysql_conn_ubtz = MySQLConnect()
-    # try:
-    #     test, health_flag = test_ubtz.st_test_ubtz()
-    #     if test and not health_flag:
-    #         test_ubtz.result_test_ubtz()
-    #         mysql_conn_ubtz.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         test_ubtz.result_test_ubtz()
-    #         mysql_conn_ubtz.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_ubtz.reset_all()
-    #     sys.exit()

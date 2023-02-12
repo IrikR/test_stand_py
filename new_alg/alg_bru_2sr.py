@@ -317,26 +317,3 @@ class TestBRU2SR:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bru_2sr = TestBRU2SR()
-    test_bru_2sr.full_test_bru_2sr()
-    # reset_test_bru_2sr = ResetRelay()
-    # mysql_conn_bru_2sr = MySQLConnect()
-    # try:
-    #     if test_bru_2sr.st_test_bru_2sr():
-    #         mysql_conn_bru_2sr.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_bru_2sr.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # finally:
-    #     reset_test_bru_2sr.reset_all()
-    #     sys.exit()

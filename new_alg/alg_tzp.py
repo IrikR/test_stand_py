@@ -307,31 +307,3 @@ class TestTZP:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_tzp = TestTZP()
-    test_tzp.full_test_tzp()
-    # reset_test_tzp = ResetRelay()
-    # mysql_conn_tzp = MySQLConnect()
-    # try:
-    #     test, health_flag = test_tzp.st_test_tzp()
-    #     if test and not health_flag:
-    #         test_tzp.result_test_tzp()
-    #         mysql_conn_tzp.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         test_tzp.result_test_tzp()
-    #         mysql_conn_tzp.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_tzp.reset_all()
-    #     sys.exit()

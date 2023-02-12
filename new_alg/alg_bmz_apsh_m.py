@@ -232,27 +232,3 @@ class TestBMZAPSHM:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bmz_apsh_m = TestBMZAPSHM()
-    test_bmz_apsh_m.full_test_bmz_apsh_m()
-    # reset_test_bmz_apsh_m = ResetRelay()
-    # mysql_conn_bmz_apsh_m = MySQLConnect()
-    # try:
-    #     test, health_flag = test_bmz_apsh_m.st_test_bmz_apsh_m()
-    #     if test and not health_flag:
-    #         mysql_conn_bmz_apsh_m.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_bmz_apsh_m.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # finally:
-    #     reset_test_bmz_apsh_m.reset_all()
-    #     sys.exit()

@@ -344,31 +344,3 @@ class TestBMZ2:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bmz_2 = TestBMZ2()
-    test_bmz_2.full_test_bmz_2()
-    # reset_test_bmz_2 = ResetRelay()
-    # mysql_conn_bmz2 = MySQLConnect()
-    # try:
-    #     test, health_flag = test_bmz_2.st_test_bmz_2()
-    #     if test and not health_flag:
-    #         test_bmz_2.result_test_bmz_2()
-    #         mysql_conn_bmz2.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         test_bmz_2.result_test_bmz_2()
-    #         mysql_conn_bmz2.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_bmz_2.reset_all()
-    #     sys.exit()

@@ -486,32 +486,3 @@ class TestBKZ3MK:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bkz_3mk = TestBKZ3MK()
-    test_bkz_3mk.full_test_bkz_3mk()
-    # reset_test_bkz_3mk = ResetRelay()
-    # mysql_conn_bkz_3mk = MySQLConnect()
-    # try:
-    #     # test_bkz_3mk.st_test_bkz_3mk()
-    #     test, health_flag_mtz, health_flag_tzp = test_bkz_3mk.st_test_bkz_3mk()
-    #     if test and not health_flag_mtz and not health_flag_tzp:
-    #         mysql_conn_bkz_3mk.mysql_block_good()
-    #         test_bkz_3mk.result_test_bkz_3mk()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_bkz_3mk.mysql_block_bad()
-    #         test_bkz_3mk.result_test_bkz_3mk()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_bkz_3mk.reset_all()
-    #     sys.exit()

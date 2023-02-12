@@ -378,31 +378,3 @@ class TestPMZ:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_pmz = TestPMZ()
-    test_pmz.full_test_pmz()
-    # reset_test_pmz = ResetRelay()
-    # mysql_conn_pmz = MySQLConnect()
-    # try:
-    #     test, health_flag = test_pmz.st_test_pmz()
-    #     if test and not health_flag:
-    #         test_pmz.result_test_pmz()
-    #         mysql_conn_pmz.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         test_pmz.result_test_pmz()
-    #         mysql_conn_pmz.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_pmz.reset_all()
-    #     sys.exit()

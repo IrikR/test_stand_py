@@ -256,26 +256,3 @@ class TestBDU1M:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bdu_1m = TestBDU1M()
-    test_bdu_1m.full_test_bdu_1m()
-    # mysql_conn_test_bdu_1m = MySQLConnect()
-    # reset_test_bdu_1m = ResetRelay()
-    # try:
-    #     if test_bdu_1m.st_test_bdu_1m():
-    #         mysql_conn_test_bdu_1m.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_test_bdu_1m.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # finally:
-    #     reset_test_bdu_1m.reset_all()
-    #     sys.exit()

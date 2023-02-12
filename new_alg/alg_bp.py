@@ -223,26 +223,3 @@ class TestBP:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bp = TestBP()
-    test_bp.full_test_bp()
-    # reset_test_bp = ResetRelay()
-    # mysql_conn_bp = MySQLConnect()
-    # try:
-    #     if test_bp.st_test_bp():
-    #         mysql_conn_bp.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_bp.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # finally:
-    #     reset_test_bp.reset_all()
-    #     sys.exit()

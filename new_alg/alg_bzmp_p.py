@@ -475,29 +475,3 @@ class TestBZMPP:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bzmp_p = TestBZMPP()
-    test_bzmp_p.full_test_bzmp_p()
-    # reset_test_bzmp_p = ResetRelay()
-    # mysql_conn_bzmp_p = MySQLConnect()
-    # try:
-    #     test, health_flag = test_bzmp_p.st_test_bzmp_p()
-    #     if test and not health_flag:
-    #         mysql_conn_bzmp_p.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_bzmp_p.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_bzmp_p.reset_all()
-    #     sys.exit()

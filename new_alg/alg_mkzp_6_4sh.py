@@ -514,27 +514,3 @@ class TestMKZP6:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_mkzp = TestMKZP6()
-    test_mkzp.full_test_mkzp_6_4sh()
-    # reset_test_mkzp = ResetRelay()
-    # mysql_conn_mkzp = MySQLConnect()
-    # try:
-    #     test, health_flag = test_mkzp.st_test_mkzp_6_4sh()
-    #     if test and not health_flag:
-    #         mysql_conn_mkzp.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_mkzp.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_mkzp.reset_all()
-    #     sys.exit()

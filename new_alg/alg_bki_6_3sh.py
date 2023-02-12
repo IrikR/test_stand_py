@@ -266,26 +266,3 @@ class TestBKI6:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bki6 = TestBKI6()
-    test_bki6.full_test_bki_6_3sh()
-    # reset_test_bki6 = ResetRelay()
-    # mysql_conn_bki6 = MySQLConnect()
-    # try:
-    #     if test_bki6.st_test_bki_6_3sh():
-    #         mysql_conn_bki6.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_bki6.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # finally:
-    #     reset_test_bki6.reset_all()
-    #     sys.exit()

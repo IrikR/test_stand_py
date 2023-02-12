@@ -496,31 +496,3 @@ class TestBTZT:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_btz_t = TestBTZT()
-    test_btz_t.full_test_btz_t()
-    # reset_test_btz_t = ResetRelay()
-    # mysql_conn_btz_t = MySQLConnect()
-    # try:
-    #     test, health_flag_pmz, health_flag_tzp = test_btz_t.st_test_btz_t()
-    #     if test and not health_flag_pmz and not health_flag_tzp:
-    #         test_btz_t.result_test_btz_t()
-    #         mysql_conn_btz_t.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         test_btz_t.result_test_btz_t()
-    #         mysql_conn_btz_t.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_btz_t.reset_all()
-    #     sys.exit()

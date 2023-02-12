@@ -619,29 +619,3 @@ class TestMTZP2:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_mtzp = TestMTZP2()
-    test_mtzp.full_test_mtzp_2()
-    # reset_test_mtzp = ResetRelay()
-    # mysql_conn_mtzp = MySQLConnect()
-    # try:
-    #     test, health_flag = test_mtzp.st_test_mtzp_2()
-    #     if test and not health_flag:
-    #         mysql_conn_mtzp.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_mtzp.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_mtzp.reset_all()
-    #     sys.exit()

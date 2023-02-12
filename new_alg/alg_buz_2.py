@@ -350,29 +350,3 @@ class TestBUZ2:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_buz_2 = TestBUZ2()
-    test_buz_2.full_test_buz_2()
-    # reset_test_buz_2 = ResetRelay()
-    # mysql_conn_buz_2 = MySQLConnect()
-    # try:
-    #     test, health_flag = test_buz_2.st_test_buz_2()
-    #     if test and not health_flag:
-    #         mysql_conn_buz_2.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_buz_2.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # except HardwareException as hwe:
-    #     my_msg(f'{hwe}', 'red')
-    # finally:
-    #     reset_test_buz_2.reset_all()
-    #     sys.exit()

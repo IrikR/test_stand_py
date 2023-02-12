@@ -252,26 +252,3 @@ class TestBDU014TP:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
             sys.exit()
-
-
-if __name__ == '__main__':
-    test_bdu_014tp = TestBDU014TP()
-    test_bdu_014tp.full_test_bdu_014tp()
-    # reset_test_bdu_014tp = ResetRelay()
-    # mysql_conn_test_bdu_014tp = MySQLConnect()
-    # try:
-    #     if test_bdu_014tp.st_test_bdu_014tp():
-    #         mysql_conn_test_bdu_014tp.mysql_block_good()
-    #         my_msg('Блок исправен', 'green')
-    #     else:
-    #         mysql_conn_test_bdu_014tp.mysql_block_bad()
-    #         my_msg('Блок неисправен', 'red')
-    # except OSError:
-    #     my_msg("ошибка системы", 'red')
-    # except SystemError:
-    #     my_msg("внутренняя ошибка", 'red')
-    # except ModbusConnectException as mce:
-    #     my_msg(f'{mce}', 'red')
-    # finally:
-    #     reset_test_bdu_014tp.reset_all()
-    #     sys.exit()
