@@ -2,12 +2,13 @@
 """
 
 """
-__all__ = ["WriteCondition", "RWError"]
+__all__ = ["WriteCondition", "RWError", "DIError"]
 
 import logging
 
 from .database import MySQLConnect
 from .utils import CLILog
+
 
 class WriteCondition:
 
@@ -15,6 +16,7 @@ class WriteCondition:
         self.cli_log = CLILog("debug", __name__)
         self.logger = logging.getLogger(__name__)
         self.mysql_conn = MySQLConnect()
+
     def write_condition(self, test_num: int, subtest_num: float) -> None:
         """
         Метод для записи результатов начала теста.
@@ -73,3 +75,16 @@ class RWError:
         self.mysql_conn.mysql_add_message(read_err)
         self.logger.debug(f'код неисправности {err_code}: {read_err}')
         self.cli_log.lev_warning(f'код неисправности {err_code}: {read_err}', "red")
+
+
+class DIError(RWError):
+    def __init__(self):
+        super().__init__()
+
+    def di_error(self, current_position: list[bool], expected_position: list[bool], err_code: list[int]) -> None:
+        for i in range(len(current_position)):
+            if current_position[i] is expected_position[i]:
+                continue
+            else:
+                self.rw_err(err_code[i])
+                break
