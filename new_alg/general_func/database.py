@@ -47,9 +47,9 @@ class MySQLConnect:
                 self.logger.info(f"записей в БД: {c.rowcount}")
                 self.cli_log.lev_debug(f"записей в БД: {c.rowcount}", "gray")
 
-        except self.mysql_err:
-            self.logger.error('!!! Ошибка связи с базой данных MySQL !!!')
-            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
+        except self.mysql_err as sqlerr:
+            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}")
+            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}', "red")
 
     def mysql_pmz_result(self, my_result: [str]) -> None:
         """
@@ -109,9 +109,9 @@ class MySQLConnect:
                 c = conn.cursor()
                 c.execute(request)
                 conn.commit()
-        except self.mysql_err:
-            self.logger.error('!!! Ошибка связи с базой данных MySQL !!!')
-            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
+        except self.mysql_err as sqlerr:
+            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}")
+            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}', "red")
 
     def mysql_ins_result(self, my_result: str, num_test: str) -> None:
         """
@@ -192,6 +192,6 @@ class MySQLConnect:
                 conn.close()
                 text_0 = err_text[1]
                 return text_0
-        except self.mysql_err:
-            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!")
-            self.cli_log.lev_warning('!!! Ошибка связи с базой данных MySQL !!!', "red")
+        except self.mysql_err as sqlerr:
+            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}")
+            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}', "red")
