@@ -140,11 +140,31 @@ class ResetProtection:
         self.logger.debug('включение KL1')
         self.cli_log.lev_info('включение KL1', "blue")
         sleep(1.5)
-        self.logger.debug('таймаут 1.5 сек, выполнен сброс защит')
-        self.cli_log.lev_info('таймаут 1.5 сек, выполнен сброс защит', "gray")
+        self.logger.debug('таймаут 1.5 сек')
+        self.cli_log.lev_info('таймаут 1.5 сек', "gray")
         self.conn_opc.ctrl_relay('KL1', False)
         self.logger.debug('отключение KL1')
         self.cli_log.lev_info('отключение KL1', "blue")
+        sleep(2)
+        self.logger.debug('таймаут 2 сек, выполнен сброс защит')
+        self.cli_log.lev_info('таймаут 2 сек, выполнен сброс защит', "gray")
+
+    def sbros_zashit_kl1_invers(self):
+        """
+        Сброс защит.
+        :return:
+        """
+        self.logger.debug("сброс защит KL1 1.5сек")
+        self.cli_log.lev_info("сброс защит KL1 1.5сек", "gray")
+        self.conn_opc.ctrl_relay('KL1', False)
+        self.logger.debug('отключение KL1')
+        self.cli_log.lev_info('отключение KL1', "blue")
+        sleep(1.5)
+        self.logger.debug('таймаут 1.5 сек')
+        self.cli_log.lev_info('таймаут 1.5 сек', "gray")
+        self.conn_opc.ctrl_relay('KL1', True)
+        self.logger.debug('включение KL1')
+        self.cli_log.lev_info('включение KL1', "blue")
         sleep(2)
         self.logger.debug('таймаут 2 сек, выполнен сброс защит')
         self.cli_log.lev_info('таймаут 2 сек, выполнен сброс защит', "gray")
@@ -225,3 +245,22 @@ class ResetProtection:
         self.conn_opc.ctrl_relay('KL24', False)
         self.logger.debug("отключение реле KL24")
         self.cli_log.lev_info("отключение реле KL24", "blue")
+
+    def sbros_zashit_kl24_v1(self) -> None:
+        """
+        Данная функция используется в алгоритме БЗМП-Д
+        """
+        self.logger.debug("Сброс защит блока через KL24")
+        self.cli_log.lev_info("Сброс защит блока через KL24", "gray")
+        self.conn_opc.ctrl_relay('KL24', True)
+        self.logger.debug("включение реле KL24")
+        self.cli_log.lev_info("включение реле KL24", "blue")
+        sleep(3)
+        self.logger.debug("таймаут 3 сек")
+        self.cli_log.lev_debug("таймаут 3 сек", "gray")
+        self.conn_opc.ctrl_relay('KL24', False)
+        self.logger.debug("отключение реле KL24")
+        self.cli_log.lev_info("отключение реле KL24", "blue")
+        sleep(0.7)
+        self.logger.debug("таймаут 0.7 сек")
+        self.cli_log.lev_debug("таймаут 0.7 сек", "gray")

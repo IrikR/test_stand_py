@@ -19,7 +19,7 @@ from .general_func.database import *
 from .general_func.exception import *
 from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.reset import ResetRelay
+from .general_func.reset import ResetRelay, ResetProtection
 from .general_func.resistance import Resistor
 from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
@@ -31,6 +31,7 @@ class TestBZMPD:
         self.conn_opc = ConnectOPC()
         self.proc = Procedure()
         self.reset = ResetRelay()
+        self.reset_protect = ResetProtection()
         self.resist = Resistor()
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
@@ -396,7 +397,7 @@ class TestBZMPD:
     def st_test_52(self) -> bool:
         self.logger.debug("идёт тест 5.2")
         self.mysql_conn.mysql_ins_result('идёт тест 5.3', '5')
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl24_v1()
         inp_01, inp_05, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05', 'inp_06'])
         if inp_01 is True and inp_05 is True and inp_06 is False:
             pass
@@ -407,16 +408,6 @@ class TestBZMPD:
         self.logger.debug("положение выходов соответствует")
         self.mysql_conn.mysql_ins_result(f'исправен, {self.timer_test_5:.1f} сек', "5")
         return True
-
-    def sbros_zashit(self) -> None:
-        self.conn_opc.ctrl_relay('KL24', True)
-        sleep(3)
-        self.logger.debug("таймаут 3 сек")
-        self.cli_log.lev_debug("таймаут 3 сек", "gray")
-        self.conn_opc.ctrl_relay('KL24', False)
-        sleep(0.7)
-        self.logger.debug("таймаут 0.7 сек")
-        self.cli_log.lev_debug("таймаут 0.7 сек", "gray")
 
     def st_test_bzmp_d(self) -> [bool]:
         if self.st_test_10():

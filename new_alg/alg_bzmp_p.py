@@ -19,7 +19,7 @@ from .general_func.database import *
 from .general_func.exception import *
 from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
-from .general_func.reset import ResetRelay
+from .general_func.reset import ResetRelay, ResetProtection
 from .general_func.resistance import Resistor
 from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
@@ -34,6 +34,7 @@ class TestBZMPP:
         self.conn_opc = ConnectOPC()
         self.proc = Procedure()
         self.reset = ResetRelay()
+        self.reset_protect = ResetProtection()
         self.resist = Resistor()
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
@@ -263,7 +264,7 @@ class TestBZMPP:
         """
         4.2.2. Сброс защит после проверки
         """
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl24()
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -398,7 +399,7 @@ class TestBZMPP:
         6.6. Сброс защит после проверки
         :return:
         """
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl24()
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -411,17 +412,6 @@ class TestBZMPP:
             return False
         self.mysql_conn.mysql_ins_result(f'исправен, {self.timer_test_6_2:.1f} сек', "6")
         return True
-
-    def sbros_zashit(self) -> None:
-        """
-        reset protection
-        :return:
-        """
-        self.conn_opc.ctrl_relay('KL24', True)
-        sleep(3)
-        self.logger.debug("таймаут 3 сек")
-        self.cli_log.lev_debug("таймаут 3 сек", "gray")
-        self.conn_opc.ctrl_relay('KL24', False)
 
     def st_test_bzmp_p(self) -> [bool]:
         if self.st_test_10():

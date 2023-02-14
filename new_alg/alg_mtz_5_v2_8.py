@@ -103,7 +103,7 @@ class TestMTZ5V28:
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl1_invers()
         inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         if inp_01 is True and inp_05 is False:
             pass
@@ -176,7 +176,7 @@ class TestMTZ5V28:
         """
         self.mysql_conn.mysql_ins_result('идёт тест 2.4', '2')
         self.logger.debug("2.4.2. Сброс защит после проверки")
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl1_invers()
         inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         if inp_01 is True and inp_05 is False:
             pass
@@ -351,7 +351,7 @@ class TestMTZ5V28:
         :param k: порядковый номер в цикле
         :return: bool
         """
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl1_invers()
         inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         if inp_01 is True and inp_05 is False:
             pass
@@ -381,7 +381,7 @@ class TestMTZ5V28:
             if self.calc_delta_t_mtz != 9999:
                 break
             else:
-                self.sbros_zashit()
+                self.reset_protect.sbros_zashit_kl1_invers()
                 sleep(3)
                 wq += 1
                 continue
@@ -410,7 +410,7 @@ class TestMTZ5V28:
         Δ%= 3.4364*(U4[i])/0.63
         :return: bool
         """
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl1_invers()
         inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         if inp_01 is True and inp_05 is False:
             return True
@@ -428,7 +428,7 @@ class TestMTZ5V28:
         Определение кратности сигнала нагрузки: Δ%= 3.4364*U4[i]/0.63
         :return: bool
         """
-        self.sbros_zashit()
+        self.reset_protect.sbros_zashit_kl1_invers()
         inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         if inp_01 is True and inp_05 is False:
             self.logger.debug("тест 4.6 положение выходов соответствует")
@@ -446,7 +446,7 @@ class TestMTZ5V28:
         self.logger.debug("подтест проверки времени срабатывания")
         for stc in range(3):
             self.logger.debug(f"попытка: {stc}")
-            self.sbros_zashit()
+            self.reset_protect.sbros_zashit_kl1_invers()
             self.delta_t_mtz, self.inp_01, self.inp_02, self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(110)
             # self.in_1, self.in_5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             self.logger.debug(f"время срабатывания: {self.delta_t_mtz}, "
@@ -461,16 +461,6 @@ class TestMTZ5V28:
                 stc += 1
                 continue
         return self.delta_t_mtz, self.in_1, self.in_5
-
-    def sbros_zashit(self):
-        """
-        Сброс защит.
-        :return:
-        """
-        self.conn_opc.ctrl_relay('KL1', False)
-        sleep(1.5)
-        self.conn_opc.ctrl_relay('KL1', True)
-        sleep(2)
 
     def st_test_mtz(self) -> [bool]:
         if self.st_test_10():
