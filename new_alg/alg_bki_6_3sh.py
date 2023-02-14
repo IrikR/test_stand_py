@@ -262,6 +262,14 @@ class TestBKI6:
             self.logger.debug(f'{mce}')
             self.cli_log.lev_warning(f'{mce}', 'red')
             my_msg(f'{mce}', 'red')
+        except AttributeError as ae:
+            self.logger.debug(f"Неверный атрибут. {ae}")
+            self.cli_log.lev_warning(f"Неверный атрибут. {ae}", 'red')
+            my_msg(f"Неверный атрибут. {ae}", 'red')
+        except ValueError as ve:
+            self.logger.debug(f"Некорректное значение для переменной. {ve}")
+            self.cli_log.lev_warning(f"Некорректное значение для переменной. {ve}", 'red')
+            my_msg(f"Некорректное значение для переменной. {ve}", 'red')
         finally:
             self.conn_opc.full_relay_off()
             self.conn_opc.opc_close()
