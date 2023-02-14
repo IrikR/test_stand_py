@@ -44,15 +44,10 @@ class Procedure:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
         self.perv_obm = PervObmTV1()
         self.vtor_obm = VtorObmTV1()
         self.reset = ResetRelay()
         self.conn_opc = ConnectOPC()
-        # self.ctrl_kl = CtrlKL()
-        # self.read_mb = ReadMB()
-        # self.di_read = DIRead()
-        # self.ai_read = AIRead()
         self.cli_log = CLILog("info", __name__)
 
     def start_procedure_1(self) -> bool:
