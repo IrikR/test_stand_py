@@ -543,6 +543,8 @@ class ConnectOPC:
         kl = self.dic_relay[f'{rel}']
         send_tuple = (kl, ctrl)
         self.opc.write(send_tuple)
+        self.cli_log.lev_info(f"реле {rel} {ctrl}", "blue")
+        self.logger.info(f"реле {rel} {ctrl}")
         self.opc.remove(send_tuple)
 
     def _full_relay_on(self):
@@ -550,7 +552,11 @@ class ConnectOPC:
         !!! НЕ ИСПОЛЬЗОВАТЬ !!!
         Функция включает все реле.
         """
+        self.logger.debug("включение всех реле")
+        self.cli_log.lev_info("включение всех реле", "gray")
         self.opc.write(self.list_relay_true)
+        self.logger.debug("все реле включены")
+        self.cli_log.lev_info("все реле включены", "gray")
 
     def full_relay_off(self):
         """

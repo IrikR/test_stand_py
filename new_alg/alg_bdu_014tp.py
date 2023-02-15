@@ -23,7 +23,7 @@ __all__ = ["TestBDU014TP"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -75,7 +75,6 @@ class TestBDU014TP:
         """
         self.logger.debug(f"старт теста: 2, подтест: 0")
         self.conn_opc.ctrl_relay('KL2', True)
-        self.logger.debug(f'включение KL2')
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -100,7 +99,6 @@ class TestBDU014TP:
         """
         self.logger.debug(f"старт теста: 2, подтест: 2")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug(f'отключение KL12')
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -150,7 +148,6 @@ class TestBDU014TP:
                                          di_xx=['inp_01']):
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug(f'отключение KL12, KL1')
             return True
         return False
 
@@ -195,7 +192,6 @@ class TestBDU014TP:
         """
         self.logger.debug(f"старт теста: 6, подтест: 1")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug(f'отключение KL12')
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -226,7 +222,14 @@ class TestBDU014TP:
 
     def full_test_bdu_014tp(self) -> None:
         try:
-            if self.st_test_bdu_014tp():
+            start_time = time()
+            result_test = self.st_test_bdu_014tp()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

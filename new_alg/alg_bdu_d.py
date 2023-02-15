@@ -13,7 +13,7 @@ __all__ = ["TestBDUD"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -65,8 +65,6 @@ class TestBDUD:
         self.logger.debug(f"старт теста: 2, подтест: 2.0")
         self.cli_log.lev_info(f"старт теста: 2, подтест: 2.0", "gray")
         self.conn_opc.ctrl_relay('KL2', True)
-        self.logger.debug(f'включение KL2')
-        self.cli_log.lev_info(f'включение KL2', "blue")
         if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
                                          err_code=[13],
                                          position_inp=[False],
@@ -90,7 +88,6 @@ class TestBDUD:
         """
         self.logger.debug(f"старт теста: 2, подтест: 3")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug(f'отключение KL12')
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
@@ -100,7 +97,6 @@ class TestBDUD:
                                          di_xx=['inp_01']):
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug(f'отключение KL25, KL1')
             return True
         return False
 
@@ -130,7 +126,6 @@ class TestBDUD:
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug(f'отключение KL12, KL25, KL1')
             return True
         return False
 
@@ -150,7 +145,6 @@ class TestBDUD:
         """
         self.logger.debug(f"старт теста: 4, подтест: 2")
         self.conn_opc.ctrl_relay('KL11', True)
-        self.logger.debug(f'включение KL11')
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
@@ -162,7 +156,6 @@ class TestBDUD:
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
             self.conn_opc.ctrl_relay('KL11', False)
-            self.logger.debug(f'отключение KL12, KL25, KL1, KL11')
             return True
         return False
 
@@ -182,7 +175,6 @@ class TestBDUD:
         """
         self.logger.debug(f"старт теста: 5, подтест: 2")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug(f'отключение KL12')
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
@@ -212,7 +204,14 @@ class TestBDUD:
 
     def full_test_bdu_d(self) -> None:
         try:
-            if self.st_test_bdu_d():
+            start_time = time()
+            result_test = self.st_test_bdu_d()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

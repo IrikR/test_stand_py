@@ -13,6 +13,7 @@ __all__ = ["TestBDU43"]
 
 import logging
 import sys
+from time import time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -61,7 +62,6 @@ class TestBDU43:
         """
         self.logger.debug("старт теста 2.0")
         self.conn_opc.ctrl_relay('KL2', True)
-        self.logger.debug("включение KL2")
         if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
                                          err_code=[13],
                                          position_inp=[False],
@@ -85,14 +85,12 @@ class TestBDU43:
         """
         self.logger.debug("старт теста 2.3")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключение KL2")
         if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.3,
                                          err_code=[23],
                                          position_inp=[False],
                                          di_xx=['inp_01']):
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug("отключение KL25, KL1")
             return True
         return False
 
@@ -118,7 +116,6 @@ class TestBDU43:
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug("отключение KL12, KL25, KL1")
             return True
         return False
 
@@ -137,7 +134,6 @@ class TestBDU43:
         """
         self.logger.debug("старт теста 4.2")
         self.conn_opc.ctrl_relay('KL11', True)
-        self.logger.debug("включение KL11")
         if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.2,
                                          err_code=[3], position_inp=[False],
                                          di_xx=['inp_01']):
@@ -145,7 +141,6 @@ class TestBDU43:
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
             self.conn_opc.ctrl_relay('KL11', False)
-            self.logger.debug("отключение KL12, KL25, KL1, KL11")
             return True
         return False
 
@@ -164,7 +159,6 @@ class TestBDU43:
         """
         self.logger.debug("старт теста 5.2")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключение KL12")
         if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.2,
                                          err_code=[4], position_inp=[False],
                                          di_xx=['inp_01']):
@@ -190,7 +184,14 @@ class TestBDU43:
 
     def full_test_bdu_4_3(self) -> None:
         try:
-            if self.st_test_bdu_4_3():
+            start_time = time()
+            result_test = self.st_test_bdu_4_3()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

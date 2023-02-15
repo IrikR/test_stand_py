@@ -15,7 +15,7 @@ __all__ = ["TestBKIP"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -71,7 +71,6 @@ class TestBKIP:
             self.logger.debug("от пользователя пришла отмена")
             return False
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug("включен KL21")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -126,7 +125,6 @@ class TestBKIP:
                                          di_xx=['inp_00', 'inp_01']):
             return True
         self.conn_opc.ctrl_relay('KL21', False)
-        self.logger.debug("отключен KL21")
         return False
 
     def st_test_50(self) -> bool:
@@ -135,7 +133,6 @@ class TestBKIP:
         ниже 30 кОм (Подключение на внутреннее сопротивление)
         """
         self.conn_opc.ctrl_relay('KL22', True)
-        self.logger.debug("включен KL22")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -144,7 +141,6 @@ class TestBKIP:
                                          position_inp=[False, True],
                                          di_xx=['inp_00', 'inp_01']):
             self.conn_opc.ctrl_relay('KL21', False)
-            self.logger.debug("отключен KL21")
             return True
         return False
 
@@ -159,7 +155,14 @@ class TestBKIP:
 
     def full_test_bki_p(self) -> None:
         try:
-            if self.st_test_bki_p():
+            start_time = time()
+            result_test = self.st_test_bki_p()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

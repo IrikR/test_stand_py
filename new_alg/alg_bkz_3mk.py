@@ -112,7 +112,6 @@ class TestBKZ3MK:
         self.logger.debug("тест 1.0")
         self.mysql_conn.mysql_ins_result('идет тест 1', '1')
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug("включение KL21")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -161,7 +160,6 @@ class TestBKZ3MK:
         self.logger.debug("тест 3.0")
         self.mysql_conn.mysql_ins_result('идет тест 3.0', '3')
         self.conn_opc.ctrl_relay('KL22', True)
-        self.logger.debug("включение KL22")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -175,7 +173,6 @@ class TestBKZ3MK:
     def st_test_31(self) -> bool:
         self.resist.resist_kohm(590)
         self.conn_opc.ctrl_relay('KL22', False)
-        self.logger.debug("отключение KL22")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -453,7 +450,13 @@ class TestBKZ3MK:
 
     def full_test_bkz_3mk(self) -> None:
         try:
+            start_time = time()
             test, health_flag_mtz, health_flag_tzp = self.st_test_bkz_3mk()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
             if test and not health_flag_mtz and not health_flag_tzp:
                 self.mysql_conn.mysql_block_good()
                 self.result_test_bkz_3mk()

@@ -13,7 +13,7 @@ __all__ = ["TestBDU1"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import ModbusConnectException
@@ -76,8 +76,6 @@ class TestBDU1:
         self.logger.debug(f"теста 2.0")
         self.cli_log.lev_info("теста 2.0", "gray")
         self.conn_opc.ctrl_relay('KL2', True)
-        self.cli_log.lev_info("Включено реле KL2", "blue")
-        self.logger.debug("Включено реле KL2")
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
@@ -99,8 +97,6 @@ class TestBDU1:
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
         self.conn_opc.ctrl_relay('KL12', True)
-        self.cli_log.lev_info("Включено реле KL12", "blue")
-        self.logger.debug("Включено реле KL12")
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
@@ -121,8 +117,6 @@ class TestBDU1:
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.cli_log.lev_info("Отключено реле KL2", "blue")
-        self.logger.debug("Отключено реле KL2")
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
@@ -145,16 +139,12 @@ class TestBDU1:
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
         self.conn_opc.ctrl_relay('KL12', True)
-        self.cli_log.lev_info("Включено реле KL12", "blue")
-        self.logger.debug("Включено реле KL12")
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
         self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
         # Отключаем KL5, KL8 для формирования 35 Ом
         self.conn_opc.ctrl_relay('KL5', False)
         self.conn_opc.ctrl_relay('KL8', False)
-        self.cli_log.lev_info("Отключено реле KL5, KL8", "blue")
-        self.logger.debug("Отключено реле KL5, KL8")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -173,20 +163,10 @@ class TestBDU1:
         self.logger.debug(f"теста 4.0")
         self.cli_log.lev_info("Тест 4", "gray")
         self.conn_opc.ctrl_relay('KL7', False)
-        self.cli_log.lev_info("Отключено реле KL7", "blue")
-        self.logger.debug("Отключено реле KL7")
         self.conn_opc.ctrl_relay('KL9', False)
-        self.cli_log.lev_info("Отключено реле KL9", "blue")
-        self.logger.debug("Отключено реле KL9")
         self.conn_opc.ctrl_relay('KL4', True)
-        self.cli_log.lev_info("Включено реле KL4", "blue")
-        self.logger.debug("Включено реле KL4")
         self.conn_opc.ctrl_relay('KL6', True)
-        self.cli_log.lev_info("Включено реле KL6", "blue")
-        self.logger.debug("Включено реле KL6")
         self.conn_opc.ctrl_relay('KL10', True)
-        self.cli_log.lev_info("Включено реле KL10", "blue")
-        self.logger.debug("Включено реле KL10")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -210,14 +190,10 @@ class TestBDU1:
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.conn_opc.ctrl_relay('KL12', True)
-        self.cli_log.lev_info("Включено реле KL12", "blue")
-        self.logger.debug("Включено реле KL12")
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
         self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
         self.conn_opc.ctrl_relay('KL11', True)
-        self.cli_log.lev_info("Включено реле KL11", "blue")
-        self.logger.debug("Включено реле KL11")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -226,8 +202,6 @@ class TestBDU1:
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL11', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.cli_log.lev_info("Отключены реле KL12, KL11, KL1", "blue")
-            self.logger.debug("Отключены реле KL12, KL11, KL1")
             return True
         return False
 
@@ -243,14 +217,10 @@ class TestBDU1:
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.conn_opc.ctrl_relay('KL12', True)
-        self.cli_log.lev_info("Включено реле KL12", "blue")
-        self.logger.debug("Включено реле KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.cli_log.lev_info("Отключено реле KL12", "blue")
-        self.logger.debug("Отключено реле KL12")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -277,7 +247,14 @@ class TestBDU1:
 
     def full_test_bdu_1(self) -> None:
         try:
-            if self.st_test_bdu_1():
+            start_time = time()
+            result_test = self.st_test_bdu_1()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

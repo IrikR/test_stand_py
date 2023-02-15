@@ -13,7 +13,7 @@ __all__ = ['TestBMZ2']
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -78,7 +78,6 @@ class TestBMZ2:
             return False
         self.mysql_conn.mysql_ins_result('идет тест 1', '1')
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug("KL21 включен")
         if self.reset_protection(test_num=1, subtest_num=1.0):
             return True
         return False
@@ -311,7 +310,13 @@ class TestBMZ2:
 
     def full_test_bmz_2(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_bmz_2()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
             if test and not health_flag:
                 self.result_test_bmz_2()
                 self.mysql_conn.mysql_block_good()

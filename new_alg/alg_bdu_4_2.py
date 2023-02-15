@@ -13,7 +13,7 @@ __all__ = ["TestBDU42"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -64,7 +64,6 @@ class TestBDU42:
         """
         self.logger.debug("старт теста 2.0")
         self.conn_opc.ctrl_relay('KL2', True)
-        self.logger.debug("включен KL2")
         if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
                                          err_code=[13, 14],
                                          position_inp=[False, False],
@@ -90,7 +89,6 @@ class TestBDU42:
         """
         self.logger.debug("старт теста 2.3")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключен KL12")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -100,7 +98,6 @@ class TestBDU42:
                                          di_xx=['inp_01', 'inp_02']):
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug("отключены KL25, KL1")
             return True
         return False
 
@@ -132,7 +129,6 @@ class TestBDU42:
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug("отключены KL12, KL25, KL1")
             return True
         return False
 
@@ -154,7 +150,6 @@ class TestBDU42:
         """
         self.logger.debug("старт теста 4.2")
         self.conn_opc.ctrl_relay('KL11', True)
-        self.logger.debug("включен KL11")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -166,7 +161,6 @@ class TestBDU42:
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
             self.conn_opc.ctrl_relay('KL11', False)
-            self.logger.debug("отключены KL12, KL25, KL1, KL11")
             return True
         return False
 
@@ -189,7 +183,6 @@ class TestBDU42:
         """
         self.logger.debug("старт теста 5.2")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -220,7 +213,14 @@ class TestBDU42:
 
     def full_test_bdu_4_2(self) -> None:
         try:
-            if self.st_test_bdu_4_2():
+            start_time = time()
+            result_test = self.st_test_bdu_4_2()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

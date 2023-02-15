@@ -13,7 +13,7 @@ __all__ = ["TestBDUDR01"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -65,7 +65,6 @@ class TestBDUDR01:
         """
         self.logger.debug("старт теста 2.0")
         self.conn_opc.ctrl_relay('KL2', True)
-        self.logger.debug("включен KL2")
         if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
                                          err_code=[220, 221, 222, 223],
                                          position_inp=[False, False, False, False],
@@ -96,7 +95,6 @@ class TestBDUDR01:
         """
         self.logger.debug("старт теста 2.3")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -106,7 +104,6 @@ class TestBDUDR01:
                                          di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug("отключены KL1, KL25")
             return True
         return False
 
@@ -143,7 +140,6 @@ class TestBDUDR01:
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug("отключены KL12, KL25, KL1")
             return True
         return False
 
@@ -170,7 +166,6 @@ class TestBDUDR01:
         """
         self.logger.debug("старт теста 4.2")
         self.conn_opc.ctrl_relay('KL11', True)
-        self.logger.debug("включен KL11")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -182,7 +177,6 @@ class TestBDUDR01:
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
             self.conn_opc.ctrl_relay('KL11', False)
-            self.logger.debug("отключены KL12, KL25, KL1, KL11")
             return True
         return False
 
@@ -209,7 +203,6 @@ class TestBDUDR01:
         """
         self.logger.debug("старт теста 5.2")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -219,7 +212,6 @@ class TestBDUDR01:
                                          di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL1', False)
-            self.logger.debug("отключены KL1, KL25")
             return True
         return False
 
@@ -231,7 +223,6 @@ class TestBDUDR01:
         self.conn_opc.ctrl_relay('KL2', True)
         self.conn_opc.ctrl_relay('KL26', True)
         self.conn_opc.ctrl_relay('KL28', True)
-        self.logger.debug("включены KL2, KL26, KL28")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -265,7 +256,6 @@ class TestBDUDR01:
         """
         self.logger.debug("старт теста 6.3")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -275,7 +265,6 @@ class TestBDUDR01:
                                          di_xx=['inp_01', 'inp_02', 'inp_03', 'inp_04']):
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL29', False)
-            self.logger.debug("отключены KL25, KL29")
             return True
         return False
 
@@ -312,7 +301,6 @@ class TestBDUDR01:
             self.conn_opc.ctrl_relay('KL12', False)
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL29', False)
-            self.logger.debug("отключены KL12, KL25, KL29")
             return True
         return False
 
@@ -339,7 +327,6 @@ class TestBDUDR01:
         """
         self.logger.debug("старт теста 8.2")
         self.conn_opc.ctrl_relay('KL11', True)
-        self.logger.debug("включен KL11")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -351,7 +338,6 @@ class TestBDUDR01:
             self.conn_opc.ctrl_relay('KL25', False)
             self.conn_opc.ctrl_relay('KL29', False)
             self.conn_opc.ctrl_relay('KL11', False)
-            self.logger.debug("отключены KL12, KL25, KL29, KL11")
             return True
         return False
 
@@ -378,7 +364,6 @@ class TestBDUDR01:
         """
         self.logger.debug("старт теста 9.2")
         self.conn_opc.ctrl_relay('KL12', False)
-        self.logger.debug("отключен KL12")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -417,7 +402,14 @@ class TestBDUDR01:
 
     def full_test_bdu_dr01(self) -> None:
         try:
-            if self.st_test_bdu_dr01():
+            start_time = time()
+            result_test = self.st_test_bdu_dr01()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_debug('Блок исправен', 'green')

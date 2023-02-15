@@ -14,7 +14,7 @@ __all__ = ["TestBKI2T"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -63,7 +63,6 @@ class TestBKI2T:
         """
         self.logger.debug("старт теста 2.0")
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug("включен KL21")
         sleep(5)
         self.logger.debug("таймаут 5 сек")
         self.cli_log.lev_debug("таймаут 5 сек", "gray")
@@ -81,7 +80,6 @@ class TestBKI2T:
         """
         self.logger.debug("старт теста 3.0")
         self.conn_opc.ctrl_relay('KL31', True)
-        self.logger.debug("включен KL31")
         self.resist.resist_kohm(12)
         sleep(1)
         self.logger.debug("таймаут 1 сек")
@@ -113,7 +111,6 @@ class TestBKI2T:
         self.logger.debug("старт теста 4.1")
         self.conn_opc.ctrl_relay('KL23', True)
         self.conn_opc.ctrl_relay('KL22', True)
-        self.logger.debug("включены KL23, KL22")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -123,7 +120,6 @@ class TestBKI2T:
                                          di_xx=['inp_05', 'inp_01', 'inp_06', 'inp_02']):
             self.resist.resist_kohm(590)
             self.conn_opc.ctrl_relay('KL22', False)
-            self.logger.debug("отключен KL22")
             return True
         return False
 
@@ -134,7 +130,6 @@ class TestBKI2T:
         """
         self.logger.debug("старт теста 5.0")
         self.conn_opc.ctrl_relay('KL31', False)
-        self.logger.debug("отключен KL31")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -164,7 +159,6 @@ class TestBKI2T:
     def st_test_61(self) -> bool:
         self.logger.debug("старт теста 6.1")
         self.conn_opc.ctrl_relay('KL22', True)
-        self.logger.debug("включен KL22")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -189,7 +183,14 @@ class TestBKI2T:
 
     def full_test_bki_2t(self) -> None:
         try:
-            if self.st_test_bki_2t():
+            start_time = time()
+            result_test = self.st_test_bki_2t()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

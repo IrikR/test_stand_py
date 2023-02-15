@@ -58,18 +58,10 @@ class Procedure:
         self.logger.debug("процедура 1")
         self.cli_log.lev_info("процедура 1", "purple")
         self.conn_opc.vtor_obm_tv1_off()
-        self.logger.debug("сброс вторичной обмотки")
-        self.cli_log.lev_debug("сброс вторичной обмотки", "gray")
         self.conn_opc.perv_obm_tv1_off()
-        self.logger.debug("сброс первичной обмотки")
-        self.cli_log.lev_debug("сброс первичной обмотки", "gray")
         self.conn_opc.ctrl_relay('KL62', True)
-        self.logger.debug("включение KL62")
-        self.cli_log.lev_debug("включение KL62", "blue")
         sleep(1)
         self.conn_opc.ctrl_relay('KL37', True)
-        self.logger.debug("включение KL37")
-        self.cli_log.lev_debug("включение KL37", "blue")
         sleep(1)
         for i in range(3):
             in_b0, *_ = self.conn_opc.simplified_read_di(['inp_08'])
@@ -91,11 +83,7 @@ class Procedure:
             self.logger.warning("процедура 1 не пройдена")
             self.cli_log.lev_warning("процедура 1 не пройдена", "red")
             self.conn_opc.ctrl_relay('KL62', False)
-            self.logger.debug("отключение KL62")
-            self.cli_log.lev_debug("отключение KL62", "blue")
             self.conn_opc.ctrl_relay('KL37', False)
-            self.logger.debug("отключение KL37")
-            self.cli_log.lev_debug("отключение KL37", "blue")
             raise HardwareException("Выходное напряжение не соответствует заданию.\n"
                                     "Неисправность узла формирования напряжения в стенде")
 
@@ -107,8 +95,6 @@ class Procedure:
         self.logger.debug("процедура 2.1")
         self.cli_log.lev_info("процедура 2.1", "purple")
         self.conn_opc.ctrl_relay('KL43', True)
-        self.logger.debug("включение KL43")
-        self.cli_log.lev_debug("включение KL43", "blue")
         sleep(1)
         condition = self._subtest_meas_volt()
         if condition:
@@ -126,8 +112,6 @@ class Procedure:
         self.logger.debug("процедура 2.2")
         self.cli_log.lev_info("процедура 2.2", "purple")
         self.conn_opc.ctrl_relay('KL44', True)
-        self.logger.debug("включение KL44")
-        self.cli_log.lev_debug("включение KL44", "blue")
         sleep(1)
         condition = self._subtest_meas_volt()
         if condition:
@@ -183,8 +167,6 @@ class Procedure:
         min_volt = 4.768
         max_volt = 7.152
         self.conn_opc.ctrl_relay('KL60', True)
-        self.logger.debug("включение KL60")
-        self.cli_log.lev_debug("включение KL60", "blue")
         sleep(3)
         meas_volt = self.conn_opc.read_ai('AI0')
         self.logger.info(f"измеренное U: {min_volt = } <= {meas_volt = } <= {max_volt = }")
@@ -213,7 +195,6 @@ class Procedure:
         self.logger.debug("процедура 3.2")
         self.cli_log.lev_info("процедура 3.2", "purple")
         self.conn_opc.ctrl_relay('KL54', True)
-        self.cli_log.lev_debug("Включение KL54", "blue")
         sleep(3)
         min_volt = 41.232
         max_volt = 61.848
