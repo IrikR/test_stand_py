@@ -109,11 +109,9 @@ class TestBTZ3:
         self.logger.debug("тест 2.0")
         self.mysql_conn.mysql_ins_result('идёт тест 2.0', '2')
         if self.proc.procedure_x4_to_x5(setpoint_volt=self.ust_prov, coef_volt=self.coef_volt):
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result("неисправен TV1", "2")
-            return False
-        return True
+            return True
+        self.mysql_conn.mysql_ins_result("неисправен TV1", "2")
+        return False
 
     def st_test_21(self) -> bool:
         """
@@ -448,7 +446,14 @@ class TestBTZ3:
 
     def full_test_btz_3(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_btz_3()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.result_test_btz_3()
                 self.mysql_conn.mysql_block_good()

@@ -13,7 +13,7 @@ __all__ = ["TestBRU2SR"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -66,7 +66,6 @@ class TestBRU2SR:
         """
         self.logger.debug("старт теста 2.0")
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug("включен KL21")
         if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.0,
                                          err_code=[59, 60],
                                          position_inp=[False, False],
@@ -76,13 +75,11 @@ class TestBRU2SR:
                 if self.subtest.subtest_b_bdu(test_num=2, subtest_num=2.2, err_code_a=63, err_code_b=64,
                                               position_a=True, position_b=False, kl1=False):
                     self.conn_opc.ctrl_relay('KL12', False)
-                    self.logger.debug("отключен KL12")
                     if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.3,
                                                      err_code=[65, 66],
                                                      position_inp=[False, False],
                                                      di_xx=['inp_01', 'inp_02']):
                         self.conn_opc.ctrl_relay('KL25', False)
-                        self.logger.debug("отключен KL25")
                         return True
         return False
 
@@ -106,7 +103,6 @@ class TestBRU2SR:
                                                  di_xx=['inp_01', 'inp_02']):
                     self.conn_opc.ctrl_relay('KL12', False)
                     self.conn_opc.ctrl_relay('KL25', False)
-                    self.logger.debug("отключены KL12, KL25")
                     return True
         return False
 
@@ -121,7 +117,6 @@ class TestBRU2SR:
             if self.subtest.subtest_b_bdu(test_num=4, subtest_num=4.1, err_code_a=63, err_code_b=64,
                                           position_a=True, position_b=False, kl1=False):
                 self.conn_opc.ctrl_relay('KL11', True)
-                self.logger.debug("включен KL11")
                 if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.2,
                                                  err_code=[69, 70],
                                                  position_inp=[False, False],
@@ -129,7 +124,6 @@ class TestBRU2SR:
                     self.conn_opc.ctrl_relay('KL12', False)
                     self.conn_opc.ctrl_relay('KL25', False)
                     self.conn_opc.ctrl_relay('KL11', False)
-                    self.logger.debug("отключены KL12, KL25, KL11")
                     return True
         return False
 
@@ -144,13 +138,11 @@ class TestBRU2SR:
             if self.subtest.subtest_b_bdu(test_num=5, subtest_num=5.1, err_code_a=63, err_code_b=64,
                                           position_a=True, position_b=False, kl1=False):
                 self.conn_opc.ctrl_relay('KL12', False)
-                self.logger.debug("отключен KL12")
                 if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.2,
                                                  err_code=[71, 72],
                                                  position_inp=[False, False],
                                                  di_xx=['inp_01', 'inp_02']):
                     self.conn_opc.ctrl_relay('KL25', False)
-                    self.logger.debug("отключен KL25")
                     return True
         return False
 
@@ -164,7 +156,6 @@ class TestBRU2SR:
         """
         self.logger.debug("старт теста 6.0")
         self.conn_opc.ctrl_relay('KL26', True)
-        self.logger.debug("включен KL26")
         if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.0,
                                          err_code=[59, 60],
                                          position_inp=[False, False],
@@ -174,13 +165,11 @@ class TestBRU2SR:
                 if self.subtest.subtest_b_bdu(test_num=6, subtest_num=6.2, err_code_a=75, err_code_b=76,
                                               position_a=False, position_b=True, kl1=False):
                     self.conn_opc.ctrl_relay('KL12', False)
-                    self.logger.debug("отключен KL12")
                     if self.conn_opc.subtest_read_di(test_num=6, subtest_num=6.3,
                                                      err_code=[77, 78],
                                                      position_inp=[False, False],
                                                      di_xx=['inp_01', 'inp_02']):
                         self.conn_opc.ctrl_relay('KL25', False)
-                        self.logger.debug("отключен KL25")
                         return True
         return False
 
@@ -202,7 +191,6 @@ class TestBRU2SR:
                                                  di_xx=['inp_01', 'inp_02']):
                     self.conn_opc.ctrl_relay('KL12', False)
                     self.conn_opc.ctrl_relay('KL25', False)
-                    self.logger.debug("отключены KL12, KL25")
                     return True
         return False
 
@@ -218,7 +206,6 @@ class TestBRU2SR:
             if self.subtest.subtest_b_bdu(test_num=8, subtest_num=8.1, err_code_a=75, err_code_b=76,
                                           position_a=False, position_b=True, kl1=False):
                 self.conn_opc.ctrl_relay('KL11', True)
-                self.logger.debug("включен KL11")
                 if self.conn_opc.subtest_read_di(test_num=8, subtest_num=8.2,
                                                  err_code=[81, 82],
                                                  position_inp=[False, False],
@@ -226,7 +213,6 @@ class TestBRU2SR:
                     self.conn_opc.ctrl_relay('KL12', False)
                     self.conn_opc.ctrl_relay('KL25', False)
                     self.conn_opc.ctrl_relay('KL11', False)
-                    self.logger.debug("отключены KL12, KL25, KL11")
                     return True
         return False
 
@@ -242,13 +228,11 @@ class TestBRU2SR:
             if self.subtest.subtest_b_bdu(test_num=9, subtest_num=9.1, err_code_a=75, err_code_b=76,
                                           position_a=False, position_b=True, kl1=False):
                 self.conn_opc.ctrl_relay('KL12', False)
-                self.logger.debug("отключен KL12")
                 if self.conn_opc.subtest_read_di(test_num=9, subtest_num=9.2,
                                                  err_code=[83, 84],
                                                  position_inp=[False, False],
                                                  di_xx=['inp_01', 'inp_02']):
                     self.conn_opc.ctrl_relay('KL25', False)
-                    self.logger.debug("отключен KL25")
                     return True
         return False
 
@@ -291,7 +275,14 @@ class TestBRU2SR:
 
     def full_test_bru_2sr(self) -> None:
         try:
-            if self.st_test_bru_2sr():
+            start_time = time()
+            result_test = self.st_test_bru_2sr()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

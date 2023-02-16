@@ -463,7 +463,14 @@ class TestBTZT:
 
     def full_test_btz_t(self) -> None:
         try:
+            start_time = time()
             test, health_flag_pmz, health_flag_tzp = self.st_test_btz_t()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag_pmz and not health_flag_tzp:
                 self.result_test_btz_t()
                 self.mysql_conn.mysql_block_good()

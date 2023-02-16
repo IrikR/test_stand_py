@@ -13,7 +13,7 @@ __all__ = ["TestBMZAPSHM"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -66,7 +66,6 @@ class TestBMZAPSHM:
         self.logger.debug("тест 1.0")
         self.cli_log.lev_info("тест 1", "skyblue")
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug('включен KL21')
         self.reset_protect.sbros_zashit_kl30()
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
                                     err_code=[347, 348, 349, 350],
@@ -104,12 +103,10 @@ class TestBMZAPSHM:
         self.cli_log.lev_info("тест 2.1", "skyblue")
         self.logger.debug("старт теста 2.1")
         self.conn_opc.ctrl_relay('KL63', True)
-        self.logger.debug('включен KL63')
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
         self.conn_opc.ctrl_relay('KL63', False)
-        self.logger.debug('отключен KL63')
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -143,7 +140,6 @@ class TestBMZAPSHM:
         self.logger.debug("старт теста 3.0")
         self.cli_log.lev_info("тест 3.0", "skyblue")
         self.conn_opc.ctrl_relay('KL73', True)
-        self.logger.debug('включен KL73')
         if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=self.ust_1):
             return True
         self.mysql_conn.mysql_ins_result('неисправен', '3')
@@ -152,12 +148,10 @@ class TestBMZAPSHM:
     def st_test_31(self) -> bool:
         self.cli_log.lev_info("тест 3.1", "skyblue")
         self.conn_opc.ctrl_relay('KL63', True)
-        self.logger.debug('включен KL63')
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
         self.conn_opc.ctrl_relay('KL63', False)
-        self.logger.debug('отключен KL63')
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -201,7 +195,14 @@ class TestBMZAPSHM:
 
     def full_test_bmz_apsh_m(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_bmz_apsh_m()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')

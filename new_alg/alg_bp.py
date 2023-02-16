@@ -14,7 +14,7 @@ __all__ = ["TestBP"]
 import logging
 import math
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -197,7 +197,14 @@ class TestBP:
 
     def full_test_bp(self) -> None:
         try:
-            if self.st_test_bp():
+            start_time = time()
+            result_test = self.st_test_bp()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

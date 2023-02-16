@@ -94,12 +94,10 @@ class TestMTZ5V27:
     def st_test_10(self) -> bool:
         self.mysql_conn.mysql_ins_result('идёт тест 1', '1')
         self.conn_opc.ctrl_relay('KL1', True)
-        self.cli_log.lev_info("включено реле KL1", "blue")
         sleep(0.5)
         self.logger.debug("таймаут 0.5 сек")
         self.cli_log.lev_debug("таймаут 0.5 сек", "gray")
         self.conn_opc.ctrl_relay('KL2', True)
-        self.cli_log.lev_info("включено реле KL1", "blue")
         sleep(1)
         self.logger.debug("таймаут 1 сек")
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -486,7 +484,14 @@ class TestMTZ5V27:
 
     def full_test_mtz_5_v27(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_mtz_5_v2_7()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.result_test()
                 self.mysql_conn.mysql_block_good()

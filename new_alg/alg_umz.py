@@ -13,7 +13,7 @@ __all__ = ["TestUMZ"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -407,7 +407,14 @@ class TestUMZ:
 
     def full_test_umz(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_umz()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.result_umz()
                 self.mysql_conn.mysql_block_good()

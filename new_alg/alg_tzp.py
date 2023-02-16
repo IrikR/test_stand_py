@@ -75,7 +75,6 @@ class TestTZP:
         self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         self.mysql_conn.mysql_ins_result('идет тест 1', '1')
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug("включен KL21")
         self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
                                          err_code=[277, 278],
@@ -173,7 +172,6 @@ class TestTZP:
                 self.logger.debug(f'напряжение соответствует: {meas_volt:.2f}')
                 self.mysql_conn.progress_level(0.0)
                 self.conn_opc.ctrl_relay('KL63', True)
-                self.logger.debug("включение KL63")
                 inp_08, *_ = self.conn_opc.simplified_read_di(['inp_08'])
                 self.logger.debug(f"inp_08 = {inp_08} (True)")
                 while inp_08 is False:
@@ -195,7 +193,6 @@ class TestTZP:
                 self.logger.debug(f"конец отсчета")
                 self.mysql_conn.progress_level(0.0)
                 self.conn_opc.ctrl_relay('KL63', False)
-                self.logger.debug(f"отключение KL63")
                 calc_delta_t = stop_timer - start_timer
                 self.logger.debug(f"dt: {calc_delta_t}")
                 self.reset_relay.stop_procedure_3()
@@ -274,7 +271,14 @@ class TestTZP:
 
     def full_test_tzp(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_tzp()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.result_test_tzp()
                 self.mysql_conn.mysql_block_good()

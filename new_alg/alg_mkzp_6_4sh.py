@@ -13,7 +13,7 @@ __all__ = ["TestMKZP6"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -483,7 +483,14 @@ class TestMKZP6:
 
     def full_test_mkzp_6_4sh(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_mkzp_6_4sh()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')

@@ -13,7 +13,7 @@ __all__ = ["TestBUPMVIR"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -66,8 +66,6 @@ class TestBUPMVIR:
         self.logger.debug("старт теста 1.1")
         self.cli_log.lev_info("старт теста 1.1", "gray")
         self.conn_opc.ctrl_relay('KL21', True)
-        self.logger.debug("включение KL21")
-        self.cli_log.lev_info("включение KL21", "blue")
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.1,
                                          err_code=[90],
                                          position_inp=[False],
@@ -84,8 +82,6 @@ class TestBUPMVIR:
         if self.subtest.subtest_a_bupmvir(test_num=2, subtest_num=2.0):
             # 2.2. Выключение блока от кнопки «Стоп» при сопротивлении 10 Ом
             self.conn_opc.ctrl_relay('KL12', False)
-            self.logger.debug("отключение KL12")
-            self.cli_log.lev_info("отключение KL12", "blue")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
             self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -104,15 +100,11 @@ class TestBUPMVIR:
         self.logger.debug("старт теста 3.0")
         self.cli_log.lev_info("старт теста 3.0", "gray")
         self.conn_opc.ctrl_relay('KL22', True)
-        self.logger.debug("включение KL22")
-        self.cli_log.lev_info("включение KL22", "blue")
         self.resist.resist_ohm(10)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
         self.conn_opc.ctrl_relay('KL12', True)
-        self.logger.debug("включение KL12")
-        self.cli_log.lev_info("включение KL12", "blue")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -122,8 +114,6 @@ class TestBUPMVIR:
                                          di_xx=['inp_01']):
             self.conn_opc.ctrl_relay('KL22', False)
             self.conn_opc.ctrl_relay('KL12', False)
-            self.logger.debug("отключение KL22, KL12")
-            self.cli_log.lev_info("отключение KL22, KL12", "blue")
             return True
         return False
 
@@ -142,8 +132,6 @@ class TestBUPMVIR:
                                              position_inp=[False],
                                              di_xx=['inp_01']):
                 self.conn_opc.ctrl_relay('KL12', False)
-                self.logger.debug("отключение KL12")
-                self.cli_log.lev_info("отключение KL12", "blue")
                 return True
         return False
 
@@ -154,8 +142,6 @@ class TestBUPMVIR:
         """
         if self.subtest.subtest_a_bupmvir(test_num=5, subtest_num=5.0):
             self.conn_opc.ctrl_relay('KL11', True)
-            self.logger.debug("включение KL11")
-            self.cli_log.lev_info("включение KL11", "blue")
             sleep(1)
             self.logger.debug("таймаут 2 сек")
             self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -165,8 +151,6 @@ class TestBUPMVIR:
                                              di_xx=['inp_01']):
                 self.conn_opc.ctrl_relay('KL12', False)
                 self.conn_opc.ctrl_relay('KL11', False)
-                self.logger.debug("отключение KL12, KL11")
-                self.cli_log.lev_info("отключение KL12, KL11", "blue")
                 return True
         return False
 
@@ -177,8 +161,6 @@ class TestBUPMVIR:
         """
         if self.subtest.subtest_a_bupmvir(test_num=6, subtest_num=6.0):
             self.conn_opc.ctrl_relay('KL12', False)
-            self.logger.debug("отключение KL12")
-            self.cli_log.lev_info("отключение KL12", "blue")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
             self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -197,14 +179,10 @@ class TestBUPMVIR:
         if self.subtest.subtest_a_bupmvir(test_num=7, subtest_num=7.0):
             self.conn_opc.ctrl_relay('KL27', False)
             self.conn_opc.ctrl_relay('KL30', True)
-            self.logger.debug("отключение KL27, KL30")
-            self.cli_log.lev_info("отключение KL27, KL30", "blue")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
             self.cli_log.lev_debug("таймаут 2 сек", "gray")
             self.conn_opc.ctrl_relay('KL27', True)
-            self.logger.debug("включение KL27")
-            self.cli_log.lev_info("включение KL27", "blue")
             sleep(6)
             self.logger.debug("таймаут 6 сек")
             self.cli_log.lev_debug("таймаут 6 сек", "gray")
@@ -213,8 +191,6 @@ class TestBUPMVIR:
                                              position_inp=[False],
                                              di_xx=['inp_01']):
                 self.conn_opc.ctrl_relay('KL30', False)
-                self.logger.debug("отключение KL30")
-                self.cli_log.lev_info("отключение KL30", "blue")
                 sleep(6)
                 self.logger.debug("таймаут 6 сек")
                 self.cli_log.lev_debug("таймаут 6 сек", "gray")
@@ -243,7 +219,14 @@ class TestBUPMVIR:
 
     def full_test_bu_pmvir(self) -> None:
         try:
-            if self.st_test_bu_pmvir():
+            start_time = time()
+            result_test = self.st_test_bu_pmvir()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

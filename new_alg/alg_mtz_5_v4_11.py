@@ -432,7 +432,14 @@ class TestMTZ5V411:
 
     def full_test_mtz_5_v411(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_mtz()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.result_test_mtz()
                 self.mysql_conn.mysql_block_good()

@@ -13,7 +13,7 @@ __all__ = ["TestBUAPSHM"]
 
 import logging
 import sys
-from time import sleep
+from time import sleep, time
 
 from .general_func.database import *
 from .general_func.exception import *
@@ -59,7 +59,6 @@ class TestBUAPSHM:
                                          position_inp=[False, False],
                                          di_xx=['inp_01', 'inp_02']):
             self.conn_opc.ctrl_relay('KL21', True)
-            self.logger.debug("включен KL21")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
             self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -82,7 +81,6 @@ class TestBUAPSHM:
         if self.subtest.subtest_a_bdu(test_num=2, subtest_num=2.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.conn_opc.ctrl_relay('KL12', False)
-            self.logger.debug("отключен KL12")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
             self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -113,7 +111,6 @@ class TestBUAPSHM:
                                              position_inp=[False, False],
                                              di_xx=['inp_01', 'inp_02']):
                 self.conn_opc.ctrl_relay('KL12', False)
-                self.logger.debug("отключен KL12")
                 return True
         return False
 
@@ -128,7 +125,6 @@ class TestBUAPSHM:
         if self.subtest.subtest_a_bdu(test_num=4, subtest_num=4.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.conn_opc.ctrl_relay('KL11', True)
-            self.logger.debug("включен KL11")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
             self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -138,7 +134,6 @@ class TestBUAPSHM:
                                              di_xx=['inp_01', 'inp_02']):
                 self.conn_opc.ctrl_relay('KL12', False)
                 self.conn_opc.ctrl_relay('KL11', False)
-                self.logger.debug("отключены KL12, KL11")
                 return True
         return False
 
@@ -153,7 +148,6 @@ class TestBUAPSHM:
         if self.subtest.subtest_a_bdu(test_num=5, subtest_num=5.0, err_code_a=103, err_code_b=104,
                                       position_a=True, position_b=False, resist=10, timeout=3):
             self.conn_opc.ctrl_relay('KL12', False)
-            self.logger.debug("отключен KL12")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
             self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -175,14 +169,12 @@ class TestBUAPSHM:
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
         self.conn_opc.ctrl_relay('KL26', True)
-        self.logger.debug("включен KL26")
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
         if self.subtest.subtest_a_bdu(test_num=6, subtest_num=6.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.conn_opc.ctrl_relay('KL12', False)
-            self.logger.debug("отключен KL12")
             sleep(1)
             self.logger.debug("таймаут 1 сек")
             self.cli_log.lev_debug("таймаут 1 сек", "gray")
@@ -213,7 +205,6 @@ class TestBUAPSHM:
                                              position_inp=[False, False],
                                              di_xx=['inp_01', 'inp_02']):
                 self.conn_opc.ctrl_relay('KL12', False)
-                self.logger.debug("отключен KL12")
                 return True
         return False
 
@@ -228,7 +219,6 @@ class TestBUAPSHM:
         if self.subtest.subtest_a_bdu(test_num=8, subtest_num=8.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.conn_opc.ctrl_relay('KL11', True)
-            self.logger.debug("включен KL11")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
             self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -238,7 +228,6 @@ class TestBUAPSHM:
                                              di_xx=['inp_01', 'inp_02']):
                 self.conn_opc.ctrl_relay('KL12', False)
                 self.conn_opc.ctrl_relay('KL11', False)
-                self.logger.debug("отключены KL12, KL11")
                 return True
         return False
 
@@ -253,7 +242,6 @@ class TestBUAPSHM:
         if self.subtest.subtest_a_bdu(test_num=9, subtest_num=9.0, err_code_a=113, err_code_b=114,
                                       position_a=False, position_b=True, resist=10, timeout=3):
             self.conn_opc.ctrl_relay('KL12', False)
-            self.logger.debug("отключен KL12")
             sleep(2)
             self.logger.debug("таймаут 2 сек")
             self.cli_log.lev_debug("таймаут 2 сек", "gray")
@@ -279,7 +267,14 @@ class TestBUAPSHM:
 
     def full_test_bu_apsh_m(self) -> None:
         try:
-            if self.st_test_bu_apsh_m():
+            start_time = time()
+            result_test = self.st_test_bu_apsh_m()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+            if result_test:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
                 self.cli_log.lev_info('Блок исправен', 'green')

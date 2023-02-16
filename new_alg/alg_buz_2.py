@@ -319,7 +319,14 @@ class TestBUZ2:
 
     def full_test_buz_2(self) -> None:
         try:
+            start_time = time()
             test, health_flag = self.st_test_buz_2()
+            end_time = time()
+            time_spent = end_time - start_time
+            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
+            self.logger.debug(f"Время выполнения: {time_spent}")
+            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+
             if test and not health_flag:
                 self.mysql_conn.mysql_block_good()
                 self.logger.debug('Блок исправен')
