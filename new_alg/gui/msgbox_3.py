@@ -27,7 +27,7 @@ def my_msg_3(msg: str, bgcolor='#37474F', btncolor='#2D3D45', fontcolor='#1F1F1F
 
     layout = [
             [sg.Text(msg, size=(60, 5), justification='center', font=font, background_color=bg_color)],
-            [sg.Button('Ok', font=font, size=16, button_color=btncolor, fontcolor=fontcolor),
+            [sg.Button('Ok', font=font, size=16, button_color=btncolor),
              sg.Button('Отмена', font=font, size=16, button_color=btncolor),
              sg.Button('Пропустить',  font=font, size=16, button_color=btncolor)]
         ]

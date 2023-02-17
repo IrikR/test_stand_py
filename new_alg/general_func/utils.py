@@ -46,7 +46,7 @@ class CLILog:
                              "reset": 0}
         msg, color_msg = args
         color = color_level[color_msg] if color_msg in color_level else 0
-        print(f"\033[37m [{datetime.time(datetime.now())} [{self.log}] {self.name}] : \033[{color}m {msg}")
+        print(f"\033[37m [{datetime.time(datetime.now())} [{self.log:<8}] {self.name:<35}] : \033[{color}m {msg}")
 
     def lev_debug(self, msg: str, msg_color: str) -> None:
         """
