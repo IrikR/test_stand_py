@@ -71,6 +71,8 @@ class TestBKZ3MK:
         self.delta_percent_tzp: float = 0.0
 
         self.meas_volt: float = 0.0
+        self.inp_01: bool = False
+        self.inp_02: bool = False
         self.inp_05: bool = False
         self.inp_06: bool = False
         self.health_flag_mtz: bool = False
@@ -390,9 +392,10 @@ class TestBKZ3MK:
     def func_delta_t_mtz(self, *, k) -> None:
         for qw in range(3):
             if self.reset_protection(test_num=4, subtest=4.1, err1=325, err2=326):
-                self.calc_delta_t_mtz = self.conn_opc.ctrl_ai_code_v0(code=105)
-                sleep(2)
-                self.inp_05, self.inp_06 = self.conn_opc.simplified_read_di(['inp_05', 'inp_06'])
+                self.calc_delta_t_mtz, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(code=105)
+                # sleep(2)
+                # self.inp_05, self.inp_06 = self.conn_opc.simplified_read_di(['inp_05', 'inp_06'])
                 result_delta_t = f"уставка МТЗ: {self.list_ust_mtz_num[k]}; попытка: {qw}; " \
                                  f"время: {self.calc_delta_t_mtz}"
                 self.logger.info(result_delta_t)
