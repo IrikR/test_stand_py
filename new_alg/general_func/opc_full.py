@@ -58,8 +58,9 @@ class ConnectOPC:
             cls._instances = super().__new__(cls)
 
         return cls._instances
-    def __del__(self):
-        ConnectOPC._instances = None
+
+    # def __del__(self):
+    #     self.opc.close()
 
     def __init__(self):
         self.opc = client()
@@ -824,4 +825,6 @@ class ConnectOPC:
             return analog_inp_ai0
 
     def opc_close(self):
-        self.opc.close('arOPC.arOpcServer.1')
+        self.opc.close()
+        self.cli_log.lev_info("отключение от OPC сервера", "gray")
+        self.logger.info("отключение от OPC сервера")
