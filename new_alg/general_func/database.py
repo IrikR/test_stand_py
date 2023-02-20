@@ -22,9 +22,6 @@ class MySQLConnect:
 
         return cls._instances
 
-    def __del__(self):
-        MySQLConnect._instances = None
-
     def __init__(self):
         self.host = 'localhost'
         self.user = 'simple_user'
@@ -47,9 +44,9 @@ class MySQLConnect:
                 self.logger.info(f"записей в БД: {c.rowcount}")
                 self.cli_log.lev_debug(f"записей в БД: {c.rowcount}", "gray")
 
-        except self.mysql_err as sqlerr:
-            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}")
-            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}', "red")
+        except self.mysql_err as sql_err:
+            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sql_err}")
+            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sql_err}', "red")
 
     def mysql_pmz_result(self, my_result: [str]) -> None:
         """
@@ -109,9 +106,9 @@ class MySQLConnect:
                 c = conn.cursor()
                 c.execute(request)
                 conn.commit()
-        except self.mysql_err as sqlerr:
-            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}")
-            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}', "red")
+        except self.mysql_err as sql_err:
+            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sql_err}")
+            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sql_err}', "red")
 
     def mysql_ins_result(self, my_result: str, num_test: str) -> None:
         """
@@ -159,9 +156,10 @@ class MySQLConnect:
         :param mess: Текстовое сообщение
         :return:
         """
-        mytime = datetime.now()
+        current_date = datetime.now()
         mess = mess[:170]
-        request = f"INSERT INTO simple_database.messages_alg(mess_alg_time, mess_text) VALUES('{mytime}','{mess}');"
+        request = f"INSERT INTO simple_database.messages_alg(mess_alg_time, mess_text) " \
+                  f"VALUES('{current_date}','{mess}');"
         self.logger.debug(f"{request}")
         self.connect_to_db(request)
 
@@ -192,6 +190,6 @@ class MySQLConnect:
                 conn.close()
                 text_0 = err_text[1]
                 return text_0
-        except self.mysql_err as sqlerr:
-            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}")
-            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sqlerr}', "red")
+        except self.mysql_err as sql_err:
+            self.logger.error(f"!!! Ошибка связи с базой данных MySQL !!!\n{sql_err}")
+            self.cli_log.lev_warning(f'!!! Ошибка связи с базой данных MySQL !!!\n{sql_err}', "red")
