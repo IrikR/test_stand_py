@@ -24,14 +24,15 @@ class TryExcept:
         self.conn_opc = ConnectOPC()
         self.mysql_conn = MySQLConnect()
 
-    def _put_result(self, msg):
+    def _put_result(self, msg: str) -> None:
         """
         Запись информационного сообщения в логгер, терминал и GUI
         """
         self.logger.warning(f"{msg}")
         self.cli_log.lev_warning(f"{msg}", 'red')
         my_msg(f"{msg}", 'red')
-    def _result_good(self):
+
+    def _result_good(self) -> None:
         """
         Запись положительного результата
         """
@@ -40,14 +41,14 @@ class TryExcept:
         self.cli_log.lev_info('Блок исправен', 'green')
         my_msg('Блок исправен', 'green')
 
-    def _result_bad(self):
+    def _result_bad(self) -> None:
         """
         Запись отрицательного результата
         """
         self.mysql_conn.mysql_block_bad()
         self._put_result('Блок неисправен')
 
-    def _time_result(self, start_time, end_time):
+    def _time_result(self, start_time, end_time) -> None:
         """
         Запись времени выполнения алгоритма проверки
         :param start_time: время начала выполнения алгоритма
@@ -58,13 +59,15 @@ class TryExcept:
         self.logger.debug(f"Время выполнения: {time_spent}")
         self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
 
-    def _not_health_flag(self, start_test):
+    def _not_health_flag(self, start_test, result) -> None:
         """
         Используется если в алгоритме проверки не используется флаг исправности
         :param start_test: алгоритм который необходимо запустить
         """
         start_time = time()
         test = start_test()
+        if result is not None:
+            result()
         end_time = time()
         self._time_result(start_time, end_time)
         if test is True:
@@ -72,7 +75,7 @@ class TryExcept:
         else:
             self._result_bad()
 
-    def _one_health_flag(self, start_test, result):
+    def _one_health_flag(self, start_test, result) -> None:
         """
         Используется если в алгоритме проверки, используется один флаг исправности
         :param start_test: алгоритм который необходимо запустить
@@ -88,7 +91,7 @@ class TryExcept:
         else:
             self._result_bad()
 
-    def _two_health_flag(self, start_test, result):
+    def _two_health_flag(self, start_test, result) -> None:
         """
         Используется если в алгоритме проверки, используется два флага исправности
         :param start_test: алгоритм который необходимо запустить
@@ -119,7 +122,7 @@ class TryExcept:
             self.conn_opc.simplified_read_di(["inp_14", "inp_15"])
             self.mysql_conn.mysql_add_message("старт проверки блока")
             if health_flag == 0:
-                self._not_health_flag(start_test)
+                self._not_health_flag(start_test, result)
             elif health_flag == 1:
                 self._one_health_flag(start_test, result)
             elif health_flag == 2:
