@@ -97,7 +97,7 @@ class BDU:
             test_bdu_4_3.full_test_bdu_4_3()
         elif self.model == "4tp":
             test_bdu = alg_bdu_014tp.TestBDU014TP()
-            test_bdu.full_test_bdu_014tp()
+            self.try_except.full_start_test(test_bdu.st_test_bdu_014tp, None, 0)
         elif self.model == "0":
             test_bdu = alg_bdu.TestBDU()
             self.try_except.full_start_test(test_bdu.st_test_bdu, None, 0)
