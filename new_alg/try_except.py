@@ -83,9 +83,10 @@ class TryExcept:
         """
         start_time = time()
         test, health_flag_0 = start_test()
+        if result is not None:
+            result()
         end_time = time()
         self._time_result(start_time, end_time)
-        result()
         if test and not health_flag_0:
             self._result_good()
         else:
@@ -99,9 +100,10 @@ class TryExcept:
         """
         start_time = time()
         test, health_flag_0, health_flag_1 = start_test()
+        if result is not None:
+            result()
         end_time = time()
         self._time_result(start_time, end_time)
-        result()
         if test and not health_flag_0 and not health_flag_1:
             self._result_good()
         else:

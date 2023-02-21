@@ -88,13 +88,13 @@ class BDU:
             self.try_except.full_start_test(test_bdu_1.st_test_bdu_1, None, 0)
         elif self.model == "1m":
             test_bdu_1m = alg_bdu_1m.TestBDU1M()
-            test_bdu_1m.full_test_bdu_1m()
+            self.try_except.full_start_test(test_bdu_1m.st_test_bdu_1m, None, 0)
         elif self.model == "42":
             test_bdu_4_2 = alg_bdu_4_2.TestBDU42()
-            test_bdu_4_2.full_test_bdu_4_2()
+            self.try_except.full_start_test(test_bdu_4_2.st_test_bdu_4_2, None, 0)
         elif self.model == "43":
             test_bdu_4_3 = alg_bdu_4_3.TestBDU43()
-            test_bdu_4_3.full_test_bdu_4_3()
+            self.try_except.full_start_test(test_bdu_4_3.st_test_bdu_4_3, None, 0)
         elif self.model == "4tp":
             test_bdu = alg_bdu_014tp.TestBDU014TP()
             self.try_except.full_start_test(test_bdu.st_test_bdu_014tp, None, 0)
@@ -103,16 +103,16 @@ class BDU:
             self.try_except.full_start_test(test_bdu.st_test_bdu, None, 0)
         elif self.model == "d42":
             test_bdu_d4_2 = alg_bdu_d4_2.TestBDUD42()
-            test_bdu_d4_2.full_test_bdu_d4_2()
+            self.try_except.full_start_test(test_bdu_d4_2.st_test_bdu_d4_2, None, 0)
         elif self.model == "d":
             test_bdu = alg_bdu_d.TestBDUD()
-            test_bdu.full_test_bdu_d()
+            self.try_except.full_start_test(test_bdu.st_test_bdu_d, None, 0)
         elif self.model == "dr01":
             test_bdu = alg_bdu_dr01.TestBDUDR01()
-            test_bdu.full_test_bdu_dr01()
+            self.try_except.full_start_test(test_bdu.st_test_bdu_dr01, None, 0)
         elif self.model == "rt":
             test_bdu = alg_bdu_r_t.TestBDURT()
-            test_bdu.full_test_bdu_r_t()
+            self.try_except.full_start_test(test_bdu.st_test_bdu_r_t, None, 0)
 
 
 class BDZ:
@@ -123,10 +123,9 @@ class BDZ:
     def __init__(self):
         self.try_except = TryExcept()
 
-    @staticmethod
-    def bdz():
+    def bdz(self):
         test_bdz = alg_bdz.TestBDZ()
-        test_bdz.full_test_bdz()
+        self.try_except.full_start_test(test_bdz.st_test_bdz, None, 0)
 
 
 class BKI:
@@ -140,20 +139,21 @@ class BKI:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_bki(self):
         if self.model == "1t":
             test_bki = alg_bki_1t.TestBKI1T()
-            test_bki.full_test_bki_1t()
+            self.try_except.full_start_test(test_bki.st_test_bki_1t, None, 0)
         elif self.model == "2t":
             test_bki = alg_bki_2t.TestBKI2T()
-            test_bki.full_test_bki_2t()
+            self.try_except.full_start_test(test_bki.st_test_bki_2t, None, 0)
         elif self.model == "6":
             test_bki = alg_bki_6_3sh.TestBKI6()
-            test_bki.full_test_bki_6_3sh()
+            self.try_except.full_start_test(test_bki.st_test_bki_6_3sh, None, 0)
         elif self.model == "p":
             test_bki = alg_bki_p.TestBKIP()
-            test_bki.full_test_bki_p()
+            self.try_except.full_start_test(test_bki.st_test_bki_p, None, 0)
 
 
 class BKZ:
@@ -176,17 +176,18 @@ class BMZ:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_bmz(self):
         if self.model == "2":
             test_bmz = alg_bmz_2.TestBMZ2()
-            test_bmz.full_test_bmz_2()
+            self.try_except.full_start_test(test_bmz.st_test_bmz_2, test_bmz.result_test_bmz_2, 1)
         elif self.model == "apsh4":
             test_bmz = alg_bmz_apsh_4.TestBMZAPSH4()
-            test_bmz.full_test_bmz_apsh_4()
+            self.try_except.full_start_test(test_bmz.st_test_bmz_apsh_4, None, 1)
         elif self.model == "apshm":
             test_bmz = alg_bmz_apsh_m.TestBMZAPSHM()
-            test_bmz.full_test_bmz_apsh_m()
+            self.try_except.full_start_test(test_bmz.st_test_bmz_apsh_m, None, 1)
 
 
 class BP:
@@ -398,7 +399,7 @@ def handler():
         else:
             print(BDU.__doc__)
     elif arg.block == "bdz":
-        BDZ.bdz()
+        BDZ().bdz()
     elif arg.block == "bki":
         if arg.model == "1t":
             BKI("1t").handler_bki()
