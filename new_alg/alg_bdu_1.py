@@ -12,17 +12,14 @@
 __all__ = ["TestBDU1"]
 
 import logging
-import sys
-from time import sleep, time
+from time import sleep
 
-from .general_func.database import *
-from .general_func.exception import ModbusConnectException
+from .general_func.database import MySQLConnect
 from .general_func.opc_full import ConnectOPC
 from .general_func.reset import ResetRelay
 from .general_func.resistance import Resistor
 from .general_func.subtest import SubtestBDU
 from .general_func.utils import CLILog
-from .gui.msgbox_1 import *
 
 
 class TestBDU1:
@@ -244,47 +241,3 @@ class TestBDU1:
                                     if self.st_test_60():
                                         return True
         return False
-
-    def full_test_bdu_1(self) -> None:
-        try:
-            start_time = time()
-            result_test = self.st_test_bdu_1()
-            end_time = time()
-            time_spent = end_time - start_time
-            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
-            self.logger.debug(f"Время выполнения: {time_spent}")
-            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
-            if result_test:
-                self.mysql_conn.mysql_block_good()
-                self.logger.debug('Блок исправен')
-                self.cli_log.lev_info('Блок исправен', 'green')
-                my_msg('Блок исправен', 'green')
-            else:
-                self.mysql_conn.mysql_block_bad()
-                self.logger.debug('Блок неисправен')
-                self.cli_log.lev_warning('Блок неисправен', 'red')
-                my_msg('Блок неисправен', 'red')
-        except OSError:
-            self.logger.debug("ошибка системы")
-            self.cli_log.lev_warning("ошибка системы", 'red')
-            my_msg("ошибка системы", 'red')
-        except SystemError:
-            self.logger.debug("внутренняя ошибка")
-            self.cli_log.lev_warning("внутренняя ошибка", 'red')
-            my_msg("внутренняя ошибка", 'red')
-        except ModbusConnectException as mce:
-            self.logger.debug(f'{mce}')
-            self.cli_log.lev_warning(f'{mce}', 'red')
-            my_msg(f'{mce}', 'red')
-        except AttributeError as ae:
-            self.logger.debug(f"Неверный атрибут. {ae}")
-            self.cli_log.lev_warning(f"Неверный атрибут. {ae}", 'red')
-            my_msg(f"Неверный атрибут. {ae}", 'red')
-        except ValueError as ve:
-            self.logger.debug(f"Некорректное значение для переменной. {ve}")
-            self.cli_log.lev_warning(f"Некорректное значение для переменной. {ve}", 'red')
-            my_msg(f"Некорректное значение для переменной. {ve}", 'red')
-        finally:
-            self.conn_opc.full_relay_off()
-            self.conn_opc.opc_close()
-            sys.exit()

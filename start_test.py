@@ -85,7 +85,7 @@ class BDU:
     def handler_bdu(self):
         if self.model == "1":
             test_bdu_1 = alg_bdu_1.TestBDU1()
-            test_bdu_1.full_test_bdu_1()
+            self.try_except.full_start_test(test_bdu_1.st_test_bdu_1, None, 0)
         elif self.model == "1m":
             test_bdu_1m = alg_bdu_1m.TestBDU1M()
             test_bdu_1m.full_test_bdu_1m()
