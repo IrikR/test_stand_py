@@ -4,7 +4,7 @@ import argparse
 import textwrap
 
 from new_alg import *
-# from old_alg import *
+from new_alg.try_except import TryExcept
 
 
 def create_parser():
@@ -80,6 +80,7 @@ class BDU:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_bdu(self):
         if self.model == "1":
@@ -99,7 +100,7 @@ class BDU:
             test_bdu.full_test_bdu_014tp()
         elif self.model == "0":
             test_bdu = alg_bdu.TestBDU()
-            test_bdu.full_test_bdu()
+            self.try_except.full_start_test(test_bdu.st_test_bdu, None, 0)
         elif self.model == "d42":
             test_bdu_d4_2 = alg_bdu_d4_2.TestBDUD42()
             test_bdu_d4_2.full_test_bdu_d4_2()
@@ -120,7 +121,7 @@ class BDZ:
     """
 
     def __init__(self):
-        pass
+        self.try_except = TryExcept()
 
     @staticmethod
     def bdz():
@@ -155,9 +156,14 @@ class BKI:
             test_bki.full_test_bki_p()
 
 
-def bkz_3mk():
-    test_bkz_3mk = alg_bkz_3mk.TestBKZ3MK()
-    test_bkz_3mk.full_test_bkz_3mk()
+class BKZ:
+
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def bkz_3mk(self):
+        test_bkz_3mk = alg_bkz_3mk.TestBKZ3MK()
+        self.try_except.full_start_test(test_bkz_3mk.st_test_bkz_3mk, test_bkz_3mk.result_test_bkz_3mk, 2)
 
 
 class BMZ:
@@ -183,9 +189,12 @@ class BMZ:
             test_bmz.full_test_bmz_apsh_m()
 
 
-def bp():
-    test_bp = alg_bp.TestBP()
-    test_bp.full_test_bp()
+class BP:
+
+    @staticmethod
+    def bp():
+        test_bp = alg_bp.TestBP()
+        test_bp.full_test_bp()
 
 
 class BRU:
@@ -245,14 +254,20 @@ class BU:
             test_bu.full_test_bu_pmvir()
 
 
-def bur():
-    test_bur = alg_bur_pmvir.TestBURPMVIR()
-    test_bur.full_test_bur_pmvir()
+class BUR:
+
+    @staticmethod
+    def bur():
+        test_bur = alg_bur_pmvir.TestBURPMVIR()
+        test_bur.full_test_bur_pmvir()
 
 
-def buz():
-    test_buz = alg_buz_2.TestBUZ2()
-    test_buz.full_test_buz_2()
+class BUZ:
+
+    @staticmethod
+    def buz():
+        test_buz = alg_buz_2.TestBUZ2()
+        test_buz.full_test_buz_2()
 
 
 class BZMP:
@@ -278,14 +293,20 @@ class BZMP:
             test_bzmp.full_test_bzmp_p()
 
 
-def mkzp():
-    test_mkzp = alg_mkzp_6_4sh.TestMKZP6()
-    test_mkzp.full_test_mkzp_6_4sh()
+class MKZP:
+
+    @staticmethod
+    def mkzp():
+        test_mkzp = alg_mkzp_6_4sh.TestMKZP6()
+        test_mkzp.full_test_mkzp_6_4sh()
 
 
-def mmtz():
-    test_mmtz = alg_mmtz_d.TestMMTZD()
-    test_mmtz.full_test_mmtz_d()
+class MMTZ:
+
+    @staticmethod
+    def mmtz():
+        test_mmtz = alg_mmtz_d.TestMMTZD()
+        test_mmtz.full_test_mmtz_d()
 
 
 class MTZ:
@@ -311,29 +332,44 @@ class MTZ:
             test_mtz.full_test_mtz_5_v411()
 
 
-def mtzp():
-    test_mtzp = alg_mtzp_2.TestMTZP2()
-    test_mtzp.full_test_mtzp_2()
+class MTZP:
+
+    @staticmethod
+    def mtzp():
+        test_mtzp = alg_mtzp_2.TestMTZP2()
+        test_mtzp.full_test_mtzp_2()
 
 
-def pmz():
-    test_pmz = alg_pmz.TestPMZ()
-    test_pmz.full_test_pmz()
+class PMZ:
+
+    @staticmethod
+    def pmz():
+        test_pmz = alg_pmz.TestPMZ()
+        test_pmz.full_test_pmz()
 
 
-def tzp():
-    test_tzp = alg_tzp.TestTZP()
-    test_tzp.full_test_tzp()
+class TZP:
+
+    @staticmethod
+    def tzp():
+        test_tzp = alg_tzp.TestTZP()
+        test_tzp.full_test_tzp()
 
 
-def ubtz():
-    test_ubtz = alg_ubtz.TestUBTZ()
-    test_ubtz.full_test_ubtz()
+class UBTZ:
+
+    @staticmethod
+    def ubtz():
+        test_ubtz = alg_ubtz.TestUBTZ()
+        test_ubtz.full_test_ubtz()
 
 
-def umz():
-    test_umz = alg_umz.TestUMZ()
-    test_umz.full_test_umz()
+class UMZ:
+
+    @staticmethod
+    def umz():
+        test_umz = alg_umz.TestUMZ()
+        test_umz.full_test_umz()
 
 
 def handler():
@@ -375,7 +411,7 @@ def handler():
         else:
             print(BKI.__doc__)
     elif arg.block == "bkz":
-        bkz_3mk()
+        BKZ().bkz_3mk()
     elif arg.block == "bmz":
         if arg.model == "2":
             BMZ("2").handler_bmz()
@@ -386,7 +422,7 @@ def handler():
         else:
             print(BMZ.__doc__)
     elif arg.block == "bp":
-        bp()
+        BP().bp()
     elif arg.block == "bru":
         if arg.model == "2s":
             BRU("2s").handler_bru()
@@ -409,9 +445,9 @@ def handler():
         else:
             print(BU.__doc__)
     elif arg.block == "bur":
-        bur()
+        BUR().bur()
     elif arg.block == "buz":
-        buz()
+        BUZ().buz()
     elif arg.block == "bzmp":
         if arg.model == "d":
             BZMP("d").handler_bzmp()
@@ -422,9 +458,9 @@ def handler():
         else:
             print(BZMP.__doc__)
     elif arg.block == "mkzp":
-        mkzp()
+        MKZP().mkzp()
     elif arg.block == "mmtz":
-        mmtz()
+        MMTZ().mmtz()
     elif arg.block == "mtz":
         if arg.model == "27":
             MTZ("27").handler_mtz()
@@ -435,15 +471,15 @@ def handler():
         else:
             print(MTZ.__doc__)
     elif arg.block == "mtzp":
-        mtzp()
+        MTZP().mtzp()
     elif arg.block == "pmz":
-        pmz()
+        PMZ().pmz()
     elif arg.block == "tzp":
-        tzp()
+        TZP().tzp()
     elif arg.block == "ubtz":
-        ubtz()
+        UBTZ().ubtz()
     elif arg.block == "umz":
-        umz()
+        UMZ().umz()
     else:
         print("используйте:\n python.exe .\start_test.py --help \n для получения справки")
 
