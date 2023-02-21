@@ -58,6 +58,11 @@ class TestBTZ3:
 
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_02: bool = False
+        self.inp_05: bool = False
+        self.inp_06: bool = False
+
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBTZ3.log",
             filemode="w",
@@ -362,7 +367,8 @@ class TestBTZ3:
         calc_delta_percent_pmz = 0.0062 * meas_volt ** 2 + 1.992 * meas_volt
         self.list_delta_percent_pmz[-1] = f'{calc_delta_percent_pmz:.2f}'
         for wq in range(4):
-            self.calc_delta_t_pmz = self.conn_opc.ctrl_ai_code_v0(103)
+            self.calc_delta_t_pmz, self.inp_01, self.inp_02, \
+                self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(103)
             if 3000 < self.calc_delta_t_pmz <= 9999:
                 if self.reset_protection(test_num=4, subtest_num=4.3):
                     wq += 1

@@ -50,6 +50,11 @@ class TestBMZ2:
         self.calc_delta_t: float = 0.0
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_02: bool = False
+        self.inp_05: bool = False
+        self.inp_06: bool = False
+
         self.msg_1 = "Переключите тумблер на корпусе блока в положение " \
                      "«Работа» и установите регулятор уставок в положение 1"
         self.msg_2 = "Переключите тумблер на корпусе блока в положение «Проверка»."
@@ -164,7 +169,8 @@ class TestBMZ2:
                 return False
             # qw = 0
             for qw in range(4):
-                self.calc_delta_t = self.conn_opc.ctrl_ai_code_v0(code=104)
+                self.calc_delta_t, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(code=104)
                 self.logger.info(f'дельта t \t {self.calc_delta_t:.1f}')
                 if self.calc_delta_t == 9999:
                     self.reset_protect.sbros_zashit_kl30()
@@ -245,7 +251,8 @@ class TestBMZ2:
         self.mysql_conn.mysql_ins_result('идет тест 3.4', '3')
         # wq = 0
         for wq in range(4):
-            self.calc_delta_t = self.conn_opc.ctrl_ai_code_v0(code=104)
+            self.calc_delta_t, self.inp_01, self.inp_02, \
+                self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(code=104)
             self.logger.info(f'дельта t \t {self.calc_delta_t:.1f}')
             if self.calc_delta_t == 9999:
                 self.reset_protect.sbros_zashit_kl30()

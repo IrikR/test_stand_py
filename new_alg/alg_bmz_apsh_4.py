@@ -46,6 +46,11 @@ class TestBMZAPSH4:
         self.coef_volt: float = 0.0
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_02: bool = False
+        self.inp_05: bool = False
+        self.inp_06: bool = False
+
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBMZAPSh4.log",
             filemode="w",
@@ -109,7 +114,8 @@ class TestBMZAPSH4:
             else:
                 self.mysql_conn.mysql_ins_result('неисправен TV1', '1')
             # 2.1.  Проверка срабатывания блока от сигнала нагрузки:
-            calc_delta_t = self.conn_opc.ctrl_ai_code_v0(111)
+            calc_delta_t, self.inp_01, self.inp_02, \
+                self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(111)
             self.logger.debug(f'delta t:\t {calc_delta_t:.1f}')
             self.list_delta_t.append(f'{calc_delta_t:.1f}')
             self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} дельта t: {calc_delta_t:.1f}')
@@ -152,7 +158,8 @@ class TestBMZAPSH4:
             pass
         else:
             return False
-        calc_delta_t = self.conn_opc.ctrl_ai_code_v0(111)
+        calc_delta_t, self.inp_01, self.inp_02, \
+                self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(111)
         self.logger.info(f'delta t: {calc_delta_t:.1f}')
         self.list_delta_t[-1] = f'{calc_delta_t:.1f}'
         self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} дельта t: {calc_delta_t:.1f}')

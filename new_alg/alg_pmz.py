@@ -51,6 +51,11 @@ class TestPMZ:
         self.calc_delta_t = 0.0
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_02: bool = False
+        self.inp_05: bool = False
+        self.inp_06: bool = False
+
         self.msg_1 = "Убедитесь в отсутствии в панелях разъемов установленных блоков Подключите " \
                      "блок ПМЗ в разъем Х14 на панели B"
         self.msg_2 = "Переключите тумблер режимов, расположенный на корпусе блока, в положение «Работа»"
@@ -202,7 +207,8 @@ class TestPMZ:
             self.list_delta_percent.append(f'{calc_delta_percent:.2f}')
             # 3.4.  Проверка срабатывания блока от сигнала нагрузки:
             for qw in range(4):
-                self.calc_delta_t = self.conn_opc.ctrl_ai_code_v0(104)
+                self.calc_delta_t, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(104)
                 self.logger.debug(f'время срабатывания, {self.calc_delta_t:.1f} мс')
                 self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} '
                                                   f'дельта t: {self.calc_delta_t:.1f}')
@@ -272,7 +278,8 @@ class TestPMZ:
         calc_delta_percent = 0.0038 * meas_volt ** 2 + 2.27 * meas_volt
         self.list_delta_percent[-1] = f'{calc_delta_percent:.2f}'
         for wq in range(4):
-            self.calc_delta_t = self.conn_opc.ctrl_ai_code_v0(104)
+            self.calc_delta_t, self.inp_01, self.inp_02, \
+                self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(104)
             self.logger.debug(f'время срабатывания, {self.calc_delta_t:.1f} мс')
             self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} '
                                               f'дельта t: {self.calc_delta_t:.1f}')

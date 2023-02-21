@@ -48,6 +48,11 @@ class TestUBTZ:
         self.calc_delta_t_bmz = 0.0
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_02: bool = False
+        self.inp_05: bool = False
+        self.inp_06: bool = False
+
         self.list_delta_t_tzp = []
         self.list_delta_t_bmz = []
         self.list_bmz_result = []
@@ -134,7 +139,8 @@ class TestUBTZ:
 
             # 3.1.  Проверка срабатывания блока от сигнала нагрузки:
             for qw in range(4):
-                self.calc_delta_t_bmz = self.conn_opc.ctrl_ai_code_v0(109)
+                self.calc_delta_t_bmz, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
                 self.logger.debug(f'тест 2, дельта t\t{self.calc_delta_t_bmz:.1f}')
                 if self.calc_delta_t_bmz == 9999:
                     self.reset_protect.sbros_zashit_ubtz()
@@ -283,7 +289,8 @@ class TestUBTZ:
 
         # 3.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         for wq in range(4):
-            self.calc_delta_t_bmz = self.conn_opc.ctrl_ai_code_v0(109)
+            self.calc_delta_t_bmz, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             self.logger.debug(f'тест 3 delta t:\t{self.calc_delta_t_bmz:.1f}')
             if self.calc_delta_t_bmz == 9999:
                 self.reset_protect.sbros_zashit_ubtz()

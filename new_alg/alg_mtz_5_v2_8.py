@@ -56,6 +56,11 @@ class TestMTZ5V28:
         self.in_5: bool
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_02: bool = False
+        self.inp_05: bool = False
+        self.inp_06: bool = False
+
         self.msg_1 = "Убедитесь в отсутствии других блоков в панелях разъемов и вставьте блок " \
                      "в соответствующий разъем панели B"
         self.msg_2 = "«Переключите тумблер на корпусе блока в положение «Работа» и установите регуляторы уставок " \
@@ -377,7 +382,8 @@ class TestMTZ5V28:
         self.reset_relay.stop_procedure_3()
 
         for wq in range(4):
-            self.calc_delta_t_mtz = self.conn_opc.ctrl_ai_code_v0(110)
+            self.calc_delta_t_mtz, self.inp_01, self.inp_02, \
+                self.inp_05, self.inp_06  = self.conn_opc.ctrl_ai_code_v0(110)
             if self.calc_delta_t_mtz != 9999:
                 break
             else:

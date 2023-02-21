@@ -57,6 +57,11 @@ class TestUMZ:
         self.k = 0
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_02: bool = False
+        self.inp_05: bool = False
+        self.inp_06: bool = False
+
         self.msg_1 = "Убедитесь в отсутствии в панелях разъемов установленных блоков Подключите " \
                      "блок УМЗ в разъем Х8 на панели B с помощью соответствующей кабельной сборки"
         self.msg_2 = "Переключите тумблер режимов, расположенный на корпусе блока, в положение «Работа»"
@@ -141,7 +146,8 @@ class TestUMZ:
             progress_msg = f'канал АБ дельта t'
             self.mysql_conn.mysql_ins_result(f'{progress_msg} {self.k}', '2')
             for i1 in range(5):
-                self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
+                self.calc_delta_t_ab, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
                 if self.calc_delta_t_ab != 9999:
                     break
                 else:
@@ -171,7 +177,8 @@ class TestUMZ:
             progress_msg = f'канал ВГ дельта t'
             self.mysql_conn.mysql_ins_result(f'{progress_msg} {self.k}', '2')
             for i2 in range(5):
-                self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
+                self.calc_delta_t_vg, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
                 if self.calc_delta_t_ab != 9999:
                     break
                 else:
@@ -255,7 +262,8 @@ class TestUMZ:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             return False
         for i3 in range(5):
-            self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
+            self.calc_delta_t_ab, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
@@ -272,7 +280,8 @@ class TestUMZ:
         else:
             return False
         for i4 in range(5):
-            self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
+            self.calc_delta_t_vg, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
@@ -322,7 +331,8 @@ class TestUMZ:
         else:
             return False
         for i3 in range(5):
-            self.calc_delta_t_ab = self.conn_opc.ctrl_ai_code_v0(109)
+            self.calc_delta_t_ab, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
@@ -358,7 +368,8 @@ class TestUMZ:
         else:
             return False
         for i4 in range(5):
-            self.calc_delta_t_vg = self.conn_opc.ctrl_ai_code_v0(109)
+            self.calc_delta_t_vg, self.inp_01, self.inp_02, \
+                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
