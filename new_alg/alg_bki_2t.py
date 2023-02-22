@@ -167,6 +167,11 @@ class TestBKI2T:
         return False
 
     def st_test_bki_2t(self) -> bool:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool
+            :return: результат теста
+        """
         if self.st_test_10():
             if self.st_test_20():
                 if self.st_test_30():

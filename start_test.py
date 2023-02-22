@@ -192,10 +192,12 @@ class BMZ:
 
 class BP:
 
-    @staticmethod
-    def bp():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def bp(self):
         test_bp = alg_bp.TestBP()
-        test_bp.full_test_bp()
+        self.try_except.full_start_test(test_bp.st_test_bp, None, 0)
 
 
 class BRU:
@@ -207,14 +209,15 @@ class BRU:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_bru(self):
         if self.model == "2s":
             test_bru = alg_bru_2s.TestBRU2S()
-            test_bru.full_test_bru_2s()
+            self.try_except.full_start_test(test_bru.st_test_bru_2s, None, 0)
         elif self.model == "2sr":
             test_bru = alg_bru_2sr.TestBRU2SR()
-            test_bru.full_test_bru_2sr()
+            self.try_except.full_start_test(test_bru.st_test_bru_2sr, None, 0)
 
 
 class BTZ:
@@ -226,14 +229,15 @@ class BTZ:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_btz(self):
         if self.model == "3":
             test_btz = alg_btz_3.TestBTZ3()
-            test_btz.full_test_btz_3()
+            self.try_except.full_start_test(test_btz.st_test_btz_3, test_btz.result_test_btz_3, 1)
         elif self.model == "t":
             test_btz_t = alg_btz_t.TestBTZT()
-            test_btz_t.full_test_btz_t()
+            self.try_except.full_start_test(test_btz_t.st_test_btz_t, test_btz_t.result_test_btz_t, 2)
 
 
 class BU:
@@ -245,30 +249,35 @@ class BU:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_bu(self):
         if self.model == "apshm":
             test_bu = alg_bu_apsh_m.TestBUAPSHM()
-            test_bu.full_test_bu_apsh_m()
+            self.try_except.full_start_test(test_bu.st_test_bu_apsh_m, None, 0)
         elif self.model == "pmvir":
             test_bu = alg_bu_pmvir.TestBUPMVIR()
-            test_bu.full_test_bu_pmvir()
+            self.try_except.full_start_test(test_bu.st_test_bu_pmvir, None, 0)
 
 
 class BUR:
 
-    @staticmethod
-    def bur():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def bur(self):
         test_bur = alg_bur_pmvir.TestBURPMVIR()
-        test_bur.full_test_bur_pmvir()
+        self.try_except.full_start_test(test_bur.st_test_bur_pmvir, None, 0)
 
 
 class BUZ:
 
-    @staticmethod
-    def buz():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def buz(self):
         test_buz = alg_buz_2.TestBUZ2()
-        test_buz.full_test_buz_2()
+        self.try_except.full_start_test(test_buz.st_test_buz_2, None, 1)
 
 
 class BZMP:
@@ -281,33 +290,38 @@ class BZMP:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_bzmp(self):
         if self.model == "d":
             test_bzmp = alg_bzmp_d.TestBZMPD()
-            test_bzmp.full_test_bzmp_d()
+            self.try_except.full_start_test(test_bzmp.st_test_bzmp_d, None, 1)
         elif self.model == "p1":
             test_bzmp = alg_bzmp_p1.TestBZMPP1()
-            test_bzmp.full_test_bzmp_p1()
+            self.try_except.full_start_test(test_bzmp.st_test_bzmp_p1, None, 1)
         elif self.model == "p":
             test_bzmp = alg_bzmp_p.TestBZMPP()
-            test_bzmp.full_test_bzmp_p()
+            self.try_except.full_start_test(test_bzmp.st_test_bzmp_p, None, 1)
 
 
 class MKZP:
 
-    @staticmethod
-    def mkzp():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def mkzp(self):
         test_mkzp = alg_mkzp_6_4sh.TestMKZP6()
-        test_mkzp.full_test_mkzp_6_4sh()
+        self.try_except.full_start_test(test_mkzp.st_test_mkzp_6_4sh, None, 1)
 
 
 class MMTZ:
 
-    @staticmethod
-    def mmtz():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def mmtz(self):
         test_mmtz = alg_mmtz_d.TestMMTZD()
-        test_mmtz.full_test_mmtz_d()
+        self.try_except.full_start_test(test_mmtz.st_test_mmtz_d, None, 1)
 
 
 class MTZ:
@@ -320,57 +334,68 @@ class MTZ:
 
     def __init__(self, model):
         self.model = model
+        self.try_except = TryExcept()
 
     def handler_mtz(self):
         if self.model == "27":
             test_mtz = alg_mtz_5_v2_7.TestMTZ5V27()
-            test_mtz.full_test_mtz_5_v27()
+            self.try_except.full_start_test(test_mtz.st_test_mtz_5_v2_7, test_mtz.result_test_mtz, 1)
         elif self.model == "28":
             test_mtz = alg_mtz_5_v2_8.TestMTZ5V28()
-            test_mtz.full_test_mtz_5_v28()
+            self.try_except.full_start_test(test_mtz.st_test_mtz, test_mtz.result_test_mtz, 1)
         elif self.model == "41":
             test_mtz = alg_mtz_5_v4_11.TestMTZ5V411()
-            test_mtz.full_test_mtz_5_v411()
+            self.try_except.full_start_test(test_mtz.st_test_mtz, test_mtz.result_test_mtz, 1)
 
 
 class MTZP:
 
-    @staticmethod
-    def mtzp():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def mtzp(self):
         test_mtzp = alg_mtzp_2.TestMTZP2()
-        test_mtzp.full_test_mtzp_2()
+        self.try_except.full_start_test(test_mtzp.st_test_mtzp_2, None, 1)
 
 
 class PMZ:
 
-    @staticmethod
-    def pmz():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def pmz(self):
         test_pmz = alg_pmz.TestPMZ()
-        test_pmz.full_test_pmz()
+        self.try_except.full_start_test(test_pmz.st_test_pmz, test_pmz.result_test_pmz, 1)
 
 
 class TZP:
 
-    @staticmethod
-    def tzp():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def tzp(self):
         test_tzp = alg_tzp.TestTZP()
-        test_tzp.full_test_tzp()
+        self.try_except.full_start_test(test_tzp.st_test_tzp, test_tzp.result_test_tzp, 1)
 
 
 class UBTZ:
 
-    @staticmethod
-    def ubtz():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def ubtz(self):
         test_ubtz = alg_ubtz.TestUBTZ()
-        test_ubtz.full_test_ubtz()
+        self.try_except.full_start_test(test_ubtz.st_test_ubtz, test_ubtz.result_test_ubtz, 1)
 
 
 class UMZ:
 
-    @staticmethod
-    def umz():
+    def __init__(self):
+        self.try_except = TryExcept()
+
+    def umz(self):
         test_umz = alg_umz.TestUMZ()
-        test_umz.full_test_umz()
+        self.try_except.full_start_test(test_umz.st_test_umz, test_umz.result_test_umz, 1)
 
 
 def handler():
@@ -470,7 +495,7 @@ def handler():
         elif arg.model == "41":
             MTZ("41").handler_mtz()
         else:
-            print(MTZ.__doc__)
+            print(MTZ("err").__doc__)
     elif arg.block == "mtzp":
         MTZP().mtzp()
     elif arg.block == "pmz":

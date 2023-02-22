@@ -59,7 +59,7 @@
 
 """
 
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 __all__ = ("new_alg", "old_alg", "test_bdu_1_class", "test_bdu_1m_class", "test_bdu_4_2_class",
            "test_bdu_4_3_class", "test_bdu_014tp_class", "test_bdu_d4_2_class", "test_bdu_d_class",

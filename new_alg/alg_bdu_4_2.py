@@ -192,8 +192,9 @@ class TestBDU42:
 
     def st_test_bdu_4_2(self) -> bool:
         """
-        Главная функция которая собирает все остальные
-        :return: bool
+            Главная функция которая собирает все остальные
+            :type: bool
+            :return: результат теста
         """
         if self.st_test_1():
             if self.st_test_20():

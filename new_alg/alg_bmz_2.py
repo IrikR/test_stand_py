@@ -298,6 +298,11 @@ class TestBMZ2:
         return False
 
     def st_test_bmz_2(self) -> [bool, bool]:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool, bool
+            :return:  результат теста, флаг исправности
+        """
         if self.st_test_10_bmz_2():
             if self.st_test_11_bmz_2():
                 if self.st_test_20_bmz_2():

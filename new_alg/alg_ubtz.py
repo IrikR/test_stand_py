@@ -12,17 +12,15 @@
 __all__ = ["TestUBTZ"]
 
 import logging
-import sys
 from time import sleep, time
 
 from .general_func.database import *
-from .general_func.exception import *
 from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
 from .general_func.reset import ResetProtection, ResetRelay
+from .general_func.rw_result import DIError
 from .general_func.subtest import ProcedureFull
 from .general_func.utils import CLILog
-from .general_func.rw_result import DIError
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
 
@@ -290,7 +288,7 @@ class TestUBTZ:
         # 3.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         for wq in range(4):
             self.calc_delta_t_bmz, self.inp_01, self.inp_02, \
-                    self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
+                self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             self.logger.debug(f'тест 3 delta t:\t{self.calc_delta_t_bmz:.1f}')
             if self.calc_delta_t_bmz == 9999:
                 self.reset_protect.sbros_zashit_ubtz()
@@ -351,7 +349,12 @@ class TestUBTZ:
         self.mysql_conn.mysql_add_message(f'тест {test_num}: не срабатывает сброс защит')
         return False
 
-    def st_test_ubtz(self) -> [bool]:
+    def st_test_ubtz(self) -> [bool, bool]:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool, bool
+            :return:  результат теста, флаг исправности
+        """
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_20():
@@ -370,54 +373,3 @@ class TestUBTZ:
             self.logger.debug(f"запись уставок ТЗП в БД: {self.list_ust_tzp_num[g2]} "
                               f"{self.list_delta_t_tzp[g2]}")
         self.mysql_conn.mysql_ubtz_tzp_result(self.list_tzp_result)
-
-    def full_test_ubtz(self) -> None:
-        try:
-            start_time = time()
-            test, health_flag = self.st_test_ubtz()
-            end_time = time()
-            time_spent = end_time - start_time
-            self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
-            self.logger.debug(f"Время выполнения: {time_spent}")
-            self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
-
-            if test and not health_flag:
-                self.result_test_ubtz()
-                self.mysql_conn.mysql_block_good()
-                self.logger.debug('Блок исправен')
-                self.cli_log.lev_info('Блок исправен', 'green')
-                my_msg('Блок исправен', 'green')
-            else:
-                self.result_test_ubtz()
-                self.mysql_conn.mysql_block_bad()
-                self.logger.debug('Блок неисправен')
-                self.cli_log.lev_warning('Блок неисправен', 'red')
-                my_msg('Блок неисправен', 'red')
-        except OSError:
-            self.logger.debug("ошибка системы")
-            self.cli_log.lev_warning("ошибка системы", 'red')
-            my_msg("ошибка системы", 'red')
-        except SystemError:
-            self.logger.debug("внутренняя ошибка")
-            self.cli_log.lev_warning("внутренняя ошибка", 'red')
-            my_msg("внутренняя ошибка", 'red')
-        except ModbusConnectException as mce:
-            self.logger.debug(f'{mce}')
-            self.cli_log.lev_warning(f'{mce}', 'red')
-            my_msg(f'{mce}', 'red')
-        except HardwareException as hwe:
-            self.logger.debug(f'{hwe}')
-            self.cli_log.lev_warning(f'{hwe}', 'red')
-            my_msg(f'{hwe}', 'red')
-        except AttributeError as ae:
-            self.logger.debug(f"Неверный атрибут. {ae}")
-            self.cli_log.lev_warning(f"Неверный атрибут. {ae}", 'red')
-            my_msg(f"Неверный атрибут. {ae}", 'red')
-        except ValueError as ve:
-            self.logger.debug(f"Некорректное значение для переменной. {ve}")
-            self.cli_log.lev_warning(f"Некорректное значение для переменной. {ve}", 'red')
-            my_msg(f"Некорректное значение для переменной. {ve}", 'red')
-        finally:
-            self.conn_opc.full_relay_off()
-            self.conn_opc.opc_close()
-            sys.exit()

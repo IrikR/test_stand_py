@@ -132,6 +132,11 @@ class TestBKI1T:
         return False
 
     def st_test_bki_1t(self) -> bool:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool
+            :return: результат теста
+        """
         if self.st_test_1_bki_1t():
             if self.st_test_20_bki_1t():
                 if self.st_test_30_bki_1t():

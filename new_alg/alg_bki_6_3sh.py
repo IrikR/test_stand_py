@@ -223,6 +223,11 @@ class TestBKI6:
             return False
 
     def st_test_bki_6_3sh(self) -> bool:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool
+            :return: результат теста
+        """
         if self.st_test_1():
             if self.st_test_20():
                 if self.st_test_21():

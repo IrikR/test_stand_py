@@ -55,14 +55,15 @@ class TryExcept:
         :param end_time: время окончания выполнения алгоритма
         """
         time_spent = end_time - start_time
-        self.cli_log.lev_info(f"Время выполнения: {time_spent}", "gray")
-        self.logger.debug(f"Время выполнения: {time_spent}")
-        self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent}")
+        self.cli_log.lev_info(f"Время выполнения: {time_spent:.2f} сек", "gray")
+        self.logger.debug(f"Время выполнения: {time_spent:.2f} сек")
+        self.mysql_conn.mysql_add_message(f"Время выполнения: {time_spent:.2f} сек")
 
     def _not_health_flag(self, start_test, result) -> None:
         """
         Используется если в алгоритме проверки не используется флаг исправности
         :param start_test: алгоритм который необходимо запустить
+        :param result: результат теста блока
         """
         start_time = time()
         test = start_test()
@@ -79,7 +80,7 @@ class TryExcept:
         """
         Используется если в алгоритме проверки, используется один флаг исправности
         :param start_test: алгоритм который необходимо запустить
-        :param result: результат выполнения алгоритма
+        :param result: результат теста блока
         """
         start_time = time()
         test, health_flag_0 = start_test()
@@ -96,7 +97,7 @@ class TryExcept:
         """
         Используется если в алгоритме проверки, используется два флага исправности
         :param start_test: алгоритм который необходимо запустить
-        :param result: результат выполнения алгоритма
+        :param result: результат теста блока
         """
         start_time = time()
         test, health_flag_0, health_flag_1 = start_test()

@@ -423,6 +423,11 @@ class TestBKZ3MK:
                 break
 
     def st_test_bkz_3mk(self) -> [bool, bool, bool]:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool, bool, bool
+            :return: результат теста, флаг исправности МТЗ, флаг исправности ТЗП
+        """
         if self.st_test_0():
             if self.st_test_10():
                 if self.st_test_11():

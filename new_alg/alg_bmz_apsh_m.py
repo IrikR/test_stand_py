@@ -180,6 +180,11 @@ class TestBMZAPSHM:
         return False
 
     def st_test_bmz_apsh_m(self) -> [bool, bool]:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool, bool
+            :return: результат теста, флаг исправности
+        """
         if self.st_test_10():
             if self.st_test_11():
                 if self.st_test_20():

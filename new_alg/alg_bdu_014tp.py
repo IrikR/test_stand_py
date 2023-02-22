@@ -202,6 +202,8 @@ class TestBDU014TP:
     def st_test_bdu_014tp(self) -> bool:
         """
             Главная функция которая собирает все остальные
+            :type: bool
+            :return: результат теста
         """
         if self.test_1():
             if self.test_20():

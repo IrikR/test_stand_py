@@ -135,6 +135,11 @@ class TestBDZ:
         return False
 
     def st_test_bdz(self) -> bool:
+        """
+            Главная функция которая собирает все остальные
+            :type: bool
+            :return: результат теста
+        """
         if self.st_test_00():
             if self.st_test_10_bdz():
                 if self.st_test_11_bdz():
