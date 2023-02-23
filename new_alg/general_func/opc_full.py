@@ -443,6 +443,9 @@ class ConnectOPC:
         self.analog_tags_value = []
         self.result: list[str] = []
 
+        self.ao_teg_list = ['Устройство.tegs.error_1', 'Устройство.tegs.error_2',
+                            'Устройство.tegs.error_3', 'Устройство.tegs.error_4']
+
     def read_group_di(self) -> {str, bool}:
         """
         Считывает из OPC сервера состояния тегов, дискретных входов ПЛК
@@ -473,7 +476,7 @@ class ConnectOPC:
             position[name] = k[1]
         return position
 
-    def subtest_read_di(self, *, test_num: int = 1, subtest_num: float = 1, err_code: [int],
+    def subtest_read_di(self, *, test_num: int = 1, subtest_num: float = 1.0, err_code: [int],
                         position_inp: [bool], di_xx: [str]) -> bool:
         """
         Метод используется в алгоритмах у которых только один вход,
@@ -522,7 +525,8 @@ class ConnectOPC:
         :param di_a: [str] - Список входов контроллера
         :return []: [bool]
         """
-        position_result: [bool] = []
+        position_result: list[bool] = []
+        position_result.clear()
 
         self.logger.debug(f"считывание дискретных входов. функция subtest_1di")
         self.cli_log.lev_debug(f"считывание дискретных входов. функция subtest_1di", "gray")
@@ -553,11 +557,11 @@ class ConnectOPC:
         !!! НЕ ИСПОЛЬЗОВАТЬ !!!
         Функция включает все реле.
         """
-        self.logger.debug("включение всех реле")
-        self.cli_log.lev_info("включение всех реле", "gray")
+        self.logger.warning("включение всех реле")
+        self.cli_log.lev_warning("включение всех реле", "red")
         self.opc.write(self.list_relay_true)
-        self.logger.debug("все реле включены")
-        self.cli_log.lev_info("все реле включены", "gray")
+        self.logger.warning("все реле включены")
+        self.cli_log.lev_warning("все реле включены", "red")
 
     def full_relay_off(self):
         """
@@ -570,18 +574,24 @@ class ConnectOPC:
         self.cli_log.lev_info("все реле отключены", "gray")
 
     def perv_obm_tv1_off(self) -> None:
+        """
+            Отключает реле первичной обмотки
+        """
         self.logger.debug("отключение реле первичной обмотки")
-        self.cli_log.lev_debug("отключение реле первичной обмотки", "gray")
+        self.cli_log.lev_info("отключение реле первичной обмотки", "gray")
         self.opc.write(self.list_perv_obm_tv1_off)
         self.logger.debug("реле первичной обмотки отключены")
-        self.cli_log.lev_debug("реле первичной обмотки отключены", "gray")
+        self.cli_log.lev_info("реле первичной обмотки отключены", "gray")
 
     def vtor_obm_tv1_off(self) -> None:
+        """
+            Отключает реле вторичной обмотки
+        """
         self.logger.debug("отключение реле вторичной обмотки")
-        self.cli_log.lev_debug("отключение реле вторичной обмотки", "gray")
+        self.cli_log.lev_info("отключение реле вторичной обмотки", "gray")
         self.opc.write(self.list_vtor_obm_tv_off)
         self.logger.debug("реле вторичной обмотки отключены")
-        self.cli_log.lev_debug("реле вторичной обмотки отключены", "gray")
+        self.cli_log.lev_info("реле вторичной обмотки отключены", "gray")
 
     def ctrl_ai_code_v0(self, code: int) -> [float, bool, bool, bool, bool]:
         """
@@ -594,113 +604,65 @@ class ConnectOPC:
             Пауза 500 мс
         111 измерение времени переключения длительностью до 1000мс по входам а1 (True) и b1 (True)
         :param code: 103, 104, 105, 109, 110, 111
-        :return analog_inp_fl: float
-        :return in_a1: bool вход 1
-        :return in_a2: bool вход 2
-        :return in_a5: bool вход 5
-        :return in_a6: bool вход 6
+        :return analog_inp_fl, in_a1, in_a2, in_a5, in_a6: измеренное напряжение, положения входов ПЛК 1, 2, 5, 6
         """
         tags_list = ["inp_01", "inp_02", "inp_05", "inp_06"]
+        result_list: list = []
+        di_list: list = []
+
+        result_list.clear()
+        di_list.clear()
 
         self.opc['Устройство.tegs.in_num_alg'] = code
         sleep(3)
 
-        in_a1, in_a2, in_a5, in_a6 = self.simplified_read_di(tags_list)
-        self.analog_tags_value.append(self.opc.list('Устройство.tegs')[3])
-        val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
-        conv_lst = ' '.join(map(str, val))
-        list_str = conv_lst.split(', ', 5)
-        list_str[0] = list_str[0][2:-1]
-        if list_str[2] == "'Good'":
-            pass
-        else:
-            self.opc['Устройство.tegs.in_num_alg'] = 0
-            self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
-            self.cli_log.lev_info(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
-            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
-                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
+        result_list.append(self.read_group_uint(tag=3))
+        di_list = self.simplified_read_di(tags_list)
+        for i in di_list:
+            result_list.append(i)
 
-        analog_inp_fl = float(list_str[1])
-        self.logger.info(f"ctrl_ai_code_v0 время срабатывания: {analog_inp_fl}")
-        self.cli_log.lev_info(f"ctrl_ai_code_v0 время срабатывания: {analog_inp_fl}", "orange")
         self.opc['Устройство.tegs.in_num_alg'] = 0
-        self.logger.debug(f"ctrl_ai_code_v0 дискретные входы: {in_a1 =}, {in_a2 =}, {in_a5 =}, {in_a6 =}")
-        self.cli_log.lev_info(f"ctrl_ai_code_v0 дискретные входы: {in_a1 =}, {in_a2 =}, {in_a5 =}, {in_a6 =}", "skyblue")
-        if analog_inp_fl >= 9000.0:
-            return 9999, in_a1, in_a2, in_a5, in_a6
+        self.logger.debug(f"результат считывания: {result_list}")
+        self.cli_log.lev_info(f"результат считывания: {result_list}", "skyblue")
+        if result_list[0] >= 9000.0:
+            result_list[0] = 9999
+            return result_list
         else:
-            return analog_inp_fl, in_a1, in_a2, in_a5, in_a6
+            return result_list
 
     def ctrl_ai_code_100(self) -> [int, float]:
         """
         100 запуск счетчика импульсов БКИ-1Т
+        ('Устройство.tegs')[0]
         :return: analog_inp_fl
         """
         self.opc['Устройство.tegs.in_num_alg'] = 100
         sleep(3)
-
-        self.analog_tags_value.append(self.opc.list('Устройство.tegs')[0])
-        val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
-        conv_lst = ' '.join(map(str, val))
-        list_str = conv_lst.split(', ', 5)
-        list_str[0] = list_str[0][2:-1]
-        if list_str[2] == "'Good'":
-            pass
-        else:
-            self.opc['Устройство.tegs.in_num_alg'] = 0
-            self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
-            self.cli_log.lev_info(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
-            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
-                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
-        analog_inp_fl = float(list_str[1])
+        analog_inp_fl = self.read_group_uint(tag=1)
         self.opc['Устройство.tegs.in_num_alg'] = 0
         return analog_inp_fl
 
     def ctrl_ai_code_101(self) -> [int, float]:
         """
         101 запуск 1-го подтеста БКИ-6-ЗШ
+        ('Устройство.tegs')[1]
         :return: analog_inp_fl
         """
         self.opc['Устройство.tegs.in_num_alg'] = 101
         sleep(21)
-        self.analog_tags_value.append(self.opc.list('Устройство.tegs')[1])
-        val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
-        conv_lst = ' '.join(map(str, val))
-        list_str = conv_lst.split(', ', 5)
-        list_str[0] = list_str[0][2:-1]
-        if list_str[2] == "'Good'":
-            pass
-        else:
-            self.opc['Устройство.tegs.in_num_alg'] = 0
-            self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
-            self.cli_log.lev_info(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
-            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
-                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
-        analog_inp_fl = float(list_str[1])
+        analog_inp_fl = self.read_group_uint(tag=2)
         self.opc['Устройство.tegs.in_num_alg'] = 0
         return analog_inp_fl
 
     def ctrl_ai_code_102(self) -> [int, float]:
         """
         102 запуск 2-го подтеста БКИ-6-ЗШ
+        ('Устройство.tegs')[2]
         :return: analog_inp_fl
         """
         self.opc['Устройство.tegs.in_num_alg'] = 102
         sleep(3)
-        self.analog_tags_value.append(self.opc.list('Устройство.tegs')[2])
-        val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
-        conv_lst = ' '.join(map(str, val))
-        list_str = conv_lst.split(', ', 5)
-        list_str[0] = list_str[0][2:-1]
-        if list_str[2] == "'Good'":
-            pass
-        else:
-            self.opc['Устройство.tegs.in_num_alg'] = 0
-            self.logger.warning(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}')
-            self.cli_log.lev_info(f'качество сигнала ctrl_ai_code_v0 {list_str[2]}', "orange")
-            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
-                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
-        analog_inp_fl = float(list_str[1])
+        analog_inp_fl = self.read_group_uint(tag=3)
         self.opc['Устройство.tegs.in_num_alg'] = 0
         return analog_inp_fl
 
@@ -716,70 +678,11 @@ class ConnectOPC:
         sleep(0.5)
         self.opc['Устройство.tegs.in_num_alg'] = 0
 
-    def read_uint_error_4(self) -> [int, float]:
+    def read_ai(self, tag: str) -> float:
         """
-            Считывание тега modbus error_4
-        :return:
-        """
-        self.analog_tags_value.append(self.opc.list('Устройство.tegs')[3])
-        val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
-        conv_lst = ' '.join(map(str, val))
-        list_str = conv_lst.split(', ', 5)
-        list_str[0] = list_str[0][2:-1]
-        if list_str[2] == "'Good'":
-            pass
-        else:
-            self.logger.warning(f'качество сигнала read_uint_error_4 {list_str[2]}')
-            self.cli_log.lev_info(f'качество сигнала read_uint_error_4 {list_str[2]}', "red")
-            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
-                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
-        analog_inp_fl = float(list_str[1])
-        return analog_inp_fl
-
-    def read_uint_error_1(self) -> [int, float]:
-        """
-            считывание тега modbus error_1
-        :return analog_inp_fl: int, float
-        """
-        self.analog_tags_value.append(self.opc.list('Устройство.tegs')[1])
-        val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
-        conv_lst = ' '.join(map(str, val))
-        list_str = conv_lst.split(', ', 5)
-        list_str[0] = list_str[0][2:-1]
-        if list_str[2] == "'Good'":
-            pass
-        else:
-            self.logger.warning(f'качество сигнала read_uint_error_1 {list_str[2]}')
-            self.cli_log.lev_info(f'качество сигнала read_uint_error_1 {list_str[2]}', "red")
-            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
-                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
-        analog_inp_fl = float(list_str[1])
-        return analog_inp_fl
-
-    def read_uint_error_2(self) -> [int, float]:
-        """
-            считывание тега modbus error_2
-        :return:
-        """
-        self.analog_tags_value.append(self.opc.list('Устройство.tegs')[2])
-        val = self.opc.read(self.analog_tags_value, update=1, include_error=True)
-        conv_lst = ' '.join(map(str, val))
-        list_str = conv_lst.split(', ', 5)
-        list_str[0] = list_str[0][2:-1]
-        if list_str[2] == "'Good'":
-            pass
-        else:
-            self.logger.warning(f'качество сигнала read_uint_error_2 {list_str[2]}')
-            self.cli_log.lev_info(f'качество сигнала read_uint_error_2 {list_str[2]}', "red")
-            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
-                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
-        analog_inp_fl = float(list_str[1])
-        return analog_inp_fl
-
-    def read_ai(self, teg: str) -> float:
-        """
-        Метод считывания аналоговых значений из OPC сервера, по входам измеряющим напряжение в стенде.
-        :param teg: Принимает значение тега который нужно прочитать ('AI0' или 'AI2')
+        Метод считывания аналоговых значений из OPC сервера, по входам измеряющим напряжение в стенде,
+        :type tag: str
+        :param tag: Принимает значение тега который нужно прочитать ('AI0' или 'AI2')
         :return: возвращает вычисленное значение напряжения в первичных величинах.
         """
         read_tags: list = []
@@ -809,12 +712,12 @@ class ConnectOPC:
                                          "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
         analog_inp_ai0 = read_tags[0][1]
         analog_inp_ai2 = read_tags[1][1]
-        if teg == 'AI0':
+        if tag == 'AI0':
             calc_volt = analog_inp_ai0 * analog_max_ai0 / analog_max_code
             self.logger.info(f'возврат результата AI0 = {calc_volt}')
             self.cli_log.lev_info(f'возврат результата AI0 = {calc_volt}', "orange")
             return calc_volt
-        elif teg == 'AI2':
+        elif tag == 'AI2':
             calc_volt = analog_inp_ai2 * analog_max_ai2 / analog_max_code
             self.logger.info(f'возврат результата AI2 = {calc_volt}')
             self.cli_log.lev_info(f'возврат результата AI2 = {calc_volt}', "orange")
@@ -823,6 +726,61 @@ class ConnectOPC:
             self.logger.info(f'возврат результата (небыл получен аргумент) = {analog_inp_ai0}')
             self.cli_log.lev_info(f'возврат результата (небыл получен аргумент) = {analog_inp_ai0}', "orange")
             return analog_inp_ai0
+
+    def read_group_uint(self, *, tag: int = 1) -> float:
+        """
+        Метод считывания аналоговых значений из OPC сервера, по выходам, результат внутренней обработки ПЛК.
+        Считываемые теги:
+        'Устройство.tegs.error_1',
+        'Устройство.tegs.error_2',
+        'Устройство.tegs.error_3',
+        'Устройство.tegs.error_4'
+        :type tag: int
+        :param tag: Принимает значение тега который нужно прочитать (1, 2, 3 или 4)
+        :return float: возвращает считанное значение.
+        """
+        #
+        ao_result: list = []
+        read_tags: list = []
+
+        ao_result.clear()
+        read_tags.clear()
+
+        self.logger.debug("старт считывания вычисленных аналоговых значений ПЛК")
+        self.cli_log.lev_debug("старт считывания вычисленных аналоговых значений ПЛК", "gray")
+
+        gr_ai = 'Устройство.tegs.'
+        read_tags = self.opc.read(self.ao_teg_list, group=gr_ai, update=1, include_error=True)
+        self.opc.remove(gr_ai)
+        self.logger.debug(f'считанные значения {read_tags}')
+        self.cli_log.lev_debug(f'считанные значения {read_tags}', "orange")
+        if read_tags[0][2] == 'Good':
+            pass
+        else:
+            self.opc['Устройство.tegs.in_num_alg'] = 0
+            self.logger.warning(f'качество аналогового сигнала {read_tags[1]}')
+            self.cli_log.lev_warning(f'качество аналогового сигнала {read_tags[1]}', "red")
+            raise ModbusConnectException("!!! Нет связи с контроллером !!! \nПроверьте подключение компьютера к "
+                                         "шкафу \"Ethernet\" кабелем  и состояние OPC сервера.")
+        for i in read_tags:
+            ao_result.append(float(i[1]))
+        self.cli_log.lev_info(f"считанные значения: {ao_result}", "orange")
+        if tag == 1:
+            self.cli_log.lev_info(f"считанные значения, tag error_1: {ao_result[0]}", "orange")
+            return ao_result[0]
+        elif tag == 2:
+            self.cli_log.lev_info(f"считанные значения, tag error_2: {ao_result[1]}", "orange")
+            return ao_result[1]
+        elif tag == 3:
+            self.cli_log.lev_info(f"считанные значения, tag error_3: {ao_result[2]}", "orange")
+            return ao_result[2]
+        elif tag == 4:
+            self.cli_log.lev_info(f"считанные значения, tag error_4: {ao_result[3]}", "orange")
+            return ao_result[3]
+        else:
+            self.logger.info(f'возврат результата (был получен не верный аргумент) = 65535.0')
+            self.cli_log.lev_info(f'возврат результата (был получен не верный аргумент) = 65535.0', "orange")
+            return 65535.0
 
     def opc_close(self):
         self.opc.close()
