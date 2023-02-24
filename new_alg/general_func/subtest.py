@@ -35,7 +35,7 @@ class SubtestMTZ5:
         self.cli_log = CLILog("info", __name__)
         self.mysql_conn = MySQLConnect()
 
-        self.delta_t_mtz: [float, int] = 0
+        self.delta_t_mtz: float = 0.0
         self.in_1: bool = False
         self.in_2: bool = False
         self.in_5: bool = False
@@ -81,10 +81,10 @@ class SubtestMTZ5:
             result = f"время срабатывания: {self.delta_t_mtz}, {self.in_1 = } is False, {self.in_5 = } is True"
             self.logger.debug(result)
             self.cli_log.lev_info(result, "skyblue")
-            if self.delta_t_mtz == 9999:
+            if self.delta_t_mtz == 9999.9:
                 i += 1
                 continue
-            elif self.delta_t_mtz != 9999 and self.in_1 is False and self.in_5 is True:
+            elif self.delta_t_mtz != 9999.9 and self.in_1 is False and self.in_5 is True:
                 break
             else:
                 i += 1

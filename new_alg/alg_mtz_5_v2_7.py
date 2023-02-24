@@ -355,7 +355,7 @@ class TestMTZ5V27:
 
         for wq in range(2):
             self.calc_delta_t_mtz, inp_01, inp_02, inp_05, inp_06 = self.conn_opc.ctrl_ai_code_v0(110)
-            if 500 < self.calc_delta_t_mtz <= 9999:
+            if 500.0 < self.calc_delta_t_mtz <= 9999.9:
                 self.reset_protect.sbros_zashit_mtz5()
                 sleep(3)
                 wq += 1
@@ -363,9 +363,9 @@ class TestMTZ5V27:
             else:
                 break
         # inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-        if self.calc_delta_t_mtz < 10:
+        if self.calc_delta_t_mtz < 10.0:
             self.list_delta_t_mtz[-1] = f'< 10'
-        elif self.calc_delta_t_mtz > 500:
+        elif self.calc_delta_t_mtz > 500.0:
             self.list_delta_t_mtz[-1] = f'> 500'
         else:
             self.list_delta_t_mtz[-1] = f'{self.calc_delta_t_mtz:.1f}'

@@ -438,13 +438,12 @@ class ConnectOPC:
                                      ('Устройство.tg.in_vtor_obm_TV1_KL58', False),
                                      ('Устройство.tg.in_vtor_obm_TV1_KL59', False),
                                      ('Устройство.tg.in_KZ_obmotka_KL60', False))
+        self.ao_teg_list = ['Устройство.tegs.error_1', 'Устройство.tegs.error_2',
+                            'Устройство.tegs.error_3', 'Устройство.tegs.error_4']
 
         self.tags_value = []
         self.analog_tags_value = []
         self.result: list[str] = []
-
-        self.ao_teg_list = ['Устройство.tegs.error_1', 'Устройство.tegs.error_2',
-                            'Устройство.tegs.error_3', 'Устройство.tegs.error_4']
 
     def read_group_di(self) -> {str, bool}:
         """
@@ -490,7 +489,7 @@ class ConnectOPC:
         :param err_code: [int] код неисправности
         :param position_inp: [bool] положение которое должен занять выход блока
         :param di_xx: [str] вход контроллера
-        :return:
+        :return: bool
         """
         self.logger.debug(f"считывание дискретных входов. функция subtest_1di")
         self.cli_log.lev_debug(f"считывание дискретных входов. функция subtest_1di", "gray")
@@ -625,7 +624,7 @@ class ConnectOPC:
         self.logger.debug(f"результат считывания: {result_list}")
         self.cli_log.lev_info(f"результат считывания: {result_list}", "skyblue")
         if result_list[0] >= 9000.0:
-            result_list[0] = 9999
+            result_list[0] = 9999.9
             return result_list
         else:
             return result_list

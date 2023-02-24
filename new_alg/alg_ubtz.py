@@ -140,7 +140,7 @@ class TestUBTZ:
                 self.calc_delta_t_bmz, self.inp_01, self.inp_02, \
                     self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
                 self.logger.debug(f'тест 2, дельта t\t{self.calc_delta_t_bmz:.1f}')
-                if self.calc_delta_t_bmz == 9999:
+                if self.calc_delta_t_bmz == 9999.9:
                     self.reset_protect.sbros_zashit_ubtz()
                     continue
                 else:
@@ -149,9 +149,9 @@ class TestUBTZ:
             in_a1, in_a2, in_a5, in_a6 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02', 'inp_05', 'inp_06'])
 
             self.reset_relay.stop_procedure_3()
-            if self.calc_delta_t_bmz < 10:
+            if self.calc_delta_t_bmz < 10.0:
                 self.list_delta_t_bmz.append(f'< 10')
-            elif self.calc_delta_t_bmz == 9999:
+            elif self.calc_delta_t_bmz == 9999.9:
                 self.list_delta_t_bmz.append(f'неисправен')
             else:
                 self.list_delta_t_bmz.append(f'{self.calc_delta_t_bmz:.1f}')
@@ -290,7 +290,7 @@ class TestUBTZ:
             self.calc_delta_t_bmz, self.inp_01, self.inp_02, \
                 self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             self.logger.debug(f'тест 3 delta t:\t{self.calc_delta_t_bmz:.1f}')
-            if self.calc_delta_t_bmz == 9999:
+            if self.calc_delta_t_bmz == 9999.9:
                 self.reset_protect.sbros_zashit_ubtz()
                 continue
             else:
@@ -298,9 +298,9 @@ class TestUBTZ:
 
         self.reset_relay.stop_procedure_3()
 
-        if self.calc_delta_t_bmz < 10:
+        if self.calc_delta_t_bmz < 10.0:
             self.list_delta_t_bmz[-1] = f'< 10'
-        elif self.calc_delta_t_bmz == 9999:
+        elif self.calc_delta_t_bmz == 9999.9:
             self.list_delta_t_bmz[-1] = f'неисправен'
         else:
             self.list_delta_t_bmz[-1] = f'{self.calc_delta_t_bmz:.1f}'

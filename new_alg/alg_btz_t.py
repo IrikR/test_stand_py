@@ -380,13 +380,13 @@ class TestBTZT:
                                  f"время: {self.calc_delta_t_pmz}"
                 self.logger.info(result_delta_t)
                 self.mysql_conn.mysql_add_message(result_delta_t)
-                if self.calc_delta_t_pmz == 9999:
+                if self.calc_delta_t_pmz == 9999.9:
                     qw += 1
                     self.logger.debug("блок не сработал по времени, повтор проверки блока")
                     self.mysql_conn.mysql_add_message("блок не сработал по времени, повтор проверки блока")
                     self.malfunction = True
                     continue
-                elif self.calc_delta_t_pmz != 9999 and self.inp_01 is False and self.inp_05 is True and \
+                elif self.calc_delta_t_pmz != 9999.9 and self.inp_01 is False and self.inp_05 is True and \
                         self.inp_02 is True and self.inp_06 is False:
                     self.logger.debug(f"блок сработал, время срабатывания: {self.calc_delta_t_pmz:.1f}")
                     self.mysql_conn.mysql_add_message(f"блок сработал, время срабатывания: {self.calc_delta_t_pmz:.1f}")

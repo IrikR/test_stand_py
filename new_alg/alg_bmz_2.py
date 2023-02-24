@@ -35,14 +35,14 @@ class TestBMZ2:
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
 
-        self.ust_test = 80.0
-        self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        self.ust_test: float = 80.0
+        self.list_ust_num: tuple = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         # расчетный лист уставок (при тестировании данных напряжений не хватает)
         # ust = (32.2, 40.2, 48.2, 56.3, 64.3, 72.3, 80.4, 88.4, 96.5, 104.5, 112.5)
-        self.list_ust_volt = (34.2, 42.2, 50.2, 58.3, 66.3, 74.3, 82.4, 90.4, 98.5, 106.5, 114.5)
-        self.list_delta_t = []
-        self.list_delta_percent = []
-        self.list_result = []
+        self.list_ust_volt: tuple = (34.2, 42.2, 50.2, 58.3, 66.3, 74.3, 82.4, 90.4, 98.5, 106.5, 114.5)
+        self.list_delta_t: list[str] = []
+        self.list_delta_percent: list[str] = []
+        self.list_result: list[[str]] = []
 
         self.coef_volt: float = 0.0
         self.calc_delta_t: float = 0.0
@@ -53,11 +53,11 @@ class TestBMZ2:
         self.inp_05: bool = False
         self.inp_06: bool = False
 
-        self.msg_1 = "Переключите тумблер на корпусе блока в положение " \
+        self.msg_1: str = "Переключите тумблер на корпусе блока в положение " \
                      "«Работа» и установите регулятор уставок в положение 1"
-        self.msg_2 = "Переключите тумблер на корпусе блока в положение «Проверка»."
-        self.msg_3 = "Переключите тумблер на корпусе блока в положение «Работа»"
-        self.msg_4 = 'Установите регулятор уставок на блоке в положение '
+        self.msg_2: str = "Переключите тумблер на корпусе блока в положение «Проверка»."
+        self.msg_3: str = "Переключите тумблер на корпусе блока в положение «Работа»"
+        self.msg_4: str = 'Установите регулятор уставок на блоке в положение '
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBMZ2.log",
@@ -169,7 +169,7 @@ class TestBMZ2:
                 self.calc_delta_t, self.inp_01, self.inp_02, \
                     self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(code=104)
                 self.logger.info(f'дельта t \t {self.calc_delta_t:.1f}')
-                if self.calc_delta_t == 9999:
+                if self.calc_delta_t == 9999.9:
                     self.reset_protect.sbros_zashit_kl30()
                     sleep(3)
                     qw += 1
@@ -177,9 +177,9 @@ class TestBMZ2:
                 else:
                     break
             self.logger.debug(f'дельта t \t {self.calc_delta_t:.1f}')
-            if self.calc_delta_t < 10:
+            if self.calc_delta_t < 10.0:
                 self.list_delta_t.append(f'< 10')
-            elif self.calc_delta_t == 9999:
+            elif self.calc_delta_t == 9999.9:
                 self.list_delta_t.append(f'неисправен')
             else:
                 self.list_delta_t.append(f'{self.calc_delta_t:.1f}')
@@ -251,7 +251,7 @@ class TestBMZ2:
             self.calc_delta_t, self.inp_01, self.inp_02, \
                 self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(code=104)
             self.logger.info(f'дельта t \t {self.calc_delta_t:.1f}')
-            if self.calc_delta_t == 9999:
+            if self.calc_delta_t == 9999.9:
                 self.reset_protect.sbros_zashit_kl30()
                 sleep(3)
                 wq += 1
@@ -259,9 +259,9 @@ class TestBMZ2:
             else:
                 break
         self.logger.debug(f'дельта t \t {self.calc_delta_t:.1f}')
-        if self.calc_delta_t < 10:
+        if self.calc_delta_t < 10.0:
             self.list_delta_t[-1] = f'< 10'
-        elif self.calc_delta_t == 9999:
+        elif self.calc_delta_t == 9999.9:
             self.list_delta_t[-1] = f'неисправен'
         else:
             self.list_delta_t[-1] = f'{self.calc_delta_t:.1f}'

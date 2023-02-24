@@ -12,13 +12,11 @@
 __all__ = ["TestMTZ5V28"]
 
 import logging
-import sys
 from time import sleep, time
 
-from .general_func.database import *
-from .general_func.exception import *
+from .general_func.database import MySQLConnect
 from .general_func.opc_full import ConnectOPC
-from .general_func.procedure import *
+from .general_func.procedure import Procedure
 from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.subtest import ProcedureFull
 from .general_func.utils import CLILog
@@ -383,8 +381,8 @@ class TestMTZ5V28:
 
         for wq in range(4):
             self.calc_delta_t_mtz, self.inp_01, self.inp_02, \
-                self.inp_05, self.inp_06  = self.conn_opc.ctrl_ai_code_v0(110)
-            if self.calc_delta_t_mtz != 9999:
+                self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(110)
+            if self.calc_delta_t_mtz != 9999.9:
                 break
             else:
                 self.reset_protect.sbros_zashit_kl1_invers()
@@ -392,9 +390,9 @@ class TestMTZ5V28:
                 wq += 1
                 continue
         inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-        if self.calc_delta_t_mtz < 10:
+        if self.calc_delta_t_mtz < 10.0:
             self.list_delta_t_mtz[-1] = f'< 10'
-        elif self.calc_delta_t_mtz > 500:
+        elif self.calc_delta_t_mtz > 500.0:
             self.list_delta_t_mtz[-1] = f'> 500'
         else:
             self.list_delta_t_mtz[-1] = f'{self.calc_delta_t_mtz:.1f}'
@@ -458,10 +456,10 @@ class TestMTZ5V28:
             self.logger.debug(f"время срабатывания: {self.delta_t_mtz}, "
                               f"{self.in_1 = } is False, "
                               f"{self.in_5 = } is True")
-            if self.delta_t_mtz == 9999:
+            if self.delta_t_mtz == 9999.9:
                 stc += 1
                 continue
-            elif self.delta_t_mtz != 9999 and self.in_1 is False and self.in_5 is True:
+            elif self.delta_t_mtz != 9999.9 and self.in_1 is False and self.in_5 is True:
                 break
             else:
                 stc += 1

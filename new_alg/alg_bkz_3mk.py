@@ -43,18 +43,18 @@ class TestBKZ3MK:
 
         # Тест 5. Проверка срабатывания защиты ТЗП блока по уставкам
         # медленные
-        self.list_ust_tzp_num = (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1)
-        self.list_ust_tzp_volt = (4.7, 7.2, 8.7, 10.2, 11.6, 13.0, 14.4, 15.7, 17.6)
-        self.list_delta_t_tzp = []
-        self.list_delta_percent_tzp = []
-        self.list_result_tzp = []
+        self.list_ust_tzp_num: tuple = (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1)
+        self.list_ust_tzp_volt: tuple = (4.7, 7.2, 8.7, 10.2, 11.6, 13.0, 14.4, 15.7, 17.6)
+        self.list_delta_t_tzp: list[str] = []
+        self.list_delta_percent_tzp: list[str] = []
+        self.list_result_tzp: list[[str]] = []
         # Тест 4. Проверка срабатывания защиты МТЗ блока по уставкам
         # быстрые
         self.list_ust_mtz_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         self.list_ust_mtz_volt = (21.8, 27.2, 32.7, 38.1, 43.6, 49.0, 54.4, 59.9, 65.3, 70.8, 76.2)
-        self.list_delta_t_mtz = []
-        self.list_delta_percent_mtz = []
-        self.list_result_mtz = []
+        self.list_delta_t_mtz: list[str] = []
+        self.list_delta_percent_mtz: list[str] = []
+        self.list_result_mtz: list[[str]] = []
 
         self.coef_volt: float = 0.0
 
@@ -77,13 +77,13 @@ class TestBKZ3MK:
         self.health_flag_tzp: bool = False
         self.malfunction: bool = False
 
-        self.msg_1 = "Убедитесь в отсутствии других блоков в панелях разъемов и вставьте " \
+        self.msg_1: str = "Убедитесь в отсутствии других блоков в панелях разъемов и вставьте " \
                      "блок в соответствующий разъем панели С»"
-        self.msg_2 = "«Переключите регулятор МТЗ на корпусе блока в положение «1», регулятор ТЗП в положение " \
+        self.msg_2: str = "«Переключите регулятор МТЗ на корпусе блока в положение «1», регулятор ТЗП в положение " \
                      "«1.1» «Переключите тумблеры в положение «Работа» и «660В»"
-        self.msg_3 = "Установите регулятор МТЗ (1-11), расположенный на корпусе блока, в положение"
-        self.msg_4 = "Установите регулятор МТЗ (1-11), расположенный на блоке, в положение «11»"
-        self.msg_5 = "Установите регулятор ТЗП (0.3-1.1), расположенный на блоке в положение"
+        self.msg_3: str = "Установите регулятор МТЗ (1-11), расположенный на корпусе блока, в положение"
+        self.msg_4: str = "Установите регулятор МТЗ (1-11), расположенный на блоке, в положение «11»"
+        self.msg_5: str = "Установите регулятор ТЗП (0.3-1.1), расположенный на блоке в положение"
 
         logging.basicConfig(filename="C:\\Stend\\project_class\\log\\TestBKZ3MK.log",
                             level=logging.DEBUG,
@@ -398,14 +398,14 @@ class TestBKZ3MK:
                 self.logger.info(result_delta_t)
                 self.mysql_conn.mysql_add_message(result_delta_t)
                 self.logger.debug(f"{self.inp_05 = } (False), {self.inp_06 = } (True)")
-                if self.calc_delta_t_mtz == 9999:
+                if self.calc_delta_t_mtz == 9999.9:
                     sleep(3)
                     qw += 1
                     self.logger.debug("блок не сработал по времени, повтор проверки блока")
                     self.mysql_conn.mysql_add_message("блок не сработал по времени, повтор проверки блока")
                     self.malfunction = True
                     continue
-                elif self.calc_delta_t_mtz != 9999 and self.inp_05 is False and self.inp_06 is True:
+                elif self.calc_delta_t_mtz != 9999.9 and self.inp_05 is False and self.inp_06 is True:
                     self.logger.debug(f"блок сработал, время срабатывания: {self.calc_delta_t_mtz:.1f}")
                     self.mysql_conn.mysql_add_message(f"блок сработал, время срабатывания: {self.calc_delta_t_mtz:.1f}")
                     self.malfunction = False

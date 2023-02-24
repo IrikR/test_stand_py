@@ -34,20 +34,20 @@ class TestUMZ:
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
 
-        self.list_ust_volt = (22.6, 27.1, 31.9, 36.5, 41.3, 46.4, 50.2, 54.7, 59.3, 63.8, 68.4)
-        self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-        self.list_delta_t_ab = []
-        self.list_delta_t_vg = []
-        self.list_delta_percent_ab = []
-        self.list_delta_percent_vg = []
+        self.list_ust_volt: tuple = (22.6, 27.1, 31.9, 36.5, 41.3, 46.4, 50.2, 54.7, 59.3, 63.8, 68.4)
+        self.list_ust_num: tuple = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        self.list_delta_t_ab: list[str] = []
+        self.list_delta_t_vg: list[str] = []
+        self.list_delta_percent_ab: list[str] = []
+        self.list_delta_percent_vg: list[str] = []
         self.list_result = []
-        self.meas_volt_ab = 0
-        self.meas_volt_vg = 0
-        self.test_setpoint_ab = False
-        self.test_setpoint_vg = False
+        self.meas_volt_ab: float = 0.0
+        self.meas_volt_vg: float = 0.0
+        self.test_setpoint_ab: bool = False
+        self.test_setpoint_vg: bool = False
         self.coef_volt: float = 0.0
-        self.calc_delta_t_ab = 0.0
-        self.calc_delta_t_vg = 0.0
+        self.calc_delta_t_ab: float = 0.0
+        self.calc_delta_t_vg: float = 0.0
 
         self.sp_volt = 0.0
         self.num_ust = 1
@@ -91,6 +91,10 @@ class TestUMZ:
         return False
 
     def st_test_11(self) -> bool:
+        """
+        1.0. проверка исходного состояния блока
+        :return:
+        """
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.1, err_code=[476, 477],
                                          position_inp=[False, True],
                                          di_xx=['inp_01', 'inp_02']):
@@ -264,7 +268,7 @@ class TestUMZ:
                 self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-            if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
+            if self.calc_delta_t_ab != 9999.9 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_ab = True
                 break
             else:
@@ -282,7 +286,7 @@ class TestUMZ:
                 self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-            if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
+            if self.calc_delta_t_vg != 9999.9 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_vg = True
                 break
             else:
@@ -333,7 +337,7 @@ class TestUMZ:
                 self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-            if self.calc_delta_t_ab != 9999 and in_a1 is True and in_a5 is False:
+            if self.calc_delta_t_ab != 9999.9 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_ab = True
                 break
             else:
@@ -370,7 +374,7 @@ class TestUMZ:
                 self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(109)
             sleep(0.5)
             in_a1, in_a5 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-            if self.calc_delta_t_vg != 9999 and in_a1 is True and in_a5 is False:
+            if self.calc_delta_t_vg != 9999.9 and in_a1 is True and in_a5 is False:
                 self.test_setpoint_vg = True
                 break
             else:

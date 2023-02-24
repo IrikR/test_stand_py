@@ -210,7 +210,7 @@ class TestPMZ:
                 self.logger.debug(f'время срабатывания, {self.calc_delta_t:.1f} мс')
                 self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} '
                                                   f'дельта t: {self.calc_delta_t:.1f}')
-                if self.calc_delta_t == 9999:
+                if self.calc_delta_t == 9999.9:
                     sleep(3)
                     # qw += 1
                     self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
@@ -223,9 +223,9 @@ class TestPMZ:
                 else:
                     break
             self.logger.debug(f'время срабатывания: {self.calc_delta_t:.1f} мс')
-            if self.calc_delta_t < 10:
+            if self.calc_delta_t < 10.0:
                 self.list_delta_t.append(f'< 10')
-            elif self.calc_delta_t == 9999:
+            elif self.calc_delta_t == 9999.9:
                 self.list_delta_t.append(f'неисправен')
             else:
                 self.list_delta_t.append(f'{self.calc_delta_t:.1f}')
@@ -281,12 +281,12 @@ class TestPMZ:
             self.logger.debug(f'время срабатывания, {self.calc_delta_t:.1f} мс')
             self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} '
                                               f'дельта t: {self.calc_delta_t:.1f}')
-            if self.calc_delta_t == 9999:
+            if self.calc_delta_t == 9999.9:
                 sleep(3)
                 wq += 1
                 self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
                 continue
-            elif 100 < self.calc_delta_t < 9999:
+            elif 100 < self.calc_delta_t < 9999.9:
                 sleep(3)
                 wq += 1
                 self.reset_protect.sbros_zashit_kl30(time_on=1.5, time_off=2.0)
@@ -294,9 +294,9 @@ class TestPMZ:
             else:
                 break
         self.logger.debug(f'время срабатывания, {self.calc_delta_t:.1f} мс')
-        if self.calc_delta_t < 10:
+        if self.calc_delta_t < 10.0:
             self.list_delta_t[-1] = f'< 10'
-        elif self.calc_delta_t > 100:
+        elif self.calc_delta_t > 100.0:
             self.list_delta_t.append(f'> 100')
         else:
             self.list_delta_t[-1] = f'{self.calc_delta_t:.1f}'
