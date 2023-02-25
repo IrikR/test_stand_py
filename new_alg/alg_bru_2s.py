@@ -32,8 +32,8 @@ class TestBRU2S:
         self.reset_relay = ResetRelay()
         self.cli_log = CLILog("debug", __name__)
 
-        self.msg_1 = "Переведите тумблер «П/А» на блоке в положение «П» и нажмите кнопку «ОК» " \
-                     "Если на блоке нет тумблера «П/А» нажмите кнопку «Отмена»"
+        self.msg_1: str = "Переведите тумблер «П/А» на блоке в положение «П» и нажмите кнопку «ОК» " \
+                          "Если на блоке нет тумблера «П/А» нажмите кнопку «Отмена»"
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBRU2S.log",

@@ -39,18 +39,18 @@ class TestTZP:
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
 
-        self._list_ust_num = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-        self._list_ust_volt = (25.7, 29.8, 34.3, 39.1, 43.7, 48.5)
-        self._list_delta_t = []
-        self._list_delta_percent = []
-        self._list_tzp_result = []
+        self._list_ust_num: tuple[float, ...] = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+        self._list_ust_volt: tuple[float, ...] = (25.7, 29.8, 34.3, 39.1, 43.7, 48.5)
+        self._list_delta_t: list[str] = []
+        self._list_delta_percent: list[str] = []
+        self._list_tzp_result: list[[str]] = []
 
-        self._coef_volt = 0.0
+        self._coef_volt: float = 0.0
         self._health_flag: bool = False
 
-        self._msg_1 = "Переключите тумблер на корпусе блока в положение «Проверка» "
-        self._msg_2 = "Переключите тумблер на корпусе блока в положение «Работа» "
-        self._msg_3 = "Установите регулятор уставок на блоке в положение"
+        self._msg_1: str = "Переключите тумблер на корпусе блока в положение «Проверка» "
+        self._msg_2: str = "Переключите тумблер на корпусе блока в положение «Работа» "
+        self._msg_3: str = "Установите регулятор уставок на блоке в положение"
 
         logging.basicConfig(
             filename="C:\Stend\project_class\log\TestTZP.log",

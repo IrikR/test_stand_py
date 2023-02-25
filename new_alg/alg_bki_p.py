@@ -33,9 +33,6 @@ class TestBKIP:
         self.reset_relay = ResetRelay()
         self.cli_log = CLILog("debug", __name__)
 
-        self.msg_1 = 'Переведите тумблер на блоке в режим «Предупредительный»'
-        self.msg_2 = 'Переведите тумблер на блоке в режим «Аварийный»'
-
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBKIP.log",
             filemode="w",
@@ -45,6 +42,9 @@ class TestBKIP:
         logging.getLogger('mysql').setLevel('DEBUG')
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
+
+        self.msg_1: str = 'Переведите тумблер на блоке в режим «Предупредительный»'
+        self.msg_2: str = 'Переведите тумблер на блоке в режим «Аварийный»'
 
     def st_test_1(self) -> bool:
         """

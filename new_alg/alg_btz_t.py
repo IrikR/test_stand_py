@@ -36,18 +36,19 @@ class TestBTZT:
         self.cli_log = CLILog("debug", __name__)
 
         self.ust_test: float = 80.0
-        # self.ust_1 = (23.7, 28.6, 35.56, 37.4, 42.6, 47.3)
-        self.list_ust_tzp_volt = (25.7, 30.6, 37.56, 39.4, 44.6, 49.3)
-        # self.list_ust_pmz_volt = (67.9, 86.4, 99.1, 117.2, 140.7, 146.4, 156.6, 164.2, 175.7, 183.7, 192.1)
-        self.list_ust_pmz_volt = (70.9, 89.4, 103.1, 121.2, 144.7, 150.4, 160.6, 168.2, 179.7, 187.7, 196.1)
-        self.list_delta_t_pmz = []
-        self.list_delta_t_tzp = []
-        self.list_delta_percent_pmz = []
-        self.list_delta_percent_tzp = []
-        self.list_ust_tzp_num = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-        self.list_ust_pmz_num = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-        self.list_result_pmz = []
-        self.list_result_tzp = []
+        # self.ust_1: tuple[float, ...] = (23.7, 28.6, 35.56, 37.4, 42.6, 47.3)
+        self.list_ust_tzp_volt: tuple[float, ...] = (25.7, 30.6, 37.56, 39.4, 44.6, 49.3)
+        # self.list_ust_pmz_volt: tuple[float, ...] = (67.9, 86.4, 99.1, 117.2, 140.7, 146.4, 156.6, 164.2, 175.7, 183.7, 192.1)
+        self.list_ust_pmz_volt: tuple[float, ...] = (
+        70.9, 89.4, 103.1, 121.2, 144.7, 150.4, 160.6, 168.2, 179.7, 187.7, 196.1)
+        self.list_delta_t_pmz: list[str] = []
+        self.list_delta_t_tzp: list[str] = []
+        self.list_delta_percent_pmz: list[str] = []
+        self.list_delta_percent_tzp: list[str] = []
+        self.list_ust_tzp_num: tuple[float, ...] = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+        self.list_ust_pmz_num: tuple[int, ...] = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        self.list_result_pmz: list[[str]] = []
+        self.list_result_tzp: list[[str]] = []
 
         self.coef_volt: float = 0.0
         self.meas_volt: float = 0.0
@@ -72,14 +73,14 @@ class TestBTZT:
         self.inp_06: bool = False
         self.inp_09: bool = False
 
-        self.msg_1 = "Переключите оба тумблера на корпусе блока в положение «Работа» и установите " \
-                     "регуляторы уставок в положение 1 (1-11) и положение 1.0 (0.5-1.0)"
-        self.msg_2 = "Переключите тумблер ПМЗ (1-11) в положение «Проверка»"
-        self.msg_9 = "Переключите тумблер ПМЗ (1-11) в положение «Работа»"
-        self.msg_3 = "Переключите тумблер ТЗП (0.5-1.0) в положение «Проверка»"
-        self.msg_8 = "Переключите тумблер ТЗП (0.5…1.0) в положение «Работа»"
-        self.msg_5 = "Установите регулятор уставок ПМЗ (1-11) на блоке в положение"
-        self.msg_7 = "Установите регулятор уставок ТЗП (0.5…1.0) на блоке в положение"
+        self.msg_1: str = "Переключите оба тумблера на корпусе блока в положение «Работа» и установите " \
+                          "регуляторы уставок в положение 1 (1-11) и положение 1.0 (0.5-1.0)"
+        self.msg_2: str = "Переключите тумблер ПМЗ (1-11) в положение «Проверка»"
+        self.msg_9: str = "Переключите тумблер ПМЗ (1-11) в положение «Работа»"
+        self.msg_3: str = "Переключите тумблер ТЗП (0.5-1.0) в положение «Проверка»"
+        self.msg_8: str = "Переключите тумблер ТЗП (0.5…1.0) в положение «Работа»"
+        self.msg_5: str = "Установите регулятор уставок ПМЗ (1-11) на блоке в положение"
+        self.msg_7: str = "Установите регулятор уставок ТЗП (0.5…1.0) на блоке в положение"
 
         logging.basicConfig(filename="C:\Stend\project_class\log\TestBTZT.log",
                             filemode="w",

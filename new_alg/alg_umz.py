@@ -34,13 +34,13 @@ class TestUMZ:
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
 
-        self.list_ust_volt: tuple = (22.6, 27.1, 31.9, 36.5, 41.3, 46.4, 50.2, 54.7, 59.3, 63.8, 68.4)
-        self.list_ust_num: tuple = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        self.list_ust_volt: tuple[float, ...] = (22.6, 27.1, 31.9, 36.5, 41.3, 46.4, 50.2, 54.7, 59.3, 63.8, 68.4)
+        self.list_ust_num: tuple[int, ...] = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         self.list_delta_t_ab: list[str] = []
         self.list_delta_t_vg: list[str] = []
         self.list_delta_percent_ab: list[str] = []
         self.list_delta_percent_vg: list[str] = []
-        self.list_result = []
+        self.list_result: list[[str]] = []
         self.meas_volt_ab: float = 0.0
         self.meas_volt_vg: float = 0.0
         self.test_setpoint_ab: bool = False
@@ -49,10 +49,10 @@ class TestUMZ:
         self.calc_delta_t_ab: float = 0.0
         self.calc_delta_t_vg: float = 0.0
 
-        self.sp_volt = 0.0
-        self.num_ust = 1
-        self.i = 0.0
-        self.k = 0
+        self.sp_volt: float = 0.0
+        self.num_ust: int = 1
+        self.i: float = 0.0
+        self.k: int = 0
         self.health_flag: bool = False
 
         self.inp_01: bool = False
@@ -60,12 +60,12 @@ class TestUMZ:
         self.inp_05: bool = False
         self.inp_06: bool = False
 
-        self.msg_1 = "Убедитесь в отсутствии в панелях разъемов установленных блоков Подключите " \
-                     "блок УМЗ в разъем Х8 на панели B с помощью соответствующей кабельной сборки"
-        self.msg_2 = "Переключите тумблер режимов, расположенный на корпусе блока, в положение «Работа»"
-        self.msg_3 = "Переведите оба регулятора уставок на корпусе блока в положение «1»"
-        self.msg_4 = "Произведите взвод защит, нажав на корпусе блока на кнопку «Взвод»"
-        self.msg_5 = 'Установите оба регулятора уставок на блоке в положение'
+        self.msg_1: str = "Убедитесь в отсутствии в панелях разъемов установленных блоков Подключите " \
+                          "блок УМЗ в разъем Х8 на панели B с помощью соответствующей кабельной сборки"
+        self.msg_2: str = "Переключите тумблер режимов, расположенный на корпусе блока, в положение «Работа»"
+        self.msg_3: str = "Переведите оба регулятора уставок на корпусе блока в положение «1»"
+        self.msg_4: str = "Произведите взвод защит, нажав на корпусе блока на кнопку «Взвод»"
+        self.msg_5: str = 'Установите оба регулятора уставок на блоке в положение'
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestUMZ.log",

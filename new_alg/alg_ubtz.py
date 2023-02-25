@@ -37,13 +37,13 @@ class TestUBTZ:
         self.di_error = DIError()
         self.cli_log = CLILog("debug", __name__)
 
-        self.list_ust_bmz_num = (1, 2, 3, 4, 5, 6, 7)
-        self.list_ust_tzp_num = (1, 2, 3, 4, 5, 6, 7)
-        self.list_ust_bmz_volt = (6.9, 13.8, 27.4, 41.1, 54.8, 68.5, 82.2)
-        self.list_ust_tzp_volt = (11.2, 15.0, 18.7, 22.4, 26.2, 29.9, 33.6)
+        self.list_ust_bmz_num: tuple[int, ...] = (1, 2, 3, 4, 5, 6, 7)
+        self.list_ust_tzp_num: tuple[int, ...] = (1, 2, 3, 4, 5, 6, 7)
+        self.list_ust_bmz_volt: tuple[float, ...] = (6.9, 13.8, 27.4, 41.1, 54.8, 68.5, 82.2)
+        self.list_ust_tzp_volt: tuple[float, ...] = (11.2, 15.0, 18.7, 22.4, 26.2, 29.9, 33.6)
 
         self.coef_volt: float = 0.0
-        self.calc_delta_t_bmz = 0.0
+        self.calc_delta_t_bmz: float = 0.0
         self.health_flag: bool = False
 
         self.inp_01: bool = False
@@ -51,17 +51,17 @@ class TestUBTZ:
         self.inp_05: bool = False
         self.inp_06: bool = False
 
-        self.list_delta_t_tzp = []
-        self.list_delta_t_bmz = []
-        self.list_bmz_result = []
-        self.list_tzp_result = []
+        self.list_delta_t_tzp: list[str] = []
+        self.list_delta_t_bmz: list[str] = []
+        self.list_bmz_result: list[[str]] = []
+        self.list_tzp_result: list[[str]] = []
 
-        self.msg_1 = "Убедитесь в отсутствии других блоков в панелях разъемов и вставьте " \
-                     "блок в соответствующий разъем панели С"
-        self.msg_2 = "Переключите регулятор МТЗ на корпусе блока в положение «1», регулятор ТЗП в положение «0»"
-        self.msg_3 = "Установите регулятор МТЗ, расположенный на корпусе блока, в положение"
-        # self.msg_4 = "Установите регулятор МТЗ, расположенный на блоке, в положение «0»"
-        self.msg_5 = "Установите регулятор ТЗП, расположенный на блоке в положение"
+        self.msg_1: str = "Убедитесь в отсутствии других блоков в панелях разъемов и вставьте " \
+                          "блок в соответствующий разъем панели С"
+        self.msg_2: str = "Переключите регулятор МТЗ на корпусе блока в положение «1», регулятор ТЗП в положение «0»"
+        self.msg_3: str = "Установите регулятор МТЗ, расположенный на корпусе блока, в положение"
+        # self.msg_4: str = "Установите регулятор МТЗ, расположенный на блоке, в положение «0»"
+        self.msg_5: str = "Установите регулятор ТЗП, расположенный на блоке в положение"
 
         #
         logging.basicConfig(

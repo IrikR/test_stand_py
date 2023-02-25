@@ -36,21 +36,21 @@ class TestMTZ5V27:
         self.subtest = SubtestMTZ5()
         self.cli_log = CLILog("debug", __name__)
 
-        self.tuple_ust_tzp_num: tuple = (0.4, 0.7, 1.0, 1.3, 1.6, 1.8, 2.0)
-        self.tuple_ust_tzp_volt: tuple = (10.8, 18.8, 26.55, 34.05, 41.4, 46.2, 50.85)
-        self.tuple_ust_mtz_num: tuple = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7)
-        self.tuple_ust_mtz_volt: tuple = (37.6, 46.8, 55.8, 64.8, 73.6, 82.4, 91.0, 99.6, 108, 116.4, 124.6)
+        self.tuple_ust_tzp_num: tuple[float, ...] = (0.4, 0.7, 1.0, 1.3, 1.6, 1.8, 2.0)
+        self.tuple_ust_tzp_volt: tuple[float, ...] = (10.8, 18.8, 26.55, 34.05, 41.4, 46.2, 50.85)
+        self.tuple_ust_mtz_num: tuple[float, ...] = (2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7)
+        self.tuple_ust_mtz_volt: tuple[float, ...] = (37.6, 46.8, 55.8, 64.8, 73.6, 82.4, 91.0, 99.6, 108, 116.4, 124.6)
         self.ust_mtz: float = 30.0
 
-        self.list_delta_t_mtz: list = []
-        self.list_delta_t_tzp: list = []
-        self.list_delta_percent_mtz: list = []
-        self.list_delta_percent_tzp: list = []
-        self.list_mtz_result: list = []
-        self.list_tzp_result: list = []
+        self.list_delta_t_mtz: list[str] = []
+        self.list_delta_t_tzp: list[str] = []
+        self.list_delta_percent_mtz: list[str] = []
+        self.list_delta_percent_tzp: list[str] = []
+        self.list_mtz_result: list[[str]] = []
+        self.list_tzp_result: list[[str]] = []
 
         self.coef_volt: float = 0.0
-        self.calc_delta_t_mtz = 0.0
+        self.calc_delta_t_mtz: float = 0.0
         self.delta_t_mtz: float
         self.in_1: bool
         self.in_5: bool

@@ -35,20 +35,20 @@ class TestMTZ5V28:
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
 
-        self.list_ust_tzp_num = (0.8, 1, 2, 2.5, 3)
-        self.list_ust_tzp_volt = (22.1, 27.6, 55.1, 68.9, 82.5)
-        self.list_ust_mtz_num = (2, 3, 4, 5, 6, 7, 8)
-        self.list_ust_mtz_volt = (36.7, 55.0, 73.4, 91.7, 110.0, 128.4, 146.7)
-        self.list_delta_t_mtz = []
-        self.list_delta_t_tzp = []
-        self.list_delta_percent_mtz = []
-        self.list_delta_percent_tzp = []
-        self.list_mtz_result = []
-        self.list_tzp_result = []
-        self.ust_mtz = 20.0
+        self.list_ust_tzp_num: tuple[float, ...] = (0.8, 1, 2, 2.5, 3)
+        self.list_ust_tzp_volt: tuple[float, ...] = (22.1, 27.6, 55.1, 68.9, 82.5)
+        self.list_ust_mtz_num: tuple[int, ...] = (2, 3, 4, 5, 6, 7, 8)
+        self.list_ust_mtz_volt: tuple[float, ...] = (36.7, 55.0, 73.4, 91.7, 110.0, 128.4, 146.7)
+        self.list_delta_t_mtz: list[str] = []
+        self.list_delta_t_tzp: list[str] = []
+        self.list_delta_percent_mtz: list[str] = []
+        self.list_delta_percent_tzp: list[str] = []
+        self.list_mtz_result: list[[str]] = []
+        self.list_tzp_result: list[[str]] = []
+        self.ust_mtz: float = 20.0
 
         self.coef_volt: float = 0.0
-        self.calc_delta_t_mtz = 0
+        self.calc_delta_t_mtz: float = 0.0
         self.delta_t_mtz: float
         self.in_1: bool
         self.in_5: bool
@@ -59,16 +59,16 @@ class TestMTZ5V28:
         self.inp_05: bool = False
         self.inp_06: bool = False
 
-        self.msg_1 = "Убедитесь в отсутствии других блоков в панелях разъемов и вставьте блок " \
-                     "в соответствующий разъем панели B"
-        self.msg_2 = "«Переключите тумблер на корпусе блока в положение «Работа» и установите регуляторы уставок " \
-                     "в положение 2 (2-8) и в положение 0.8 (0.8-3)»"
-        self.msg_3 = "Переключите регулятор МТЗ, расположенный на корпусе блока в положение «Проверка»"
-        self.msg_4 = "Установите регулятор уставок на блоке в положение \t"
-        self.msg_5 = "Установите регулятор времени перегруза на блоке в положение «21 сек»"
-        # self.msg_6 = "Установите регулятор МТЗ, расположенный на блоке, в положение «8»"
-        self.msg_7 = "Установите регулятор уставок на блоке в положение\t"
-        self.msg_8 = "Переключите тумблер, расположенный на корпусе блока в положение «Работа»"
+        self.msg_1: str = "Убедитесь в отсутствии других блоков в панелях разъемов и вставьте блок " \
+                          "в соответствующий разъем панели B"
+        self.msg_2: str = "«Переключите тумблер на корпусе блока в положение «Работа» и установите регуляторы уставок " \
+                          "в положение 2 (2-8) и в положение 0.8 (0.8-3)»"
+        self.msg_3: str = "Переключите регулятор МТЗ, расположенный на корпусе блока в положение «Проверка»"
+        self.msg_4: str = "Установите регулятор уставок на блоке в положение \t"
+        self.msg_5: str = "Установите регулятор времени перегруза на блоке в положение «21 сек»"
+        # self.msg_6: str = "Установите регулятор МТЗ, расположенный на блоке, в положение «8»"
+        self.msg_7: str = "Установите регулятор уставок на блоке в положение\t"
+        self.msg_8: str = "Переключите тумблер, расположенный на корпусе блока в положение «Работа»"
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestMTZ5_v28.log",

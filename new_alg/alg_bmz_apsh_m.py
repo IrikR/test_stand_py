@@ -39,8 +39,8 @@ class TestBMZAPSHM:
         self.coef_volt: float = 0.0
         self.health_flag: bool = False
 
-        self.msg_1 = "Убедитесь в отсутствии блоков во всех испытательных разъемах. " \
-                     "Вставьте блок в соответствующий испытательный разъем»"
+        self.msg_1: str = "Убедитесь в отсутствии блоков во всех испытательных разъемах. " \
+                          "Вставьте блок в соответствующий испытательный разъем»"
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBMZAPShM.log",

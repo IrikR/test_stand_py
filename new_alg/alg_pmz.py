@@ -38,15 +38,15 @@ class TestPMZ:
         self.cli_log = CLILog("debug", __name__)
 
         self.ust_1: float = 80.0
-        self.list_ust_num = (1, 2, 3, 4, 5, 6, 7, 8, 9)
-        self.list_ust_volt = (75.4, 92, 114, 125, 141, 156.4, 172, 182.4, 196)
-        self.list_delta_t = []
-        self.list_delta_percent = []
-        self.list_result = []
+        self.list_ust_num: tuple[int, ...] = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+        self.list_ust_volt: tuple[float, ...] = (75.4, 92, 114, 125, 141, 156.4, 172, 182.4, 196)
+        self.list_delta_t: list[str] = []
+        self.list_delta_percent: list[str] = []
+        self.list_result: list[[str]] = []
 
-        self.meas_volt_ust = 0.0
-        self.coef_volt = 0.0
-        self.calc_delta_t = 0.0
+        self.meas_volt_ust: float = 0.0
+        self.coef_volt: float = 0.0
+        self.calc_delta_t: float = 0.0
         self.health_flag: bool = False
 
         self.inp_01: bool = False
@@ -54,11 +54,11 @@ class TestPMZ:
         self.inp_05: bool = False
         self.inp_06: bool = False
 
-        self.msg_1 = "Убедитесь в отсутствии в панелях разъемов установленных блоков Подключите " \
-                     "блок ПМЗ в разъем Х14 на панели B"
-        self.msg_2 = "Переключите тумблер режимов, расположенный на корпусе блока, в положение «Работа»"
-        self.msg_3 = 'Установите регулятор уставок на блоке в положение'
-        self.msg_4 = "Переключите тумблер на корпусе блока в положение «Проверка»"
+        self.msg_1: str = "Убедитесь в отсутствии в панелях разъемов установленных блоков Подключите " \
+                          "блок ПМЗ в разъем Х14 на панели B"
+        self.msg_2: str = "Переключите тумблер режимов, расположенный на корпусе блока, в положение «Работа»"
+        self.msg_3: str = 'Установите регулятор уставок на блоке в положение'
+        self.msg_4: str = "Переключите тумблер на корпусе блока в положение «Проверка»"
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestPMZ.log",

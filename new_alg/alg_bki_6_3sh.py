@@ -31,10 +31,6 @@ class TestBKI6:
         self.reset_relay = ResetRelay()
         self.cli_log = CLILog("debug", __name__)
 
-        self.msg_1 = 'Убедитесь в отсутствии других блоков или соединительных кабелей в панели разъемов А'
-        self.msg_2 = 'Подключите в разъем, расположенный на панели разъемов А ' \
-                     'соединительный кабель для проверки блока БКИ-6-3Ш'
-
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBKI63Sh.log",
             filemode="w",
@@ -44,6 +40,12 @@ class TestBKI6:
         logging.getLogger('mysql').setLevel('WARNING')
         self.logger = logging.getLogger(__name__)
         # self.logger.addHandler(logging.StreamHandler(self.logger.setLevel(10)))
+
+        self.msg_1: str = 'Убедитесь в отсутствии других блоков или соединительных кабелей в панели разъемов А'
+        self.msg_2: str = 'Подключите в разъем, расположенный на панели разъемов А ' \
+                          'соединительный кабель для проверки блока БКИ-6-3Ш'
+
+        self.tags_list: list[str] = ['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']
 
     def st_test_1(self) -> bool:
         """
@@ -62,7 +64,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
                                          err_code=[123, 123, 124, 125, 125],
                                          position_inp=[False, True, True, False, True],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 
@@ -82,7 +84,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=2, subtest_num=2.1,
                                          err_code=[126, 126, 127, 128, 128],
                                          position_inp=[False, True, True, False, True],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 
@@ -97,7 +99,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.0,
                                          err_code=[129, 129, 130, 131, 131],
                                          position_inp=[False, True, True, False, True],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 
@@ -115,7 +117,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.2,
                                          err_code=[132, 132, 133, 134, 134],
                                          position_inp=[False, True, True, False, True],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 
@@ -131,7 +133,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.0,
                                          err_code=[135, 135, 136, 137, 137],
                                          position_inp=[False, True, False, True, False],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 
@@ -146,7 +148,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=4, subtest_num=4.1,
                                          err_code=[138, 138, 139, 140, 140],
                                          position_inp=[False, True, False, False, True],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 
@@ -161,7 +163,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.0,
                                          err_code=[141, 141, 142, 143, 143],
                                          position_inp=[False, True, True, False, True],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 
@@ -173,7 +175,7 @@ class TestBKI6:
         if self.conn_opc.subtest_read_di(test_num=5, subtest_num=5.1,
                                          err_code=[144, 144, 145, 146, 146],
                                          position_inp=[False, True, False, False, True],
-                                         di_xx=['inp_01', 'inp_07', 'inp_06', 'inp_04', 'inp_05']):
+                                         di_xx=self.tags_list):
             return True
         return False
 

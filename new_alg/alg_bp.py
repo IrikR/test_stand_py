@@ -38,7 +38,7 @@ class TestBP:
         self.capacitor_capacitance: float = 0.0
         self.capacitor_capacitance_d: float = 0.0
 
-        self.msg_1 = "Убедитесь в отсутствии других блоков и вставьте блок БП в соответствующий разъем"
+        self.msg_1: str = "Убедитесь в отсутствии других блоков и вставьте блок БП в соответствующий разъем"
 
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBP.log",

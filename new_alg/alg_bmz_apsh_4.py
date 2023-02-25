@@ -34,11 +34,11 @@ class TestBMZAPSH4:
         self.mysql_conn = MySQLConnect()
         self.cli_log = CLILog("debug", __name__)
 
-        self.list_ust_num = (1, 2, 3, 4, 5)
-        self.list_ust = (9.84, 16.08, 23.28, 34.44, 50.04)
+        self.list_ust_num: tuple[int, ...] = (1, 2, 3, 4, 5)
+        self.list_ust: tuple[float, ...] = (9.84, 16.08, 23.28, 34.44, 50.04)
 
-        self.list_delta_t = []
-        self.list_result = []
+        self.list_delta_t: list[str] = []
+        self.list_result: list[[str]] = []
 
         self.coef_volt: float = 0.0
         self.health_flag: bool = False
