@@ -63,11 +63,9 @@ class TestBKIP:
         Тест 2. Проверка работы блока при нормальном сопротивлении изоляции
         """
         self.logger.debug("старт теста 2.0")
-        if my_msg(self.msg_1):
-            self.logger.debug("от пользователя пришло подтверждение")
-        else:
-            self.logger.debug("от пользователя пришла отмена")
+        if not my_msg(self.msg_1):
             return False
+
         self.conn_opc.ctrl_relay('KL21', True)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
@@ -109,11 +107,9 @@ class TestBKIP:
         Тест 4. Проверка работы блока в режиме «Аварийный» при сопротивлении изоляции 100 кОм
         """
         self.logger.debug("старт теста 4.0")
-        if my_msg(self.msg_2):
-            self.logger.debug("от пользователя пришло подтверждение")
-        else:
-            self.logger.debug("от пользователя пришла отмена")
+        if not my_msg(self.msg_2):
             return False
+
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")

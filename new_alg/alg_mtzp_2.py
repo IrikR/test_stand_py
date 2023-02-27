@@ -71,11 +71,10 @@ class TestMTZP2:
         :return: bool
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
-        if my_msg(self.msg_1):
-            pass
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+
         self.logger.debug('тест 1.1')
         self.mysql_conn.mysql_ins_result("идёт тест 1.2", '1')
         return True
@@ -111,13 +110,12 @@ class TestMTZP2:
         max_volt = 1.0 * self.meas_volt_ust
         self.logger.debug(f'измеренное напряжение\t{min_volt:.2f} <= {meas_volt:.2f} <= {max_volt:.2f}')
         if min_volt <= meas_volt <= max_volt:
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result('неисправен', '1')
             self.reset.sbros_kl63_proc_1_21_31()
-            return False
+            return True
+        self.mysql_conn.mysql_ins_result('неисправен', '1')
         self.reset.sbros_kl63_proc_1_21_31()
-        return True
+        return False
+
 
     def st_test_13(self) -> bool:
         """
@@ -190,12 +188,11 @@ class TestMTZP2:
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
         inp_01, inp_10 = self.conn_opc.simplified_read_di(['inp_01', 'inp_10'])
         if inp_10 is False and inp_01 is True:
-            pass
-        else:
-            self.logger.debug('тест 2.1 положение выходов не соответствует')
-            self.mysql_conn.mysql_ins_result('неисправен', '2')
-            return False
-        return True
+            return True
+        self.logger.debug('тест 2.1 положение выходов не соответствует')
+        self.mysql_conn.mysql_ins_result('неисправен', '2')
+        return False
+
 
     def st_test_21(self) -> bool:
         """
@@ -301,10 +298,9 @@ class TestMTZP2:
         Тест 4. Проверка защиты МТЗ-1
         :return: bool
         """
-        if my_msg(self.msg_2):
-            pass
-        else:
+        if not my_msg(self.msg_2):
             return False
+
         self.mysql_conn.mysql_ins_result('идёт тест 4.1', '4')
         self.resist.resist_ohm(0)
         self.conn_opc.ctrl_relay('KL12', True)
@@ -369,10 +365,9 @@ class TestMTZP2:
         Тест 5. Проверка защиты МТЗ-2
         :return: bool
         """
-        if my_msg(self.msg_3):
-            pass
-        else:
+        if not my_msg(self.msg_3):
             return False
+
         self.mysql_conn.mysql_ins_result('идёт тест 5.1', '5')
         self.resist.resist_ohm(0)
         sleep(1)
@@ -440,10 +435,9 @@ class TestMTZP2:
         Тест 6. Проверка защиты УМТЗ
         :return: boolean
         """
-        if my_msg(self.msg_4):
-            pass
-        else:
+        if not my_msg(self.msg_4):
             return False
+
         self.mysql_conn.mysql_ins_result('идёт тест 6.1', '6')
         self.resist.resist_ohm(0)
         if self.proc.procedure_x4_to_x5(setpoint_volt=self.ust_2, coef_volt=self.coef_volt):
@@ -484,10 +478,9 @@ class TestMTZP2:
         Тест 7. Проверка защиты МТЗ-3
         :return: bool
         """
-        if my_msg(self.msg_5):
-            pass
-        else:
+        if not my_msg(self.msg_5):
             return False
+
         self.mysql_conn.mysql_ins_result('идёт тест 7.1', '7')
         self.resist.resist_ohm(0)
         sleep(1)

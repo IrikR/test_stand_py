@@ -48,6 +48,9 @@ class TestBMZAPSH4:
         self.inp_05: bool = False
         self.inp_06: bool = False
 
+        self.msg_1: str = "Установите переключатель уставок на блоке в положение 1"
+        self.msg_4: str = 'Установите регулятор уставок на блоке в положение:'
+
         logging.basicConfig(
             filename="C:\\Stend\\project_class\\log\\TestBMZAPSh4.log",
             filemode="w",
@@ -63,12 +66,10 @@ class TestBMZAPSH4:
         # Тест 1. Проверка исходного состояния блока:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
-        msg_1 = "Установите переключатель уставок на блоке в положение 1"
-        if my_msg(msg_1):
-            pass
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+
         self.mysql_conn.mysql_ins_result('идёт тест 1.1', '1')
         self.conn_opc.ctrl_relay('KL66', True)
         if self.reset_protection(test_num=1, subtest_num=1.0, err_code=342):
@@ -94,8 +95,9 @@ class TestBMZAPSH4:
         self.mysql_conn.mysql_ins_result('идёт тест 2.0', '1')
         k = 0
         for i in self.list_ust:
-            msg_4 = 'Установите регулятор уставок на блоке в положение:'
-            msg_result = my_msg_2(f'{msg_4} {self.list_ust_num[k]}')
+
+            msg_result = my_msg_2(f'{self.msg_4} {self.list_ust_num[k]}')
+
             if msg_result == 0:
                 pass
             elif msg_result == 1:
@@ -105,14 +107,18 @@ class TestBMZAPSH4:
                 self.list_delta_t.append('пропущена')
                 k += 1
                 continue
+
             self.mysql_conn.mysql_ins_result(f'уставка {self.list_ust_num[k]}', '4')
+
             if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=i):
                 pass
             else:
                 self.mysql_conn.mysql_ins_result('неисправен TV1', '1')
+
             # 2.1.  Проверка срабатывания блока от сигнала нагрузки:
             calc_delta_t, self.inp_01, self.inp_02, \
                 self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(111)
+
             self.logger.debug(f'delta t:\t {calc_delta_t:.1f}')
             self.list_delta_t.append(f'{calc_delta_t:.1f}')
             self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} дельта t: {calc_delta_t:.1f}')
@@ -147,29 +153,25 @@ class TestBMZAPSH4:
         return True
 
     def subtest_2_2(self, i: float, k: int) -> bool:
-        if self.reset_protection(test_num=2, subtest_num=2.2):
-            pass
-        else:
+        if not self.reset_protection(test_num=2, subtest_num=2.2):
             return False
-        if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=i, factor=1.1):
-            pass
-        else:
+
+        if not self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=i, factor=1.1):
             return False
+
         calc_delta_t, self.inp_01, self.inp_02, \
             self.inp_05, self.inp_06 = self.conn_opc.ctrl_ai_code_v0(111)
         self.logger.info(f'delta t: {calc_delta_t:.1f}')
         self.list_delta_t[-1] = f'{calc_delta_t:.1f}'
         self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} дельта t: {calc_delta_t:.1f}')
-        inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
-        if inp_01 is True:
-            pass
-        else:
-            self.logger.debug("вход 1 не соответствует")
-            self.mysql_conn.mysql_ins_result('неисправен', '1')
-            self.mysql_conn.mysql_error(346)
-            return False
-        self.reset_relay.stop_procedure_3()
-        return True
+        # inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
+        if self.inp_01 is True:
+            self.reset_relay.stop_procedure_3()
+            return True
+        self.logger.debug("вход 1 не соответствует")
+        self.mysql_conn.mysql_ins_result('неисправен', '1')
+        self.mysql_conn.mysql_error(346)
+        return False
 
     def reset_protection(self, *, test_num: int, subtest_num: float, err_code: int = 344) -> bool:
         """
@@ -181,8 +183,8 @@ class TestBMZAPSH4:
         """
         self.logger.debug(f"сброс защит блока, тест {test_num}, подтест {subtest_num}")
         self.reset_protect.sbros_zashit_kl1()
-        inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
-        if inp_01 is False:
+        self.inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
+        if self.inp_01 is False:
             self.logger.debug("вход 1 соответствует")
             return True
         self.logger.debug("вход 1 не соответствует")

@@ -115,10 +115,9 @@ class TestBTZ3:
         Тест 2. Проверка работоспособности защиты ПМЗ блока в режиме «Проверка»
         """
 
-        if my_msg(self.msg_2):
-            pass
-        else:
+        if not my_msg(self.msg_2):
             return False
+
         self.logger.debug("тест 2.0")
         self.mysql_conn.mysql_ins_result('идёт тест 2.0', '2')
         if self.proc.procedure_x4_to_x5(setpoint_volt=self.ust_prov, coef_volt=self.coef_volt):
@@ -154,10 +153,9 @@ class TestBTZ3:
         Тест 3. Проверка работоспособности защиты ТЗП блока в режиме «Проверка»
         """
 
-        if my_msg(self.msg_3):
-            pass
-        else:
+        if not my_msg(self.msg_3):
             return False
+
         if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.0,
                                          err_code=[381, 382, 383, 384],
                                          position_inp=[True, False, False, True],
@@ -170,10 +168,9 @@ class TestBTZ3:
         3.2. Сброс защит после проверки
         """
 
-        if my_msg(self.msg_4):
-            pass
-        else:
+        if not my_msg(self.msg_4):
             return False
+
         if self.reset_protection(test_num=3, subtest_num=3.1, err_code_a=385, err_code_b=386, err_code_c=387,
                                  err_code_d=388):
             return True
@@ -184,10 +181,9 @@ class TestBTZ3:
         Тест 4. Проверка срабатывания защиты ПМЗ блока по уставкам
         """
 
-        if my_msg(self.msg_4_1):
-            pass
-        else:
+        if not my_msg(self.msg_4_1):
             return False
+
         k = 0
         for i in self.list_ust_pmz:
             self.logger.debug(f'тест 4 уставка {self.list_ust_pmz_num[k]}')
@@ -339,9 +335,7 @@ class TestBTZ3:
         4.2. Формирование нагрузочного сигнала 1,1*U3[i]:
         4.2.1. Сброс защит после проверки
         """
-        if self.reset_protection(test_num=4, subtest_num=4.2):
-            pass
-        else:
+        if not self.reset_protection(test_num=4, subtest_num=4.2):
             return False
 
         if self.proc.procedure_1_24_34(setpoint_volt=i, coef_volt=self.coef_volt, factor=1.1):

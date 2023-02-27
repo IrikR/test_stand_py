@@ -69,7 +69,6 @@ class TestBZMPD:
         Тест 1. Проверка исходного состояния блока:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         self.mysql_conn.mysql_ins_result('идёт тест 1.1', '1')
         self.mysql_conn.mysql_ins_result('---', '2')
         self.mysql_conn.mysql_ins_result('---', '3')
@@ -77,8 +76,7 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result('---', '5')
         if my_msg(self.msg_1):
             return True
-        else:
-            return False
+        return False
 
     def st_test_11(self) -> bool:
         """
@@ -228,10 +226,10 @@ class TestBZMPD:
         Тест 3. Проверка срабатывания блока при снижении силовой изоляции
         """
         self.logger.debug("идёт тест 3.0")
-        if my_msg(self.msg_4):
-            pass
-        else:
+
+        if not my_msg(self.msg_4):
             return False
+
         self.mysql_conn.mysql_ins_result('идёт тест 3.1', '3')
         self.resist.resist_kohm(61)
         sleep(5)
@@ -280,10 +278,10 @@ class TestBZMPD:
         Тест 4. Проверка защиты ПМЗ
         """
         self.logger.debug("идёт тест 4.0")
-        if my_msg(self.msg_5):
-            pass
-        else:
+
+        if not my_msg(self.msg_5):
             return False
+
         self.mysql_conn.mysql_ins_result('идёт тест 4.1', '4')
         if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=self.ust_1):
             pass
@@ -344,11 +342,9 @@ class TestBZMPD:
         self.logger.debug("идёт тест 5.0")
         self.mysql_conn.mysql_ins_result('идёт тест 5.1', '5')
         if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=self.ust_2):
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result("неисправен TV1", "4")
-            return False
-        return True
+            return True
+        self.mysql_conn.mysql_ins_result("неисправен TV1", "4")
+        return False
 
     def st_test_51(self) -> bool:
         """
@@ -382,15 +378,13 @@ class TestBZMPD:
         self.mysql_conn.mysql_ins_result('идёт тест 5.2', '5')
         inp_01, inp_05, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05', 'inp_06'])
         if inp_01 is False and inp_05 is False and inp_06 is True and self.timer_test_5 <= 360:
-            pass
-        else:
-            self.logger.debug("положение выходов не соответствует")
-            self.mysql_conn.mysql_ins_result("неисправен", "5")
+            self.logger.debug("положение выходов соответствует")
             self.reset.sbros_kl63_proc_all()
-            return False
-        self.logger.debug("положение выходов соответствует")
+            return True
+        self.logger.debug("положение выходов не соответствует")
+        self.mysql_conn.mysql_ins_result("неисправен", "5")
         self.reset.sbros_kl63_proc_all()
-        return True
+        return False
 
     def st_test_52(self) -> bool:
         self.logger.debug("идёт тест 5.2")

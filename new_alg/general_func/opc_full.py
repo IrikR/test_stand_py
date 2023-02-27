@@ -713,8 +713,8 @@ class ConnectOPC:
         analog_inp_ai2 = read_tags[1][1]
         if tag == 'AI0':
             calc_volt = analog_inp_ai0 * analog_max_ai0 / analog_max_code
-            self.logger.info(f'возврат результата AI0 = {calc_volt}')
-            self.cli_log.lev_info(f'возврат результата AI0 = {calc_volt}', "orange")
+            self.logger.info(f'измеренное напряжение AI0 = {calc_volt}')
+            self.cli_log.lev_info(f'измеренное напряжение AI0 = {calc_volt}', "orange")
             return calc_volt
         elif tag == 'AI2':
             calc_volt = analog_inp_ai2 * analog_max_ai2 / analog_max_code

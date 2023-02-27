@@ -40,7 +40,7 @@ class TestBTZT:
         self.list_ust_tzp_volt: tuple[float, ...] = (25.7, 30.6, 37.56, 39.4, 44.6, 49.3)
         # self.list_ust_pmz_volt: tuple[float, ...] = (67.9, 86.4, 99.1, 117.2, 140.7, 146.4, 156.6, 164.2, 175.7, 183.7, 192.1)
         self.list_ust_pmz_volt: tuple[float, ...] = (
-        70.9, 89.4, 103.1, 121.2, 144.7, 150.4, 160.6, 168.2, 179.7, 187.7, 196.1)
+            70.9, 89.4, 103.1, 121.2, 144.7, 150.4, 160.6, 168.2, 179.7, 187.7, 196.1)
         self.list_delta_t_pmz: list[str] = []
         self.list_delta_t_tzp: list[str] = []
         self.list_delta_percent_pmz: list[str] = []
@@ -96,11 +96,10 @@ class TestBTZT:
         Тест 1. Проверка исходного состояния блока:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
-        if my_msg(self.msg_1):
-            pass
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+
         self.logger.debug("тест 1")
         self.mysql_conn.mysql_ins_result('идет тест 1', '1')
         self.conn_opc.ctrl_relay('KL21', True)
@@ -126,10 +125,9 @@ class TestBTZT:
         """
         Тест 2. Проверка работоспособности защиты ПМЗ блока в режиме «Проверка»
         """
-        if my_msg(self.msg_2):
-            pass
-        else:
+        if not my_msg(self.msg_2):
             return False
+
         self.logger.debug("тест 2")
         self.mysql_conn.mysql_ins_result('идет тест 2.1', '2')
         if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=self.ust_test):
@@ -190,10 +188,10 @@ class TestBTZT:
         """
         self.logger.debug("тест 3.2")
         self.mysql_conn.mysql_ins_result('идет тест 3.2', '3')
-        if my_msg(self.msg_8):
-            pass
-        else:
+
+        if not my_msg(self.msg_8):
             return False
+
         self.reset_protect.sbros_zashit_kl30()
         sleep(1)
         if self.conn_opc.subtest_read_di(test_num=3, subtest_num=3.1,

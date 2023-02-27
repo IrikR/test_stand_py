@@ -57,11 +57,10 @@ class TestBP:
         """
 
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
-        if my_msg(self.msg_1):
-            pass
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+
         self.mysql_conn.mysql_ins_result("идёт тест 1", "1")
         self.conn_opc.ctrl_relay('KL78', True)
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,
@@ -176,14 +175,13 @@ class TestBP:
         calc_volt = meas_volt * (103 / 3)
         self.logger.debug(f'вычисленное напряжение, должно быть больше 6\t{calc_volt:.2f}')
         if calc_volt >= 6:
-            pass
-        else:
             self.reset_protect.sbros_testa_bp_1()
-            self.mysql_conn.mysql_ins_result("неисправен", "6")
-            return False
+            self.mysql_conn.mysql_ins_result("исправен", "6")
+            return True
         self.reset_protect.sbros_testa_bp_1()
-        self.mysql_conn.mysql_ins_result("исправен", "6")
-        return True
+        self.mysql_conn.mysql_ins_result("неисправен", "6")
+        return False
+
 
     def st_test_bp(self) -> bool:
         """

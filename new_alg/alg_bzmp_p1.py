@@ -61,7 +61,6 @@ class TestBZMPP1:
         Тест 1. Проверка исходного состояния блока:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             return True
         return False
@@ -108,12 +107,10 @@ class TestBZMPP1:
         self.logger.debug("идёт тест 1.2")
         self.coef_volt = self.proc.procedure_1_22_32()
         if self.coef_volt != 0.0:
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result("неисправен TV1", "1")
-            return False
-        self.reset.stop_procedure_32()
-        return True
+            self.reset.stop_procedure_32()
+            return True
+        self.mysql_conn.mysql_ins_result("неисправен TV1", "1")
+        return False
 
     def st_test_13(self) -> bool:
         self.logger.debug("идёт тест 1.3")
@@ -131,12 +128,10 @@ class TestBZMPP1:
                 continue
         inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
         if inp_01 is True and inp_06 is False:
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result("неисправен", "1")
-            return False
-        self.mysql_conn.mysql_ins_result("исправен", "1")
-        return True
+            self.mysql_conn.mysql_ins_result("исправен", "1")
+            return True
+        self.mysql_conn.mysql_ins_result("неисправен", "1")
+        return False
 
     def st_test_20(self) -> bool:
         """
@@ -166,14 +161,12 @@ class TestBZMPP1:
         self.cli_log.lev_debug("таймаут 1 сек", "gray")
         inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
         if inp_01 is False and inp_06 is True:
-            pass
-        else:
-            self.logger.debug("положение выходов не соответствует")
-            self.mysql_conn.mysql_ins_result("неисправен", "2")
             self.reset.stop_procedure_3()
-            return False
+            return True
+        self.logger.debug("положение выходов не соответствует")
+        self.mysql_conn.mysql_ins_result("неисправен", "2")
         self.reset.stop_procedure_3()
-        return True
+        return False
 
     def st_test_23(self) -> bool:
         """
@@ -188,10 +181,9 @@ class TestBZMPP1:
         Тест 3. Проверка защиты от несимметрии фаз
         """
         self.logger.debug("идёт тест 3.0")
-        if my_msg(self.msg_4):
-            pass
-        else:
+        if not my_msg(self.msg_4):
             return False
+
         if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=self.ust_faz):
             return True
         self.mysql_conn.mysql_ins_result("неисправен TV1", "3")
@@ -219,17 +211,15 @@ class TestBZMPP1:
         self.logger.debug(f'таймер тест 3: {self.timer_test_5_2:.1f}')
         inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
         if inp_01 is False and inp_06 is True and self.timer_test_5_2 <= 12:
-            pass
-        else:
-            self.logger.debug("положение выходов не соответствует")
-            self.mysql_conn.mysql_ins_result("неисправен", "3")
+            self.logger.debug("положение выходов соответствует")
             self.reset.sbros_kl63_proc_all()
             self.conn_opc.ctrl_relay('KL81', False)
-            return False
-        self.logger.debug("положение выходов соответствует")
+            return True
+        self.logger.debug("положение выходов не соответствует")
+        self.mysql_conn.mysql_ins_result("неисправен", "3")
         self.reset.sbros_kl63_proc_all()
         self.conn_opc.ctrl_relay('KL81', False)
-        return True
+        return False
 
     def st_test_32(self) -> bool:
         """
@@ -246,24 +236,22 @@ class TestBZMPP1:
         self.cli_log.lev_debug("таймаут 0.7 сек", "gray")
         inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
         if inp_01 is True and inp_06 is False:
-            pass
-        else:
-            self.logger.debug("положение выходов не соответствует")
-            self.mysql_conn.mysql_ins_result("неисправен", "5")
-            return False
-        self.logger.debug("положение выходов соответствует")
-        self.mysql_conn.mysql_ins_result(f'исправен, {self.timer_test_5_2:.1f} сек', "3")
-        return True
+            self.logger.debug("положение выходов соответствует")
+            self.mysql_conn.mysql_ins_result(f'исправен, {self.timer_test_5_2:.1f} сек', "3")
+            return True
+        self.logger.debug("положение выходов не соответствует")
+        self.mysql_conn.mysql_ins_result("неисправен", "5")
+        return False
 
     def st_test_40(self) -> bool:
         """
         Тест 4. Проверка защиты от перегрузки
         """
         self.logger.debug("идёт тест 4.0")
-        if my_msg(self.msg_5):
-            pass
-        else:
+
+        if not my_msg(self.msg_5):
             return False
+
         if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=self.ust):
             return True
         self.mysql_conn.mysql_ins_result("неисправен TV1", "4")

@@ -74,10 +74,10 @@ class TestBMZ2:
         Тест 1. Проверка исходного состояния блока:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        if my_msg(self.msg_1):
-            pass
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+
         self.mysql_conn.mysql_ins_result('идет тест 1', '1')
         self.conn_opc.ctrl_relay('KL21', True)
         if self.reset_protection(test_num=1, subtest_num=1.0):
@@ -98,10 +98,9 @@ class TestBMZ2:
         """
         Тест 2. Проверка работоспособности защиты блока в режиме «Проверка»
         """
-        if my_msg(self.msg_2):
-            pass
-        else:
+        if not my_msg(self.msg_2):
             return False
+
         self.mysql_conn.mysql_ins_result('идет тест 2', '2')
         self.logger.debug("начало теста 2, сброс всех реле")
         if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=self.ust_test):
@@ -139,10 +138,9 @@ class TestBMZ2:
         """
         Тест 3. Проверка срабатывания защиты блока по уставкам
         """
-        if my_msg(self.msg_3):
-            pass
-        else:
+        if not my_msg(self.msg_3):
             return False
+
         self.mysql_conn.mysql_ins_result('идет тест 3', '3')
         # Цикл i=1…11 (Таблица уставок 1)
         k = 0
@@ -235,16 +233,12 @@ class TestBMZ2:
         self.mysql_conn.mysql_ins_result('идет тест 3.2', '3')
         self.logger.debug("старт теста 3.2")
 
-        if self.reset_protection(test_num=3, subtest_num=3.2):
-            pass
-        else:
+        if not self.reset_protection(test_num=3, subtest_num=3.2):
             return False
 
         self.mysql_conn.mysql_ins_result('идет тест 3.3', '3')
 
-        if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=i, factor=1.1):
-            pass
-        else:
+        if not self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=i, factor=1.1):
             return False
         # Δ%= 6,1085*U4
 
@@ -270,16 +264,14 @@ class TestBMZ2:
 
         # inp_01, inp_02, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02', 'inp_05'])
         if self.inp_01 is True and self.inp_05 is False and self.inp_02 is True:
-            pass
-        else:
-            self.logger.debug("выходы блока не соответствуют")
-            self.mysql_conn.mysql_ins_result('неисправен', '3')
-            self.mysql_conn.mysql_error(341)
-            return False
-        self.logger.debug("выходы блока соответствуют")
-        self.reset_relay.stop_procedure_3()
-        self.logger.debug("сброс реле и старт теста 3.5")
-        return True
+            self.logger.debug("выходы блока соответствуют")
+            self.reset_relay.stop_procedure_3()
+            self.logger.debug("сброс реле и старт теста 3.5")
+            return True
+        self.logger.debug("выходы блока не соответствуют")
+        self.mysql_conn.mysql_ins_result('неисправен', '3')
+        self.mysql_conn.mysql_error(341)
+        return False
 
     def reset_protection(self, *, test_num: int = 3, subtest_num: float = 3.5):
         """

@@ -45,6 +45,9 @@ class TestMMTZD:
         self.coef_volt: float = 0.0
         self.health_flag: bool = False
 
+        self.inp_01: bool = False
+        self.inp_05: bool = False
+
         self.msg_1: str = "Убедитесь в отсутствии в панелях разъемов установленных блоков. " \
                           "Подключите блок в разъем Х21 на панели С"
         self.msg_2: str = "Переключите тумблер режимов, расположенный на корпусе блока, в положение «Работа»"
@@ -69,29 +72,22 @@ class TestMMTZD:
         :return:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
                 return True
         return False
 
     def st_test_11(self) -> bool:
+        """
+        Тест 1.1.
+        Коды ошибок 412 и 413
+        :return: bool
+        """
+        err_code = [412, 413]
         self.conn_opc.ctrl_relay('KL33', True)
-        self.reset_protect.sbros_zashit_kl1()
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-        if inp_01 is True and inp_05 is True:
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result("неисправен", "1")
-            if inp_01 is False:
-                self.logger.debug("положение входа 1 не соответствует")
-                self.mysql_conn.mysql_error(412)
-            elif inp_05 is False:
-                self.logger.debug("положение входа 5 не соответствует")
-                self.mysql_conn.mysql_error(413)
-            return False
-        self.logger.debug("положение выходов блока соответствует")
-        return True
+        if self.reset_protection(test_num=1, subtest_num=1.1, err_code=err_code):
+            return True
+        return False
 
     def st_test_12(self) -> bool:
         """
@@ -108,12 +104,14 @@ class TestMMTZD:
         Тест 2. Проверка срабатывания защиты II канала по уставкам.
         :return:
         """
-        if my_msg(self.msg_3):
-            pass
-        else:
+        err_code = [417, 418]
+
+        if not my_msg(self.msg_3):
             return False
+
         k = 0
         for i in self.list_ust_volt:
+
             msg_result = my_msg_2(f'{self.msg_4} {self.list_ust_num[k]}')
             if msg_result == 0:
                 pass
@@ -123,24 +121,26 @@ class TestMMTZD:
                 self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[k]} пропущена')
                 k += 1
                 continue
+
             if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=i):
                 pass
             else:
                 self.mysql_conn.mysql_ins_result('неисправен', '2')
                 return False
+
             # 2.1.  Проверка срабатывания блока от сигнала нагрузки:
             self.conn_opc.ctrl_ai_code_v1(106)
             sleep(3)
-            inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+            self.inp_01, self.inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             self.reset_relay.stop_procedure_3()
-            if inp_01 is False and inp_05 is False:
+            if self.inp_01 is False and self.inp_05 is False:
                 self.logger.debug("положение выходов блока соответствует")
-                if self.subtest_23():
+                if self.reset_protection(test_num=2, subtest_num=2.0, err_code=err_code):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_2[k]}')
                 else:
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_2[k]}')
                     return False
-            elif inp_01 is True:
+            elif self.inp_01 is True:
                 if self.subtest_22(i):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_2[k]}')
                 else:
@@ -148,7 +148,7 @@ class TestMMTZD:
                     self.mysql_conn.mysql_error(415)
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_2[k]}')
                     return False
-            elif inp_05 is True:
+            elif self.inp_05 is True:
                 if self.subtest_22(i):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_2[k]}')
                 else:
@@ -165,16 +165,19 @@ class TestMMTZD:
         Тест 3. Проверка срабатывания защиты III канала по уставкам.
         :return:
         """
+        err_code = [417, 418]
+
         self.conn_opc.ctrl_relay('KL73', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
         self.cli_log.lev_debug("таймаут 5 сек", "gray")
-        if my_msg(self.msg_5):
-            pass
-        else:
+
+        if not my_msg(self.msg_5):
             return False
+
         x = 0
         for y in self.list_ust_volt:
+
             msg_result = my_msg_2(f'{self.msg_6} {self.list_ust_num[x]}')
             if msg_result == 0:
                 pass
@@ -184,21 +187,23 @@ class TestMMTZD:
                 self.mysql_conn.mysql_add_message(f'уставка {self.list_ust_num[x]} пропущена')
                 x += 1
                 continue
+
             if self.proc.procedure_x4_to_x5(coef_volt=self.coef_volt, setpoint_volt=y):
                 pass
             else:
                 self.mysql_conn.mysql_ins_result('неисправен', '3')
+
             self.conn_opc.ctrl_ai_code_v1(106)
             sleep(3)
-            inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+            self.inp_01, self.inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
             self.reset_relay.stop_procedure_3()
-            if inp_01 is False and inp_05 is False:
-                if self.subtest_33():
+            if self.inp_01 is False and self.inp_05 is False:
+                if self.reset_protection(test_num=3, subtest_num=3.0, err_code=err_code):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_3[x]}')
                 else:
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_3[x]}')
                     return False
-            elif inp_01 is True:
+            elif self.inp_01 is True:
                 if self.subtest_32(y):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_3[x]}')
                 else:
@@ -206,7 +211,7 @@ class TestMMTZD:
                     self.mysql_conn.mysql_error(419)
                     self.mysql_conn.mysql_ins_result('неисправен', f'{self.list_num_yach_test_3[x]}')
                     return False
-            elif inp_05 is True:
+            elif self.inp_05 is True:
                 if self.subtest_32(y):
                     self.mysql_conn.mysql_ins_result('исправен', f'{self.list_num_yach_test_3[x]}')
                 else:
@@ -224,64 +229,37 @@ class TestMMTZD:
         :param i:
         :return:
         """
-        self.reset_protect.sbros_zashit_kl1()
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-        if inp_01 is True and inp_05 is True:
-            pass
-        elif inp_01 is False:
-            self.mysql_conn.mysql_ins_result('неисправен', '2')
-            self.mysql_conn.mysql_error(417)
+        if not self.reset_protection(test_num=2, subtest_num=2.2, err_code=[417, 418]):
             return False
-        elif inp_05 is False:
-            self.mysql_conn.mysql_ins_result('неисправен', '2')
-            self.mysql_conn.mysql_error(418)
-            return False
+
         if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=i, factor=1.1):
             pass
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
+
         # 2.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         self.conn_opc.ctrl_ai_code_v1(107)
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+
+        self.inp_01, self.inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         self.reset_relay.stop_procedure_3()
-        if inp_01 is False and inp_05 is False:
-            if self.subtest_23():
+        if self.inp_01 is False and self.inp_05 is False:
+            if self.reset_protection(test_num=2, subtest_num=2.3, err_code=[417, 418]):
                 return True
-            else:
-                return False
-        elif inp_01 is True:
+            return False
+        elif self.inp_01 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             self.mysql_conn.mysql_error(415)
-            if self.subtest_23():
+            if self.reset_protection(test_num=2, subtest_num=2.3, err_code=[417, 418]):
                 return True
-            else:
-                return False
-        elif inp_05 is True:
+            return False
+        elif self.inp_05 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '2')
             self.mysql_conn.mysql_error(416)
-            if self.subtest_23():
+            if self.reset_protection(test_num=2, subtest_num=2.3, err_code=[417, 418]):
                 return True
-            else:
-                return False
-
-    def subtest_23(self) -> bool:
-        """
-        2.3. Сброс защит после проверки
-        :return:
-        """
-        self.reset_protect.sbros_zashit_kl1()
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-        if inp_01 is True and inp_05 is True:
-            return True
-        else:
-            self.mysql_conn.mysql_ins_result('неисправен', '2')
-            if inp_01 is False:
-                self.mysql_conn.mysql_error(417)
-            elif inp_05 is False:
-                self.mysql_conn.mysql_error(418)
             return False
 
     def subtest_32(self, y) -> bool:
@@ -290,66 +268,57 @@ class TestMMTZD:
         :param y:
         :return:
         """
-        self.reset_protect.sbros_zashit_kl1()
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-        if inp_01 is True and inp_05 is True:
-            pass
-        elif inp_01 is False:
-            self.mysql_conn.mysql_ins_result('неисправен', '3')
-            self.mysql_conn.mysql_error(417)
+        if not self.reset_protection(test_num=3, subtest_num=3.2, err_code=[417, 418]):
             return False
-        elif inp_05 is False:
-            self.mysql_conn.mysql_ins_result('неисправен', '3')
-            self.mysql_conn.mysql_error(418)
-            return False
+
         if self.proc.procedure_1_24_34(coef_volt=self.coef_volt, setpoint_volt=y, factor=1.1):
             pass
         else:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             return False
+
         # 2.2.2.  Проверка срабатывания блока от сигнала нагрузки:
         self.conn_opc.ctrl_ai_code_v1(107)
         sleep(3)
         self.logger.debug("таймаут 3 сек")
         self.cli_log.lev_debug("таймаут 3 сек", "gray")
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+
+        self.inp_01, self.inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
         self.reset_relay.stop_procedure_3()
-        if inp_01 is False and inp_05 is False:
-            if self.subtest_33():
+        if self.inp_01 is False and self.inp_05 is False:
+            if self.reset_protection(test_num=3, subtest_num=3.3, err_code=[417, 418]):
                 return True
-            else:
-                return False
-        elif inp_01 is True:
+            return False
+
+        elif self.inp_01 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             self.mysql_conn.mysql_error(419)
-            if self.subtest_33():
+            if self.reset_protection(test_num=3, subtest_num=3.3, err_code=[417, 418]):
                 return True
-            else:
-                return False
-        elif inp_05 is True:
+            return False
+
+        elif self.inp_05 is True:
             self.mysql_conn.mysql_ins_result('неисправен', '3')
             self.mysql_conn.mysql_error(420)
-            if self.subtest_33():
+            if self.reset_protection(test_num=3, subtest_num=3.3, err_code=[417, 418]):
                 return True
-            else:
-                return False
+            return False
 
-    def subtest_33(self) -> bool:
+    def reset_protection(self, test_num: int, subtest_num: float, err_code: list[int]) -> bool:
         """
-        2.3. Сброс защит после проверки
-        :return:
+        Сброс защит с последующей проверкой состояния выходов блока.
+        :param test_num: Номер теста
+        :param subtest_num: Номер подтеста
+        :param err_code: для тестов 3.х будет 417 и 418
+        :return: bool
         """
         self.reset_protect.sbros_zashit_kl1()
-        inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
-        if inp_01 is True and inp_05 is True:
+        if self.conn_opc.subtest_read_di(test_num=test_num, subtest_num=subtest_num,
+                                         err_code=err_code,
+                                         position_inp=[True, True],
+                                         di_xx=['inp_01', 'inp_05']):
             return True
-        else:
-            self.mysql_conn.mysql_ins_result('неисправен', '3')
-            if inp_01 is False:
-                self.mysql_conn.mysql_error(417)
-            elif inp_05 is False:
-                self.mysql_conn.mysql_error(418)
-            return False
+        return False
 
     def st_test_mmtz_d(self) -> [bool, bool]:
         """

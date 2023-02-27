@@ -60,7 +60,6 @@ class TestBUZ2:
         Тест 1. Включение/выключение блока в нормальном режиме:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
                 return True
@@ -167,10 +166,10 @@ class TestBUZ2:
         self.logger.debug("таймаут 0.3 сек")
         self.cli_log.lev_debug("таймаут 0.3 сек", "gray")
         self.conn_opc.ctrl_relay('KL66', True)
-        if my_msg(self.msg_3):
-            pass
-        else:
+
+        if not my_msg(self.msg_3):
             return False
+
         self.conn_opc.ctrl_relay('KL66', False)
         sleep(1)
         self.logger.debug("таймаут 1 сек")

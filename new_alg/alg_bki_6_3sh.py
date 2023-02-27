@@ -52,13 +52,12 @@ class TestBKI6:
         Тест 1. Проверка исходного состояния контактов блока при отсутствии напряжения питания
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        if my_msg(self.msg_1):
-            if my_msg(self.msg_2):
-                pass
-            else:
-                return False
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+        if not my_msg(self.msg_2):
+            return False
+
         self.conn_opc.ctrl_relay('KL22', True)
         sleep(3)
         if self.conn_opc.subtest_read_di(test_num=1, subtest_num=1.0,

@@ -273,14 +273,13 @@ class TestBKZ3MK:
         """
         self.logger.debug("тест 5.0")
         self.malfunction = False
-        if my_msg(self.msg_4):
-            pass
-        else:
+
+        if not my_msg(self.msg_4):
             return False
-        if self.reset_protection(test_num=5, subtest=5.0, err1=329, err2=330):
-            pass
-        else:
+
+        if not self.reset_protection(test_num=5, subtest=5.0, err1=329, err2=330):
             return False
+
         m = 0
         for n in self.list_ust_tzp_volt:
             self.logger.debug(f"проверка уставки: {self.list_ust_tzp_volt[m]}")
@@ -288,6 +287,7 @@ class TestBKZ3MK:
 
             self.mysql_conn.mysql_add_message(f'уставка ТЗП: {self.list_ust_tzp_num[m]}, подтест 5.1')
             msg_result_tzp = my_msg_2(f'{self.msg_5} {self.list_ust_tzp_num[m]}')
+
             if msg_result_tzp == 0:
                 pass
             elif msg_result_tzp == 1:

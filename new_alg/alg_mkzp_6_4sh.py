@@ -94,13 +94,13 @@ class TestMKZP6:
         :return: 
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
-        if my_msg(self.msg_1):
-            pass
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+
         self.logger.debug('тест 1.1')
         self.mysql_conn.mysql_ins_result("идёт тест 1.1", '1')
+
         meas_volt_ust = self.proc.procedure_1_21_31()
         if meas_volt_ust != 0.0:
             pass
@@ -108,6 +108,7 @@ class TestMKZP6:
             self.logger.debug('неисправен')
             self.mysql_conn.mysql_ins_result("неисправен", '1')
             return False
+
         self.conn_opc.ctrl_relay('KL73', True)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
@@ -117,16 +118,15 @@ class TestMKZP6:
         self.logger.debug("таймаут 5 сек")
         self.cli_log.lev_debug("таймаут 5 сек", "gray")
         self.conn_opc.ctrl_relay('KL63', True)
+
         meas_volt = self.conn_opc.read_ai('AI0')
-        self.logger.debug(f'измеренное напряжение:\t{meas_volt}')
         if 0.8 * meas_volt_ust <= meas_volt <= 1.0 * meas_volt_ust:
-            pass
-        else:
-            self.mysql_conn.mysql_ins_result('неисправен', '1')
             self.reset.sbros_kl63_proc_1_21_31()
-            return False
+            return True
+        self.mysql_conn.mysql_ins_result('неисправен', '1')
         self.reset.sbros_kl63_proc_1_21_31()
-        return True
+        return False
+
 
     def st_test_11(self) -> bool:
         self.logger.debug('тест 1.2')
@@ -287,10 +287,9 @@ class TestMKZP6:
         self.logger.debug('тест 2 пройден')
         self.mysql_conn.mysql_ins_result("исправен", '2')
         if my_msg(self.msg_13):
-            pass
-        else:
-            return False
-        return True
+            return True
+        return False
+
 
     def st_test_30(self) -> bool:
         """
@@ -340,10 +339,10 @@ class TestMKZP6:
         """
         self.logger.debug('тест 4.1')
         self.mysql_conn.mysql_ins_result("идёт тест 4.1", '4')
-        if my_msg(self.msg_20):
-            pass
-        else:
+
+        if not my_msg(self.msg_20):
             return False
+
         self.conn_opc.ctrl_relay('KL99', False)
         sleep(5)
         self.logger.debug("таймаут 5 сек")
@@ -451,10 +450,9 @@ class TestMKZP6:
         return True
 
     def st_test_52(self) -> bool:
-        if my_msg(self.msg_13):
-            pass
-        else:
+        if not my_msg(self.msg_13):
             return False
+
         self.logger.debug('тест 5 пройден')
         self.mysql_conn.mysql_ins_result("исправен", '5')
         return True

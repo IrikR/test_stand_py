@@ -57,10 +57,10 @@ class TestBMZAPSHM:
         Тест 1. Проверка исходного состояния блока:
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        if my_msg(self.msg_1):
-            pass
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+
         self.logger.debug("тест 1.0")
         self.cli_log.lev_info("тест 1", "skyblue")
         self.conn_opc.ctrl_relay('KL21', True)
