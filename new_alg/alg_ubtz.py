@@ -15,6 +15,7 @@ import logging
 from time import sleep, time
 
 from .general_func.database import *
+from .general_func.exception import HardwareException
 from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
 from .general_func.reset import ResetProtection, ResetRelay
@@ -77,13 +78,12 @@ class TestUBTZ:
     def st_test_10(self) -> bool:
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
         self.logger.debug("старт теста 1.0")
-        if my_msg(self.msg_1):
-            if my_msg(self.msg_2):
-                pass
-            else:
-                return False
-        else:
+
+        if not my_msg(self.msg_1):
             return False
+        if not my_msg(self.msg_2):
+            return False
+
         self.mysql_conn.mysql_ins_result("идёт тест 1.0", '1')
         self.conn_opc.ctrl_relay('KL22', True)
         self.conn_opc.ctrl_relay('KL66', True)
@@ -223,9 +223,13 @@ class TestUBTZ:
             self.mysql_conn.progress_level(0.0)
             in_b1, *_ = self.conn_opc.simplified_read_di(['inp_b1'])
             a = 0
+
             while in_b1 is False and a < 10:
                 a += 1
                 in_b1, *_ = self.conn_opc.simplified_read_di(['inp_09'])
+            if in_b1 is False:
+                raise HardwareException("Неисправность в стенде, контроль состояния вторичного главного контакта KL63")
+
             start_timer = time()
             sub_timer = 0
             in_a6, *_ = self.conn_opc.simplified_read_di(['inp_06'])

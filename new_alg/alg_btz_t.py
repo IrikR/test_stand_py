@@ -22,6 +22,7 @@ from .general_func.subtest import ProcedureFull
 from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
+from .general_func.exception import HardwareException
 
 
 class TestBTZT:
@@ -409,6 +410,9 @@ class TestBTZT:
         while self.inp_09 is False and i <= 20:
             i += 1
             self.inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
+        if self.inp_09 is False:
+            raise HardwareException("Неисправность в стенде, контроль состояния вторичного главного контакта KL63")
+
         if self.inp_09 is True:
             start_timer = time()
             meas_time = 0

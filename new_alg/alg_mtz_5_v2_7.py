@@ -15,6 +15,7 @@ import logging
 from time import sleep, time
 
 from .general_func.database import *
+from .general_func.exception import HardwareException
 from .general_func.opc_full import ConnectOPC
 from .general_func.procedure import *
 from .general_func.reset import ResetProtection, ResetRelay
@@ -83,7 +84,6 @@ class TestMTZ5V27:
         :return: bool
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
                 return True
@@ -286,18 +286,22 @@ class TestMTZ5V27:
             # 4.4.  Проверка срабатывания блока от сигнала нагрузки:
             self.conn_opc.ctrl_relay('KL63', True)
             self.mysql_conn.progress_level(0.0)
+
             r = 0
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
+            inp_09, *_ = self.conn_opc.simplified_read_di(["inp_09"])
             while inp_09 is False and r <= 5:
-                inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
+                inp_09, *_ = self.conn_opc.simplified_read_di(["inp_09"])
                 r += 1
+            if inp_09 is False:
+                raise HardwareException("Неисправность в стенде, контроль состояния вторичного главного контакта KL63")
+
             start_timer_tzp = time()
             delta_t_tzp = 0
-            inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
+            inp_05, *_ = self.conn_opc.simplified_read_di(["inp_05"])
             while inp_05 is False and delta_t_tzp <= 21:
                 delta_t_tzp = time() - start_timer_tzp
                 self.mysql_conn.progress_level(delta_t_tzp)
-                inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
+                inp_05, *_ = self.conn_opc.simplified_read_di(["inp_05"])
             stop_timer_tzp = time()
             self.conn_opc.ctrl_relay('KL63', False)
             calc_delta_t_tzp = stop_timer_tzp - start_timer_tzp
@@ -309,7 +313,7 @@ class TestMTZ5V27:
             self.mysql_conn.mysql_add_message(f'уставка {self.tuple_ust_tzp_num[m]} '
                                               f'дельта %: {calc_delta_percent_tzp:.2f}')
             self.reset_relay.stop_procedure_3()
-            inp_01, inp_05 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05'])
+            inp_01, inp_05 = self.conn_opc.simplified_read_di(["inp_01", "inp_05"])
             if inp_01 is False and inp_05 is True and calc_delta_t_tzp <= 21:
                 self.logger.debug("положение выходов соответствует")
                 if self.subtest.subtest_xx(test_num=4, subtest_num=4.6, err_code_a=449, err_code_b=450):

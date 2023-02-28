@@ -22,6 +22,7 @@ from .general_func.subtest import *
 from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
+from .general_func.exception import HardwareException
 
 
 class TestMTZ5V411:
@@ -80,7 +81,6 @@ class TestMTZ5V411:
         :return: bool
         """
         self.cli_log.lev_info(f"старт теста {__doc__}", "skyblue")
-        self.conn_opc.simplified_read_di(['inp_14', 'inp_15'])
         if my_msg(self.msg_1):
             if my_msg(self.msg_2):
                 return True
@@ -264,10 +264,14 @@ class TestMTZ5V411:
             # 4.4.  Проверка срабатывания блока от сигнала нагрузки:
             self.conn_opc.ctrl_relay('KL63', True)
             r = 0
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
+
+            inp_09, *_ = self.conn_opc.simplified_read_di(["inp_09"])
             while inp_09 is False and r <= 5:
                 inp_09, *_ = self.conn_opc.simplified_read_di(["inp_09"])
                 r += 1
+            if inp_09 is False:
+                raise HardwareException("Неисправность в стенде, контроль состояния вторичного главного контакта KL63")
+
             start_timer_tzp = time()
             delta_t_tzp = 0
             inp_05, *_ = self.conn_opc.simplified_read_di(["inp_05"])

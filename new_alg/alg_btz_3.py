@@ -22,6 +22,7 @@ from .general_func.subtest import ProcedureFull
 from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
 from .gui.msgbox_2 import *
+from .general_func.exception import HardwareException
 
 
 class TestBTZ3:
@@ -291,11 +292,15 @@ class TestBTZ3:
             # 5.4.  Проверка срабатывания блока от сигнала нагрузки:
             self.mysql_conn.progress_level(0.0)
             self.conn_opc.ctrl_relay('KL63', True)
+
             inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
             i1 = 0
             while inp_09 is False and i1 <= 4:
                 inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
                 i1 += 1
+            if inp_09 is False:
+                raise HardwareException("Неисправность в стенде, контроль состояния вторичного главного контакта KL63")
+
             start_timer_tzp = time()
             calc_delta_t_tzp = 0
             inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
