@@ -14,9 +14,10 @@ __all__ = ["TestBZMPP"]
 import logging
 from time import sleep, time
 
-from .general_func.database import *
+from .general_func.database import MySQLConnect
+from .general_func.delta_t import DeltaT
 from .general_func.opc_full import ConnectOPC
-from .general_func.procedure import *
+from .general_func.procedure import Procedure
 from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.resistance import Resistor
 from .general_func.utils import CLILog
@@ -30,6 +31,7 @@ class TestBZMPP:
 
     def __init__(self):
         self.conn_opc = ConnectOPC()
+        self.delta_t = DeltaT()
         self.proc = Procedure()
         self.reset = ResetRelay()
         self.reset_protect = ResetProtection()
@@ -285,23 +287,15 @@ class TestBZMPP:
         sleep(0.1)
         self.logger.debug("таймаут 0.1 сек")
         self.cli_log.lev_debug("таймаут 0.1 сек", "gray")
+
+        self.mysql_conn.progress_level(0.0)
         self.conn_opc.ctrl_relay('KL63', True)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
-        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-        i = 0
-        while inp_09 is False and i <= 10:
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-            i += 1
-        start_timer = time()
-        inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
-        stop_timer = 0
-        while inp_05 is True and stop_timer <= 12:
-            inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
-            stop_timer = time() - start_timer
-        timer_test_5_2 = stop_timer
-        self.logger.debug(f'таймер тест 6.2: {timer_test_5_2:.1f}')
+        timer_test_5_2 = self.delta_t.delta_t_tzp(di_xx=['inp_09', 'inp_05'], max_dt=13.0)
+        self.logger.debug(f'таймер тест 5.2: {timer_test_5_2:.1f}')
+
         inp_01, inp_05, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05', 'inp_06'])
         if inp_01 is False and inp_05 is False and inp_06 is True and timer_test_5_2 <= 12:
             pass
@@ -345,26 +339,16 @@ class TestBZMPP:
         """
         # 6.2.  Проверка срабатывания блока от сигнала нагрузки:
         """
+        self.mysql_conn.progress_level(0.0)
+
         self.conn_opc.ctrl_relay('KL63', True)
         sleep(2)
         self.logger.debug("таймаут 2 сек")
         self.cli_log.lev_debug("таймаут 2 сек", "gray")
-        self.mysql_conn.progress_level(0.0)
-        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-        k = 0
-        while inp_09 is False and k <= 10:
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-            k += 1
-        start_timer = time()
-        inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
-        stop_timer = 0
-        while inp_05 is True and stop_timer <= 360:
-            inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
-            stop_timer = time() - start_timer
-            self.mysql_conn.progress_level(stop_timer)
-        self.timer_test_6_2 = stop_timer
+
+        self.timer_test_6_2 = self.delta_t.delta_t_tzp(di_xx=['inp_09', 'inp_05'])
         self.logger.debug(f'таймер тест 6.2: {self.timer_test_6_2:.1f}')
-        self.mysql_conn.progress_level(0.0)
+
         inp_01, inp_05, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_05', 'inp_06'])
         if inp_01 is False and inp_05 is False and inp_06 is True and self.timer_test_6_2 <= 360:
             self.reset.sbros_kl63_proc_all()
