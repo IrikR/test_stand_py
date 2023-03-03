@@ -12,11 +12,12 @@
 __all__ = ["TestBUZ2"]
 
 import logging
-from time import sleep, time
+from time import sleep
 
-from .general_func.database import *
+from .general_func.database import MySQLConnect
+from .general_func.delta_t import DeltaT
 from .general_func.opc_full import ConnectOPC
-from .general_func.procedure import *
+from .general_func.procedure import Procedure
 from .general_func.reset import ResetRelay
 from .general_func.subtest import *
 from .general_func.utils import CLILog
@@ -27,6 +28,7 @@ class TestBUZ2:
 
     def __init__(self):
         self.conn_opc = ConnectOPC()
+        self.delta_t = DeltaT()
         self.proc = Procedure()
         self.reset = ResetRelay()
         self.mysql_conn = MySQLConnect()
@@ -278,20 +280,11 @@ class TestBUZ2:
             self.mysql_conn.mysql_ins_result("неисправен", "3")
             return False
         self.conn_opc.ctrl_relay('KL63', True)
-        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-        k = 0
-        while inp_09 is False and k <= 10:
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-            k += 1
-        start_timer = time()
-        inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
-        stop_timer = 0
-        while inp_01 is True and stop_timer <= 360:
-            inp_01, *_ = self.conn_opc.simplified_read_di(['inp_01'])
-            stop_timer = time() - start_timer
-        timer_test_3 = stop_timer
+
+        timer_test_3 = self.delta_t.delta_t_tzp(di_xx=['inp_09', 'inp_01'])
+
         inp_01, inp_02 = self.conn_opc.simplified_read_di(['inp_01', 'inp_02'])
-        if inp_01 is False and inp_02 is False and timer_test_3 <= 360:
+        if inp_01 is False and inp_02 is False and timer_test_3 <= 360.0:
             pass
         else:
             self.mysql_conn.mysql_ins_result("неисправен", "3")
