@@ -12,9 +12,10 @@ __all__ = ["TestBZMPP1"]
 import logging
 from time import sleep, time
 
-from .general_func.database import *
+from .general_func.database import MySQLConnect
+from .general_func.delta_t import DeltaT
 from .general_func.opc_full import ConnectOPC
-from .general_func.procedure import *
+from .general_func.procedure import Procedure
 from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.utils import CLILog
 from .gui.msgbox_1 import *
@@ -24,6 +25,7 @@ class TestBZMPP1:
 
     def __init__(self):
         self.conn_opc = ConnectOPC()
+        self.delta_t = DeltaT()
         self.proc = Procedure()
         self.reset = ResetRelay()
         self.mysql_conn = MySQLConnect()
@@ -195,19 +197,11 @@ class TestBZMPP1:
         sleep(0.1)
         self.logger.debug("таймаут 0.1 сек")
         self.cli_log.lev_debug("таймаут 0.1 сек", "gray")
+
+        self.mysql_conn.progress_level(0.0)
         self.conn_opc.ctrl_relay('KL63', True)
-        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-        i = 0
-        while inp_09 is False and i <= 10:
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-            i += 1
-        start_timer = time()
-        inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
-        stop_timer = 0
-        while inp_06 is False and stop_timer <= 12:
-            inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
-            stop_timer = time() - start_timer
-        self.timer_test_5_2 = stop_timer
+        self.timer_test_5_2 = self.delta_t.delta_t_tzp(di_xx=['inp_09', 'inp_06'], max_dt=13.0, position=False)
+
         self.logger.debug(f'таймер тест 3: {self.timer_test_5_2:.1f}')
         inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
         if inp_01 is False and inp_06 is True and self.timer_test_5_2 <= 12:
@@ -262,21 +256,12 @@ class TestBZMPP1:
         4.2.  Проверка срабатывания блока от сигнала нагрузки:
         """
         self.logger.debug("идёт тест 4.1")
+
+        self.mysql_conn.progress_level(0.0)
         self.conn_opc.ctrl_relay('KL63', True)
-        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-        k = 0
-        while inp_09 is False and k <= 10:
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-            k += 1
-        start_timer = time()
-        inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
-        stop_timer = 0
-        while inp_06 is False and stop_timer <= 360:
-            inp_06, *_ = self.conn_opc.simplified_read_di(['inp_06'])
-            stop_timer = time() - start_timer
-            self.logger.debug(f'таймер тест 4: {stop_timer:.1f}')
-        self.timer_test_6_2 = stop_timer
+        self.timer_test_6_2 = self.delta_t.delta_t_tzp(di_xx=['inp_09', 'inp_06'], position=False)
         self.logger.debug(f'таймер тест 4: {self.timer_test_6_2:.1f}')
+
         inp_01, inp_06 = self.conn_opc.simplified_read_di(['inp_01', 'inp_06'])
         if inp_01 is False and inp_06 is True and self.timer_test_6_2 <= 360:
             pass
