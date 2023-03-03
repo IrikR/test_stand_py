@@ -14,9 +14,10 @@ __all__ = ["TestBZMPD"]
 import logging
 from time import sleep, time
 
-from .general_func.database import *
+from .general_func.database import MySQLConnect
+from .general_func.delta_t import DeltaT
 from .general_func.opc_full import ConnectOPC
-from .general_func.procedure import *
+from .general_func.procedure import Procedure
 from .general_func.reset import ResetProtection, ResetRelay
 from .general_func.resistance import Resistor
 from .general_func.utils import CLILog
@@ -27,6 +28,7 @@ class TestBZMPD:
 
     def __init__(self):
         self.conn_opc = ConnectOPC()
+        self.delta_t = DeltaT()
         self.proc = Procedure()
         self.reset = ResetRelay()
         self.reset_protect = ResetProtection()
@@ -352,25 +354,11 @@ class TestBZMPD:
         """
         self.logger.debug("идёт тест 5.1")
         self.mysql_conn.mysql_ins_result('идёт тест 5.2', '5')
+        self.mysql_conn.progress_level(0.0)
+
         self.conn_opc.ctrl_relay('KL63', True)
-        self.mysql_conn.progress_level(0.0)
-        inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-        k = 0
-        while inp_09 is False and k <= 10:
-            inp_09, *_ = self.conn_opc.simplified_read_di(['inp_09'])
-            k += 1
-        start_timer_test_5 = time()
-        inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
-        stop_timer = 0
-        while inp_05 is True and stop_timer <= 360:
-            inp_05, *_ = self.conn_opc.simplified_read_di(['inp_05'])
-            sleep(0.2)
-            stop_timer_test_5 = time() - start_timer_test_5
-            self.logger.debug(f'таймер тест 5: {stop_timer_test_5:.1f}')
-            self.mysql_conn.progress_level(stop_timer_test_5)
-        stop_timer_test_5 = time()
-        self.timer_test_5 = stop_timer_test_5 - start_timer_test_5
-        self.mysql_conn.progress_level(0.0)
+        self.timer_test_5 = self.delta_t.delta_t_tzp(di_xx=['inp_09', 'inp_05'])
+
         self.logger.debug(f'таймер тест 5: {self.timer_test_5:.1f}')
         sleep(2)
         self.logger.debug("таймаут 2 сек")
